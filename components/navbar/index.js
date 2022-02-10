@@ -1,6 +1,5 @@
-import React, { Node } from 'react';
+import React, { Node } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Icon } from 'react-native-vector-icons/FontAwesome';
 import { Colors } from '../../lib/styles';
 
 const Section = ({ children, childStyle, ...viewProps }): Node => {
@@ -15,7 +14,7 @@ const Section = ({ children, childStyle, ...viewProps }): Node => {
   )
 }
 
-const Navbar = (): Node => {
+export const NavbarHomeScreen = (): Node => {
   return (
     <View style={styles.navbarContainer}>
       <Section style={styles.sectionContainer} childStyle={styles.sectionChildren}>
@@ -32,20 +31,18 @@ const Navbar = (): Node => {
 
 const styles = StyleSheet.create({
   navbarContainer: {
+    flex: .1,
     backgroundColor: Colors.primary,
-    height: '3%'
   },
   sectionContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    height: '100%',
-    marginRight: '3%'
+    flex: 1,
+    marginRight: 24
   },
   sectionChildren: {
-    marginRight: '3%'
+    marginRight: 8
   }
 })
-
-export default Navbar
