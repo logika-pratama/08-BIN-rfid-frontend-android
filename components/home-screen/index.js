@@ -1,50 +1,61 @@
 import React, { Node } from 'react'
-import { FlatList, View, StyleSheet, SafeAreaView } from "react-native"
+import { FlatList, View, Pressable } from "react-native"
+import { API_URL } from 'react-native-dotenv'
 import MenuScreen from "../menu-screen"
-import { Colors } from '../../lib/styles';
+import { useNavigation } from '@react-navigation/native'
+import StylesFactory from '../../styles-factory'
 import { NavbarHomeScreen } from '../navbar';
 
 const data = [
   {
     id: 0,
-    title: 'Stok Barang'
+    title: 'Stok Barang',
+    url: searchText => `${API_URL}/api/v1/stoktake/${encodeURIComponent(searchText)}`
   },
   {
     id: 1,
-    title: 'Memindai Barang'
+    title: 'Memindai Barang',
+    url: searchText => `${API_URL}/api/v1/item/search/${encodeURIComponent(searchText)}`
   },
   {
     id: 2,
-    title: 'Memindai Pemantauan dan Uji Material'
+    title: 'Memilih',
+    url: searchText => `${API_URL}/api/v1/tm/search/${encodeURIComponent(searchText)}`
   },
   {
-    id: 4,
-    title: 'Gerbang Pemindaian'
+    id: 3,
+    title: 'Gerbang Pemindaian',
+    url: `${API_URL}/api/v1/gatescan`
   }
 ]
 
-const renderItem = ({ item }) => {
+const renderItem = (navigation) => ({ item }) => {
+  const onPress = () => {
+    return navigation.navigate('detail', { title: item.title, url: item.url })
+  }
+
   return (
-    <MenuScreen title={item.title} />
+    <Pressable onPress={onPress}>
+      <MenuScreen title={item.title} />
+    </Pressable>
   )
 }
 
 const HomeScreen = (): Node => {
+  const navigation = useNavigation()
+  const theme = useTheme()
+  const Styles = new StylesFactory(theme)
+  const homeScreenStyles = Styles.homeScreenStyles()
+
   return (
-    <View style={styles.homeScreenContainer}>
+    <View style={homeScreenStyles.homeScreenContainer}>
       {/* <NavbarHomeScreen /> */}
       <FlatList
         data={data}
-        renderItem={renderItem}
+        renderItem={renderItem(navigation)}
         keyExractor={item => item.id} />
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  homeScreenContainer: {
-    flex: 1
-  },
-})
 
 export default HomeScreen

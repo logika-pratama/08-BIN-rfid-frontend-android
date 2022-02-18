@@ -1,27 +1,19 @@
 import React, { Node } from 'react'
-import { Text, View, StyleSheet } from "react-native"
+import { Text, View } from 'react-native'
+import { useTheme } from 'react-native-paper'
+import StylesFactory from '../../styles-factory'
 
 const MenuScreen = ({ title }): Node => {
+  const theme = useTheme()
+  const Styles = new StylesFactory(theme)
+  const menuScreenStyles = Styles.menuScreenStyles()
   return (
-    <View style={styles.menuScreenContainer}>
-      <Text style={styles.title}>
+    <View style={menuScreenStyles.menuScreenContainer}>
+      <Text style={menuScreenStyles.title}>
         {title}
       </Text>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  menuScreenContainer: {
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-  title: {
-    textAlign: 'center',
-    fontSize: 12,
-  }
-})
 
 export default MenuScreen

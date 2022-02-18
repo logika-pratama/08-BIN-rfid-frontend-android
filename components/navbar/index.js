@@ -1,6 +1,6 @@
 import React, { Node } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import { Colors } from '../../lib/styles';
+import { View, Text } from 'react-native'
+import StylesFactory from '../../styles-factory'
 
 const Section = ({ children, childStyle, ...viewProps }): Node => {
   return (
@@ -15,9 +15,12 @@ const Section = ({ children, childStyle, ...viewProps }): Node => {
 }
 
 export const NavbarHomeScreen = (): Node => {
+  const theme = useTheme()
+  const Styles = new StylesFactory(theme)
+  const navBarStyles = Styles.navBarStyles()
   return (
-    <View style={styles.navbarContainer}>
-      <Section style={styles.sectionContainer} childStyle={styles.sectionChildren}>
+    <View style={navBarStyles.navbarContainer}>
+      <Section style={navBarStyles.sectionContainer} childStyle={navBarStyles.sectionChildren}>
         <Text>
           Bahasa
         </Text>
@@ -28,21 +31,3 @@ export const NavbarHomeScreen = (): Node => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  navbarContainer: {
-    flex: .1,
-    backgroundColor: Colors.primary,
-  },
-  sectionContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    flex: 1,
-    marginRight: 24
-  },
-  sectionChildren: {
-    marginRight: 8
-  }
-})
