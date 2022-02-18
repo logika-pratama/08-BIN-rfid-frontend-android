@@ -1,5 +1,6 @@
 import React, { Node } from 'react'
 import { View, Text } from 'react-native'
+import { useTheme } from 'react-native-paper'
 import StylesFactory from '../../styles-factory'
 
 const Section = ({ children, childStyle, ...viewProps }): Node => {

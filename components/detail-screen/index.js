@@ -1,6 +1,7 @@
 import React, { Node } from 'react'
 import { Text, View } from 'react-native'
 import { useRoute } from '@react-navigation/native'
+import { useTheme } from 'react-native-paper'
 import StylesFactory from '../../styles-factory'
 
 const DetailScreen = (): Node => {

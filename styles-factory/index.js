@@ -8,9 +8,16 @@ export default class StylesFactory {
 
   createStyles = (obj = {}) => StyleSheet.create(obj)
 
+  navigationStackStyles = () => this.createStyles({
+    navigationStackContainer: {
+      flex: 1,
+    }
+  })
+
   homeScreenStyles = () => this.createStyles({
     homeScreenContainer: {
-      flex: 1
+      flex: 1,
+      backgroundColor: this.colors?.lightGray,
     }
   })
 
@@ -24,12 +31,6 @@ export default class StylesFactory {
     title: {
       textAlign: 'center',
       fontSize: 12,
-    }
-  })
-
-  navigationHomeStyles = () => this.createStyles({
-    navigationHomeContainer: {
-      flex: 1,
     }
   })
 
@@ -54,12 +55,10 @@ export default class StylesFactory {
   detailScreenStyles = () => this.createStyles({
     detailScreenContainer: {
       flex: 1,
-      backgroundColor: '#eeeeee',
-      marginVertical: 8,
-      marginHorizontal: 16
+      backgroundColor: this.colors?.lightGray,
     },
     title: {
-      color: '#333333',
+      color: this.colors?.black,
       textAlign: 'left',
       fontSize: 12,
     }

@@ -3,6 +3,7 @@ import { FlatList, View, Pressable } from "react-native"
 import { API_URL } from 'react-native-dotenv'
 import MenuScreen from "../menu-screen"
 import { useNavigation } from '@react-navigation/native'
+import { useTheme } from 'react-native-paper'
 import StylesFactory from '../../styles-factory'
 import { NavbarHomeScreen } from '../navbar';
 
