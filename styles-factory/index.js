@@ -10,12 +10,27 @@ export default class StylesFactory {
 
   navigationStackStyles = () => this.createStyles({
     navigationStackContainer: {
+      display: 'flex',
       flex: 1,
+    }
+  })
+
+  loginScreenStyles = () => this.createStyles({
+    loginScreenContainer: {
+      display: 'flex',
+      flex: 1,
+      backgroundColor: this.colors?.lightGray,
+    },
+    formContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
     }
   })
 
   homeScreenStyles = () => this.createStyles({
     homeScreenContainer: {
+      display: 'flex',
       flex: 1,
       backgroundColor: this.colors?.lightGray,
     }
@@ -36,11 +51,11 @@ export default class StylesFactory {
 
   navBarStyles = () => this.createStyles({
     navbarContainer: {
+      display: 'flex',
       flex: .1,
       backgroundColor: this.colors?.primary,
     },
     sectionContainer: {
-      display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-end',
@@ -54,6 +69,7 @@ export default class StylesFactory {
 
   detailScreenStyles = () => this.createStyles({
     detailScreenContainer: {
+      display: 'flex',
       flex: 1,
       backgroundColor: this.colors?.lightGray,
     },

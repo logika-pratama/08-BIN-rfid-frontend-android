@@ -1,5 +1,5 @@
 import React, { Node } from 'react'
-import { FlatList, View, Pressable } from "react-native"
+import { FlatList, View, Pressable } from 'react-native'
 import { API_URL } from 'react-native-dotenv'
 import MenuScreen from "../menu-screen"
 import { useNavigation } from '@react-navigation/native'
@@ -10,29 +10,68 @@ import { NavbarHomeScreen } from '../navbar';
 const data = [
   {
     id: 0,
-    title: 'Stok Barang',
-    url: searchText => `${API_URL}/api/v1/stoktake/${encodeURIComponent(searchText)}`
+    title: 'Pencatatan Stok',
+    url: searchText => `/stoktake/${encodeURIComponent(searchText)}`,
+    tableHeaders: ['Nomor RFID', 'Jumlah', 'SKU', 'Kode Barang'],
+    enableSearch: true,
+    enableConfirm: false
   },
   {
     id: 1,
     title: 'Memindai Barang',
-    url: searchText => `${API_URL}/api/v1/item/search/${encodeURIComponent(searchText)}`
+    url: searchText => `/item/search/${encodeURIComponent(searchText)}`,
+    tableHeaders: [
+      'Nomor RFID',
+      'Jumlah',
+      'SKU',
+      'Kode Barang',
+      'Nama',
+      'Deskripsi',
+      'Satuan'
+    ],
+    enableSearch: true,
+    enableConfirm: false
   },
   {
     id: 2,
-    title: 'Memilih',
-    url: searchText => `${API_URL}/api/v1/tm/search/${encodeURIComponent(searchText)}`
+    title: 'Pengecekan Barang',
+    url: searchText => `/tm/search/${encodeURIComponent(searchText)}`,
+    tableHeaders: [
+      'Nomor RFID',
+      'Jumlah',
+      'SKU',
+      'Kode Barang',
+      'Nama',
+      'Deskripsi',
+      'Satuan',
+      'Nomor Baris',
+      'Nomor Rak',
+      'Nomor Kotak',
+      'Waktu Pantau'
+    ],
+    enableSearch: true,
+    enableConfirm: false
   },
   {
     id: 3,
     title: 'Gerbang Pemindaian',
-    url: `${API_URL}/api/v1/gatescan`
+    url: `/gatescan`,
+    tableHeaders: ['Nomor RFID'],
+    enableSearch: false,
+    enableConfirm: true
   }
 ]
 
 const renderItem = (navigation) => ({ item }) => {
+  const { title, url, tableHeaders, enableSearch, enableConfirm } = item
   const onPress = () => {
-    return navigation.navigate('detail', { title: item.title, url: item.url })
+    return navigation.navigate('detail', {
+      title,
+      url,
+      tableHeaders,
+      enableSearch,
+      enableConfirm
+    })
   }
 
   return (
@@ -54,7 +93,7 @@ const HomeScreen = (): Node => {
       <FlatList
         data={data}
         renderItem={renderItem(navigation)}
-        keyExractor={item => item.id} />
+        keyExtractor={item => item.id} />
     </View>
   )
 }

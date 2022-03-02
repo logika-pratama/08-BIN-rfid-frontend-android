@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useTheme } from 'react-native-paper'
 import HomeScreen from '../components/home-screen'
 import DetailScreen from '../components/detail-screen'
+import LoginScreen from '../components/login-screen'
 import StylesFactory from '../styles-factory'
 
 const Stack = createNativeStackNavigator()
@@ -18,6 +19,10 @@ const NavigationStack = (): Node => {
     <SafeAreaView style={navigationStackStyles.navigationStackContainer}>
       <NavigationContainer>
         <Stack.Navigator>
+          <Stack.Screen
+            name='login'
+            component={LoginScreen}
+          />
           <Stack.Screen
             name='home'
             component={HomeScreen}
