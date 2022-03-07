@@ -1,9 +1,11 @@
-import React, { Node, useState, useEffect, useRef } from 'react'
+import React, { Node, useState, useEffect } from 'react'
 import { Text, View } from 'react-native'
 import { useRoute } from '@react-navigation/native'
-import { useTheme, DataTable } from 'react-native-paper'
+import { TextInput, useTheme, DataTable } from 'react-native-paper'
+import { useForm, Controller } from 'react-hook-form'
 import InstanceApi from '../../service'
 import StylesFactory from '../../styles-factory'
+import { Button } from '../../lib/components-ingredients'
 
 const optionsRowsPerPage = [10, 25, 50]
 
@@ -13,13 +15,17 @@ const DetailScreen = (): Node => {
   const Styles = new StylesFactory(theme)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(optionsRowsPerPage[0])
-  const refSearch = useRef(null)
-  const { title, url, tableHeaders, enableSearch, enableConfirm } = route.params
+  const { title, endPoint, tableHeaders, enableSearch, enableConfirm, token } = route.params
   const detailScreenStyles = Styles.detailScreenStyles()
 
-  const getUrl = searchText => typeof url === 'function' ? url(searchText) : url
+  const getEndPoint = searchText => typeof endPoint === 'function' ? endPoint(searchText) : endPoint
   const Api = new InstanceApi()
-  const searchValue = refSearch.current?.value
+
+  const { control, handleSubmit, formState: { error } } = useForm({
+    defaultValues: {
+      search: ''
+    }
+  })
 
   const onPageChange = page => () => {
     setPage(page)
@@ -29,24 +35,47 @@ const DetailScreen = (): Node => {
 
   }
 
+  const onSubmit = async data => {
+    const searchValue = data?.search
+    const finalEndpoint = getEndPoint(searchValue)
+
+    if (searchValue) {
+      const resp = await Api.detailSearch(finalEndpoint, token)
+      console.log('resp')
+      console.log(resp)
+
+      if (resp.status === 200) {
+        console.log(resp)
+        console.log('resp')
+      }
+    }
+  }
+
   useEffect(() => {
     setPage(0)
   }, [rowsPerPage])
-
-  useEffect(() => {
-    if (searchValue) {
-      const finalUrl = getUrl(searchValue)
-      Api.detailSearch(finalUrl)
-    }
-  }, [searchValue])
 
   return (
     <View style={detailScreenStyles.detailScreenContainer}>
       <Text style={detailScreenStyles.title}>
         title: {title}
         {'\n'}
-        url: {getUrl(11222)}
+        url: {getEndPoint(11222)}
       </Text>
+      <Controller
+        name='search'
+        control={control}
+        render={({ field: { onChange, onBlur, value } }) =>
+          <TextInput
+            label={'Pencarian'}
+            placeholder={'Pencarian'}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={value}
+          />}
+      />
+      <Button onPress={handleSubmit(onSubmit)} text='Cari' />
+
       <DataTable>
         <DataTable.Header>
           {tableHeaders.map(tableHeader =>

@@ -1,6 +1,5 @@
 import React, { Node } from 'react'
 import { FlatList, View, Pressable } from 'react-native'
-import { API_URL } from 'react-native-dotenv'
 import MenuScreen from "../menu-screen"
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from 'react-native-paper'
@@ -11,7 +10,7 @@ const data = [
   {
     id: 0,
     title: 'Pencatatan Stok',
-    url: searchText => `/stoktake/${encodeURIComponent(searchText)}`,
+    endPoint: searchText => `/stoktake/${encodeURIComponent(searchText)}`,
     tableHeaders: ['Nomor RFID', 'Jumlah', 'SKU', 'Kode Barang'],
     enableSearch: true,
     enableConfirm: false
@@ -19,7 +18,7 @@ const data = [
   {
     id: 1,
     title: 'Memindai Barang',
-    url: searchText => `/item/search/${encodeURIComponent(searchText)}`,
+    endPoint: searchText => `/item/search/${encodeURIComponent(searchText)}`,
     tableHeaders: [
       'Nomor RFID',
       'Jumlah',
@@ -35,7 +34,7 @@ const data = [
   {
     id: 2,
     title: 'Pengecekan Barang',
-    url: searchText => `/tm/search/${encodeURIComponent(searchText)}`,
+    endPoint: searchText => `/tm/search/${encodeURIComponent(searchText)}`,
     tableHeaders: [
       'Nomor RFID',
       'Jumlah',
@@ -55,7 +54,7 @@ const data = [
   {
     id: 3,
     title: 'Gerbang Pemindaian',
-    url: `/gatescan`,
+    endPoint: `/gatescan`,
     tableHeaders: ['Nomor RFID'],
     enableSearch: false,
     enableConfirm: true
@@ -63,11 +62,11 @@ const data = [
 ]
 
 const renderItem = (navigation) => ({ item }) => {
-  const { title, url, tableHeaders, enableSearch, enableConfirm } = item
+  const { title, endPoint, tableHeaders, enableSearch, enableConfirm } = item
   const onPress = () => {
     return navigation.navigate('detail', {
       title,
-      url,
+      endPoint,
       tableHeaders,
       enableSearch,
       enableConfirm

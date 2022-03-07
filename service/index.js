@@ -10,33 +10,33 @@ export default class InstanceApi {
     }
   })
 
-  async login(url, data) {
+  async login(endPoint, data) {
     try {
-      return await this.instance.post(url, data)
+      return await this.instance.post(endPoint, data)
     }
     catch (err) {
       return err
     }
   }
 
-  async detailSearch(url) {
-    token = localStorage.getItem('token')
-    this.instance.defaults.headers.common['Authorization'] = token
+  async detailSearch(endPoint, token) {
+    console.log('token')
+    console.log(token)
+    this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
     try {
-      return await this.instance.get(url)
+      return await this.instance.get(endPoint)
     }
     catch (err) {
       return err
     }
   }
 
-  async detailConfirm(url, data) {
-    token = localStorage.getItem('token')
-    this.instance.defaults.headers.common['Authorization'] = token
+  async detailConfirm(endPoint, data, token) {
+    this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
     try {
-      return await this.instance.post(url, data)
+      return await this.instance.post(endPoint, data)
     }
     catch (err) {
       return err
