@@ -11,7 +11,12 @@ const data = [
     id: 0,
     title: 'Pencatatan Stok',
     endPoint: searchText => `/stoktake/${encodeURIComponent(searchText)}`,
-    tableHeaders: ['Nomor RFID', 'Jumlah', 'SKU', 'Kode Barang'],
+    tableHeaders: [
+      'No. RFID',
+      'Jumlah',
+      'SKU',
+      'Kode Barang'
+    ],
     enableSearch: true,
     enableConfirm: false
   },
@@ -20,13 +25,13 @@ const data = [
     title: 'Memindai Barang',
     endPoint: searchText => `/item/search/${encodeURIComponent(searchText)}`,
     tableHeaders: [
-      'Nomor RFID',
-      'Jumlah',
-      'SKU',
-      'Kode Barang',
+      'No. RFID',
+      // 'Jumlah',
+      // 'SKU',
+      // 'Kode Barang',
       'Nama',
-      'Deskripsi',
-      'Satuan'
+      // 'Deskripsi',
+      // 'Satuan'
     ],
     enableSearch: true,
     enableConfirm: false
@@ -36,17 +41,17 @@ const data = [
     title: 'Pengecekan Barang',
     endPoint: searchText => `/tm/search/${encodeURIComponent(searchText)}`,
     tableHeaders: [
-      'Nomor RFID',
-      'Jumlah',
-      'SKU',
-      'Kode Barang',
+      'No. RFID',
+      // 'Jumlah',
+      // 'SKU',
+      // 'Kode Barang',
       'Nama',
-      'Deskripsi',
-      'Satuan',
-      'Nomor Baris',
-      'Nomor Rak',
-      'Nomor Kotak',
-      'Waktu Pantau'
+      // 'Deskripsi',
+      // 'Satuan',
+      'No. Baris',
+      'No. Rak',
+      'No. Kotak',
+      // 'Waktu Pantau'
     ],
     enableSearch: true,
     enableConfirm: false
@@ -55,16 +60,17 @@ const data = [
     id: 3,
     title: 'Gerbang Pemindaian',
     endPoint: `/gatescan`,
-    tableHeaders: ['Nomor RFID'],
+    tableHeaders: ['No. RFID'],
     enableSearch: false,
     enableConfirm: true
   }
 ]
 
 const renderItem = (navigation) => ({ item }) => {
-  const { title, endPoint, tableHeaders, enableSearch, enableConfirm } = item
+  const { id, title, endPoint, tableHeaders, enableSearch, enableConfirm } = item
   const onPress = () => {
     return navigation.navigate('detail', {
+      id,
       title,
       endPoint,
       tableHeaders,

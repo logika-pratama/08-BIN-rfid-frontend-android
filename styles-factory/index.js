@@ -32,7 +32,7 @@ export default class StylesFactory {
     homeScreenContainer: {
       display: 'flex',
       flex: 1,
-      backgroundColor: this.colors?.lightGray,
+      backgroundColor: this.colors?.white,
     }
   })
 
@@ -46,6 +46,7 @@ export default class StylesFactory {
     title: {
       textAlign: 'center',
       fontSize: 12,
+      color: this.colors?.white
     }
   })
 
@@ -71,7 +72,7 @@ export default class StylesFactory {
     detailScreenContainer: {
       display: 'flex',
       flex: 1,
-      backgroundColor: this.colors?.lightGray,
+      backgroundColor: this.colors?.white,
     },
     title: {
       color: this.colors?.black,

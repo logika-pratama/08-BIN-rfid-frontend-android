@@ -14,8 +14,10 @@ const DetailScreen = (): Node => {
   const theme = useTheme()
   const Styles = new StylesFactory(theme)
   const [page, setPage] = useState(0)
+  const [data, setData] = useState([])
+  const [finalData, setFinalData] = useState([])
   const [rowsPerPage, setRowsPerPage] = useState(optionsRowsPerPage[0])
-  const { title, endPoint, tableHeaders, enableSearch, enableConfirm, token } = route.params
+  const { id, title, endPoint, tableHeaders, enableSearch, enableConfirm, token } = route.params
   const detailScreenStyles = Styles.detailScreenStyles()
 
   const getEndPoint = searchText => typeof endPoint === 'function' ? endPoint(searchText) : endPoint
@@ -45,8 +47,10 @@ const DetailScreen = (): Node => {
       console.log(resp)
 
       if (resp.status === 200) {
-        console.log(resp)
-        console.log('resp')
+        const data = resp.data?.data
+        console.log('data')
+        console.log(data)
+        setData(data)
       }
     }
   }
@@ -55,26 +59,35 @@ const DetailScreen = (): Node => {
     setPage(0)
   }, [rowsPerPage])
 
+
+  useEffect(() => {
+    data &&
+      setFinalData(prevData => (data[0] ? [...prevData, data[0]] : [...prevData]))
+  }, [data])
+
+  console.log('finalData')
+  console.log(finalData)
+
   return (
     <View style={detailScreenStyles.detailScreenContainer}>
-      <Text style={detailScreenStyles.title}>
-        title: {title}
-        {'\n'}
-        url: {getEndPoint(11222)}
-      </Text>
-      <Controller
-        name='search'
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) =>
-          <TextInput
-            label={'Pencarian'}
-            placeholder={'Pencarian'}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            value={value}
-          />}
-      />
-      <Button onPress={handleSubmit(onSubmit)} text='Cari' />
+      {enableSearch &&
+        <View>
+          <Controller
+            name='search'
+            control={control}
+            render={({ field: { onChange, onBlur, value } }) =>
+              <TextInput
+                label={'Pencarian'}
+                placeholder={'Pencarian'}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                onKeyPress={handleSubmit(onSubmit)}
+              />}
+          />
+          <Button onPress={handleSubmit(onSubmit)} text='Cari' />
+        </View>
+      }
 
       <DataTable>
         <DataTable.Header>
@@ -84,17 +97,69 @@ const DetailScreen = (): Node => {
             </DataTable.Title>)}
         </DataTable.Header>
 
-        <DataTable.Row>
-          <DataTable.Cell>Frozen yogurt</DataTable.Cell>
-          <DataTable.Cell numeric>159</DataTable.Cell>
-          <DataTable.Cell numeric>6.0</DataTable.Cell>
-        </DataTable.Row>
+        {/* Pencatatan Stok */}
+        {id === 0 &&
+          finalData?.map(row =>
+            <DataTable.Row>
+              <DataTable.Cell>
+                {row.tag_number}
+              </DataTable.Cell>
+              <DataTable.Cell>
+                {row.Quantity}
+              </DataTable.Cell>
+              <DataTable.Cell>
+                {row.SKU}
+              </DataTable.Cell>
+              <DataTable.Cell>
+                {row.Item_code}
+              </DataTable.Cell>
+            </DataTable.Row>
+          )}
 
-        <DataTable.Row>
-          <DataTable.Cell>Ice cream sandwich</DataTable.Cell>
-          <DataTable.Cell numeric>237</DataTable.Cell>
-          <DataTable.Cell numeric>8.0</DataTable.Cell>
-        </DataTable.Row>
+        {/* Memindai Barang */}
+        {id === 1 &&
+          finalData?.map(row =>
+            <DataTable.Row>
+              <DataTable.Cell>
+                {row.tag_number}
+              </DataTable.Cell>
+              <DataTable.Cell>
+                {row.Name}
+              </DataTable.Cell>
+            </DataTable.Row>
+          )}
+
+        {/* Pengecekan Barang */}
+        {id === 2 &&
+          finalData?.map(row =>
+            <DataTable.Row>
+              <DataTable.Cell>
+                {row.tag_number}
+              </DataTable.Cell>
+              <DataTable.Cell>
+                {row.Name}
+              </DataTable.Cell>
+              <DataTable.Cell>
+                {row.Line_number}
+              </DataTable.Cell>
+              <DataTable.Cell>
+                {row.Rak_number}
+              </DataTable.Cell>
+              <DataTable.Cell>
+                {row.Bin_number}
+              </DataTable.Cell>
+            </DataTable.Row>
+          )}
+
+        {/* Gerbang Pemindaian */}
+        {id === 3 &&
+          finalData?.map(row =>
+            <DataTable.Row>
+              <DataTable.Cell>
+                {row.tag_number}
+              </DataTable.Cell>
+            </DataTable.Row>
+          )}
 
         <DataTable.Pagination
           numberOfPages={3}

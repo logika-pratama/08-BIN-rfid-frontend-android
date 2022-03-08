@@ -31,7 +31,7 @@ const checkAuth = async () => {
 
 const Stack = createNativeStackNavigator()
 
-const AppStack = (token): Node => {
+const AppStack = ({ token }): Node => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -79,6 +79,7 @@ const NavigationStack = (): Node => {
   return (
     <SafeAreaView style={navigationStackStyles.navigationStackContainer}>
       <NavigationContainer>
+        {/* <LoginStack /> */}
         {token ? <AppStack token={token} /> : <LoginStack />}
       </NavigationContainer>
     </SafeAreaView>

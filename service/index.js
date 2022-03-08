@@ -20,8 +20,6 @@ export default class InstanceApi {
   }
 
   async detailSearch(endPoint, token) {
-    console.log('token')
-    console.log(token)
     this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
     try {
