@@ -1,14 +1,17 @@
 import React, { Node } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper'
-import NavigationStack from './navigation-stack';
-import { Theme } from './lib/styles-ingredients';
+import { AuthProvider } from './src/contexts'
+import NavigationStack from './src/navigation-stack'
+import { Theme } from './src/lib/styles-ingredients'
 
-const App: () => Node = () => {
+const App = (): Node => {
   return (
-    <PaperProvider theme={Theme}>
-      <NavigationStack />
-    </PaperProvider>
-  );
-};
+    <AuthProvider>
+      <PaperProvider theme={Theme}>
+        <NavigationStack />
+      </PaperProvider>
+    </AuthProvider>
+  )
+}
 
 export default App;

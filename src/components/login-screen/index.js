@@ -1,15 +1,14 @@
 import React, { Node } from 'react'
-import { SafeAreaView } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { SafeAreaView, ActivityIndicator } from 'react-native'
 import { TextInput, useTheme } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useAuth } from '../../contexts'
 import StylesFactory from '../../styles-factory'
 import { Button } from '../../lib/components-ingredients'
-import InstanceApi from '../../service'
+import InstanceApi from '../../services'
 
 const LoginScreen = (): Node => {
-  const navigation = useNavigation()
+  const { loading, saveToken } = useAuth()
   const theme = useTheme()
   const { control, handleSubmit, formState: { error } } = useForm({
     defaultValues: {
@@ -27,13 +26,12 @@ const LoginScreen = (): Node => {
     const resp = await Api.login('/login', data)
     if (resp.status === 200) {
       const jwtToken = resp.data.jwtTokken
-      try {
-        await AsyncStorage.setItem('@token', jwtToken)
-        return navigation.navigate('home')
-      } catch (err) {
-        console.log('Failed store token to async storage', err)
-      }
+      await saveToken({ jwtToken })
     }
+  }
+
+  if (loading) {
+    return <ActivityIndicator color={blackColor} animating={true} size="small" />
   }
 
   return (

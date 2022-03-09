@@ -15,6 +15,14 @@ export default class StylesFactory {
     }
   })
 
+  loadingStyles = () => this.createStyles({
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      backgroundColor: this.colors?.white,
+    }
+  })
+
   loginScreenStyles = () => this.createStyles({
     loginScreenContainer: {
       display: 'flex',

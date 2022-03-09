@@ -1,33 +1,14 @@
-import React, { Node, useEffect, useState } from 'react'
-import { SafeAreaView, Text } from 'react-native'
+import React, { Node } from 'react'
+import { SafeAreaView } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useTheme } from 'react-native-paper'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import decode from 'jwt-decode'
+import { useAuth } from '../contexts'
 import HomeScreen from '../components/home-screen'
 import DetailScreen from '../components/detail-screen'
 import LoginScreen from '../components/login-screen'
 import StylesFactory from '../styles-factory'
-
-// * Checking JWT Auth
-const checkAuth = async () => {
-  try {
-    const token = await AsyncStorage.getItem('@token')
-    try {
-      const { exp } = decode(token)
-      if (exp < new Date().getTime() / 1000) {
-        return false
-      }
-    } catch (e) {
-      return false
-    }
-    return token
-  } catch (err) {
-    console.log('Failed get token from async storage', err)
-    return false
-  }
-}
+import LoadingScreen from '../components/loading-screen'
 
 const Stack = createNativeStackNavigator()
 
@@ -54,33 +35,24 @@ const LoginStack = (): Node => {
         name='login'
         component={LoginScreen}
       />
-      <Stack.Screen
-        name='home'
-        component={HomeScreen}
-      />
     </Stack.Navigator>
   )
 }
 
 const NavigationStack = (): Node => {
   const theme = useTheme()
-  const [token, setToken] = useState(false)
+  const { authData, loading } = useAuth()
   const Styles = new StylesFactory(theme)
   const navigationStackStyles = Styles.navigationStackStyles()
 
-  useEffect(() => {
-    async function handleAsyncCheckOut() {
-      const token = await checkAuth()
-      setToken(token)
-    }
-    handleAsyncCheckOut()
-  }, [])
+  if (loading) {
+    return <LoadingScreen />
+  }
 
   return (
     <SafeAreaView style={navigationStackStyles.navigationStackContainer}>
       <NavigationContainer>
-        {/* <LoginStack /> */}
-        {token ? <AppStack token={token} /> : <LoginStack />}
+        {authData ? <AppStack token={authData.jwtToken} /> : <LoginStack />}
       </NavigationContainer>
     </SafeAreaView>
   )

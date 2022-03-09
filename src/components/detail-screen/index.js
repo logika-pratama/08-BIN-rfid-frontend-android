@@ -3,7 +3,7 @@ import { Text, View } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import { TextInput, useTheme, DataTable } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
-import InstanceApi from '../../service'
+import InstanceApi from '../../services'
 import StylesFactory from '../../styles-factory'
 import { Button } from '../../lib/components-ingredients'
 
@@ -33,7 +33,7 @@ const DetailScreen = (): Node => {
     setPage(page)
   }
 
-  const handlePress = () => {
+  const handleConfrim = () => {
 
   }
 
@@ -42,15 +42,17 @@ const DetailScreen = (): Node => {
     const finalEndpoint = getEndPoint(searchValue)
 
     if (searchValue) {
-      const resp = await Api.detailSearch(finalEndpoint, token)
-      console.log('resp')
-      console.log(resp)
+      if (id !== 3) {
+        const resp = await Api.detailSearch(finalEndpoint, token)
+        console.log('resp')
+        console.log(resp)
 
-      if (resp.status === 200) {
-        const data = resp.data?.data
-        console.log('data')
-        console.log(data)
-        setData(data)
+        if (resp.status === 200) {
+          const data = resp.data?.data
+          console.log('data')
+          console.log(data)
+          setData(data)
+        }
       }
     }
   }
@@ -172,6 +174,10 @@ const DetailScreen = (): Node => {
           optionsLabel={'Baris per Halaman'}
         />
       </DataTable>
+
+      {id === 3 &&
+        <Button onPress={handleConfrim} text='Confirm' />
+      }
     </View>
   )
 }
