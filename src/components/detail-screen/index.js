@@ -1,6 +1,6 @@
 import React, { Node, useState, useEffect } from 'react'
 import { Text, View } from 'react-native'
-import { useRoute } from '@react-navigation/native'
+import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput, useTheme, DataTable } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
 import InstanceApi from '../../services'
@@ -11,6 +11,7 @@ const optionsRowsPerPage = [10, 25, 50]
 
 const DetailScreen = (): Node => {
   const route = useRoute()
+  const navigation = useNavigation()
   const theme = useTheme()
   const Styles = new StylesFactory(theme)
   const [page, setPage] = useState(0)
@@ -56,6 +57,12 @@ const DetailScreen = (): Node => {
       }
     }
   }
+
+  useEffect(() => {
+    navigation.setOptions({
+      title
+    })
+  }, [])
 
   useEffect(() => {
     setPage(0)

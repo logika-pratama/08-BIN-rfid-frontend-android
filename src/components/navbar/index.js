@@ -15,20 +15,29 @@ const Section = ({ children, childStyle, ...viewProps }): Node => {
   )
 }
 
-export const NavbarHomeScreen = (): Node => {
+const NavbarHomeScreen = (): Node => {
   const theme = useTheme()
   const Styles = new StylesFactory(theme)
   const navBarStyles = Styles.navBarStyles()
+
+  console.log('masuk navbar')
   return (
-    <View style={navBarStyles.navbarContainer}>
-      <Section style={navBarStyles.sectionContainer} childStyle={navBarStyles.sectionChildren}>
-        <Text>
-          Bahasa
-        </Text>
-        <Text>
-          Keluar
-        </Text>
-      </Section>
+    <View>
+      <Text>
+        tes
+      </Text>
     </View>
+    // <View style={navBarStyles.navbarContainer}>
+    //   <Section style={navBarStyles.sectionContainer} childStyle={navBarStyles.sectionChildren}>
+    //     <Text>
+    //       Bahasa
+    //     </Text>
+    //     <Text>
+    //       Keluar
+    //     </Text>
+    //   </Section>
+    // </View>
   )
 }
+
+export { NavbarHomeScreen }

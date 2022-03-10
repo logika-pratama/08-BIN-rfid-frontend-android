@@ -10,6 +10,8 @@ import InstanceApi from '../../services'
 const LoginScreen = (): Node => {
   const { loading, saveToken } = useAuth()
   const theme = useTheme()
+  const primaryColor = theme.colors.primary
+
   const { control, handleSubmit, formState: { error } } = useForm({
     defaultValues: {
       email: '',
@@ -31,7 +33,7 @@ const LoginScreen = (): Node => {
   }
 
   if (loading) {
-    return <ActivityIndicator color={blackColor} animating={true} size="small" />
+    return <ActivityIndicator color={primaryColor} animating={true} size="small" />
   }
 
   return (
