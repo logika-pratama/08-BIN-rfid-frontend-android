@@ -1,14 +1,16 @@
-import React, { Node } from 'react'
-import { SafeAreaView, ActivityIndicator } from 'react-native'
+import React, { Node, useState } from 'react'
+import { SafeAreaView } from 'react-native'
 import { TextInput, useTheme } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
 import { useAuth } from '../../contexts'
-import StylesFactory from '../../styles-factory'
+import StylesFactory from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 import InstanceApi from '../../services'
+import LoadingScreen from '../loading-screen'
 
 const LoginScreen = (): Node => {
-  const { loading, saveToken } = useAuth()
+  const { saveToken } = useAuth()
+  const [loadingLogin, setLoadingLogin] = useState(false)
   const theme = useTheme()
   const primaryColor = theme.colors.primary
 
@@ -25,15 +27,19 @@ const LoginScreen = (): Node => {
   const Api = new InstanceApi()
 
   const onSubmit = async data => {
+    setLoadingLogin(true)
     const resp = await Api.login('/login', data)
     if (resp.status === 200) {
       const jwtToken = resp.data.jwtTokken
       await saveToken({ jwtToken })
     }
+    else {
+      setLoadingLogin(false)
+    }
   }
 
-  if (loading) {
-    return <ActivityIndicator color={primaryColor} animating={true} size="small" />
+  if (loadingLogin) {
+    return <LoadingScreen />
   }
 
   return (

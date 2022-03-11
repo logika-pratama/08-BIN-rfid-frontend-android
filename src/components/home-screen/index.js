@@ -3,7 +3,7 @@ import { FlatList, View, Pressable } from 'react-native'
 import MenuScreen from "../menu-screen"
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from 'react-native-paper'
-import StylesFactory from '../../styles-factory'
+import StylesFactory from '../../styles-kitchen'
 import { NavbarHomeScreen } from '../navbar';
 
 const data = [

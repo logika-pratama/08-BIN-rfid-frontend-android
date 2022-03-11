@@ -73,16 +73,18 @@ const AuthProvider: React.FC = ({ children }) => {
       await AsyncStorage.setItem('@jwtToken', authDataSerialized)
     } catch (err) {
       console.error('Failed store token to async storage', err)
-    } finally {
     }
   }
 
   async function deleteToken(): tokenFunction {
+    setLoading(true)
     try {
       setAuthData(undefined)
     } catch (err) {
       console.error('Failed delete token in async storage', err)
     } finally {
+      await AsyncStorage.removeItem('@jwtToken')
+      setLoading(false)
     }
   }
 

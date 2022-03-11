@@ -61,7 +61,8 @@ export default class StylesFactory {
   navBarStyles = () => this.createStyles({
     navbarContainer: {
       display: 'flex',
-      flex: .1,
+      // flex: .1,
+      height: 60,
       backgroundColor: this.colors?.primary,
     },
     sectionContainer: {
@@ -72,7 +73,8 @@ export default class StylesFactory {
       marginRight: 24
     },
     sectionChildren: {
-      marginRight: 8
+      marginRight: 8,
+      color: this.colors.white
     }
   })
 

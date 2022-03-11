@@ -1,5 +1,5 @@
 import React, { Node } from 'react'
-import { SafeAreaView, View, Text } from 'react-native'
+import { SafeAreaView } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useTheme } from 'react-native-paper'
@@ -7,7 +7,7 @@ import { useAuth } from '../contexts'
 import HomeScreen from '../components/home-screen'
 import DetailScreen from '../components/detail-screen'
 import LoginScreen from '../components/login-screen'
-import StylesFactory from '../styles-factory'
+import StylesFactory from '../styles-kitchen'
 import LoadingScreen from '../components/loading-screen'
 import { NavbarHomeScreen } from '../components/navbar'
 
@@ -49,6 +49,9 @@ const LoginStack = (): Node => {
       <Stack.Screen
         name='login'
         component={LoginScreen}
+        options={{
+          headerShown: false
+        }}
       />
     </Stack.Navigator>
   )

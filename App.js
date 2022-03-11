@@ -6,11 +6,11 @@ import { Theme } from './src/lib/styles-ingredients'
 
 const App = (): Node => {
   return (
-    <AuthProvider>
-      <PaperProvider theme={Theme}>
+    <PaperProvider theme={Theme}>
+      <AuthProvider>
         <NavigationStack />
-      </PaperProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </PaperProvider>
   )
 }
 

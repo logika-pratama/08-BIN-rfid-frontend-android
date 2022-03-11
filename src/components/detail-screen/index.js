@@ -4,7 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput, useTheme, DataTable } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
 import InstanceApi from '../../services'
-import StylesFactory from '../../styles-factory'
+import StylesFactory from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 
 const optionsRowsPerPage = [10, 25, 50]
