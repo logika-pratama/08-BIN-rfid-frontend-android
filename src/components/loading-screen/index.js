@@ -1,11 +1,11 @@
 import React, { Node } from 'react'
 import { SafeAreaView, ActivityIndicator } from 'react-native'
 import { useTheme } from 'react-native-paper'
-import StylesFactory from '../../styles-kitchen'
+import StylesKitchen from '../../styles-kitchen'
 
 const LoadingScreen = (): Node => {
   const theme = useTheme()
-  const Styles = new StylesFactory(theme)
+  const Styles = new StylesKitchen(theme)
   const loadingStyles = Styles.loadingStyles()
   const primaryColor = theme.colors.primary
 

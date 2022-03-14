@@ -1,10 +1,10 @@
 import React, { Node } from 'react'
 import { FlatList, View, Pressable } from 'react-native'
-import MenuScreen from "../menu-screen"
+import MenuScreen from '../menu-screen'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from 'react-native-paper'
-import StylesFactory from '../../styles-kitchen'
-import { NavbarHomeScreen } from '../navbar';
+import StylesKitchen from '../../styles-kitchen'
+import { NavbarHomeScreen } from '../navbar'
 
 const data = [
   {
@@ -66,7 +66,7 @@ const data = [
   }
 ]
 
-const renderItem = (navigation) => ({ item }) => {
+const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
   const { id, title, endPoint, tableHeaders, enableSearch, enableConfirm } = item
   const onPress = () => {
     return navigation.navigate('detail', {
@@ -80,7 +80,7 @@ const renderItem = (navigation) => ({ item }) => {
   }
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable style={homeScreenStyles.homeButton} onPress={onPress}>
       <MenuScreen title={item.title} />
     </Pressable>
   )
@@ -89,15 +89,14 @@ const renderItem = (navigation) => ({ item }) => {
 const HomeScreen = (): Node => {
   const navigation = useNavigation()
   const theme = useTheme()
-  const Styles = new StylesFactory(theme)
+  const Styles = new StylesKitchen(theme)
   const homeScreenStyles = Styles.homeScreenStyles()
 
   return (
     <View style={homeScreenStyles.homeScreenContainer}>
-      {/* <NavbarHomeScreen /> */}
       <FlatList
         data={data}
-        renderItem={renderItem(navigation)}
+        renderItem={renderItem(navigation, homeScreenStyles)}
         keyExtractor={item => item.id} />
     </View>
   )

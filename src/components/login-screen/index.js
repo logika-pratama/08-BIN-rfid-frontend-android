@@ -1,18 +1,19 @@
 import React, { Node, useState } from 'react'
-import { SafeAreaView } from 'react-native'
+import { SafeAreaView, Image, View, Text } from 'react-native'
 import { TextInput, useTheme } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
 import { useAuth } from '../../contexts'
-import StylesFactory from '../../styles-kitchen'
+import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 import InstanceApi from '../../services'
 import LoadingScreen from '../loading-screen'
+import LogistikPolri from '../../assets/images/logistik_polri.png'
 
 const LoginScreen = (): Node => {
   const { saveToken } = useAuth()
   const [loadingLogin, setLoadingLogin] = useState(false)
+  const [secureText, setSecureText] = useState(true)
   const theme = useTheme()
-  const primaryColor = theme.colors.primary
 
   const { control, handleSubmit, formState: { error } } = useForm({
     defaultValues: {
@@ -21,10 +22,14 @@ const LoginScreen = (): Node => {
     }
   })
 
-  const Styles = new StylesFactory(theme)
+  const Styles = new StylesKitchen(theme)
   const loginScreenStyles = Styles.loginScreenStyles()
 
   const Api = new InstanceApi()
+
+  const handleSecureText = () => {
+    setSecureText(prev => !prev)
+  }
 
   const onSubmit = async data => {
     setLoadingLogin(true)
@@ -44,34 +49,47 @@ const LoginScreen = (): Node => {
 
   return (
     <SafeAreaView style={loginScreenStyles.loginScreenContainer}>
-      <Controller
-        name='email'
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) =>
-          <TextInput
-            label={'E-Mail'}
-            placeholder={'E-Mail'}
-            keyboardType='email-address'
-            onChangeText={onChange}
-            onBlur={onBlur}
-            value={value}
-          />}
-      />
-      <Controller
-        name='password'
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) =>
-          <TextInput
-            label={'Kata Sandi'}
-            placeholder={'Kata Sandi'}
-            secureTextEntry
-            right={<TextInput.Icon name='eye' />}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            value={value}
-          />}
-      />
-      <Button onPress={handleSubmit(onSubmit)} text='Masuk' />
+      <View style={loginScreenStyles.imageAndTextContainer}>
+        <Image
+          style={loginScreenStyles.imageStyle}
+          source={LogistikPolri}
+        />
+        <Text style={loginScreenStyles.textStyle}>
+          ITAM-RFID
+        </Text>
+      </View>
+      <View style={loginScreenStyles.formContainer}>
+        <Controller
+          name='email'
+          control={control}
+          render={({ field: { onChange, onBlur, value } }) =>
+            <TextInput
+              style={loginScreenStyles.feildsStyle}
+              label={'E-Mail'}
+              placeholder={'E-Mail'}
+              keyboardType='email-address'
+              onChangeText={onChange}
+              onBlur={onBlur}
+              value={value}
+            />}
+        />
+        <Controller
+          name='password'
+          control={control}
+          render={({ field: { onChange, onBlur, value } }) =>
+            <TextInput
+              style={loginScreenStyles.feildsStyle}
+              label={'Kata Sandi'}
+              placeholder={'Kata Sandi'}
+              secureTextEntry={secureText}
+              right={<TextInput.Icon name={secureText ? 'eye-off' : 'eye'} onPress={handleSecureText} />}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              value={value}
+            />}
+        />
+      </View>
+      <Button onPress={handleSubmit(onSubmit)} text='Masuk' customButtonStyles={loginScreenStyles.buttonStyle} />
     </SafeAreaView >
   )
 }

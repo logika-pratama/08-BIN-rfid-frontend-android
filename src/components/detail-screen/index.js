@@ -1,10 +1,10 @@
 import React, { Node, useState, useEffect } from 'react'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput, useTheme, DataTable } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
 import InstanceApi from '../../services'
-import StylesFactory from '../../styles-kitchen'
+import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 
 const optionsRowsPerPage = [10, 25, 50]
@@ -13,7 +13,7 @@ const DetailScreen = (): Node => {
   const route = useRoute()
   const navigation = useNavigation()
   const theme = useTheme()
-  const Styles = new StylesFactory(theme)
+  const Styles = new StylesKitchen(theme)
   const [page, setPage] = useState(0)
   const [data, setData] = useState([])
   const [finalData, setFinalData] = useState([])
@@ -182,8 +182,8 @@ const DetailScreen = (): Node => {
         />
       </DataTable>
 
-      {id === 3 &&
-        <Button onPress={handleConfrim} text='Confirm' />
+      {enableConfirm &&
+        <Button onPress={handleConfrim} text='Konfirmasi' />
       }
     </View>
   )

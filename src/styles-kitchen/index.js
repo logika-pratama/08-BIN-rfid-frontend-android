@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 
-export default class StylesFactory {
+export default class StylesKitchen {
   constructor(theme) {
     this.colors = theme?.colors
     this.fonts = theme?.fonts
@@ -23,16 +23,59 @@ export default class StylesFactory {
     }
   })
 
+  buttonStyles = () => this.createStyles({
+    buttonContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    buttonStyle: {
+      borderRadius: 20,
+      width: 100,
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: this.colors?.accent
+    },
+    textStyle: {
+      color: this.colors?.white
+    }
+  })
+
   loginScreenStyles = () => this.createStyles({
     loginScreenContainer: {
       display: 'flex',
       flex: 1,
+      justifyContent: 'center',
       backgroundColor: this.colors?.lightGray,
     },
     formContainer: {
-      flexDirection: 'row',
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'flex-end',
+    },
+    feildsStyle: {
+      width: 320,
+      borderRadius: 0,
+      marginBottom: 6,
+      overflow: 'hidden'
+    },
+    imageAndTextContainer: {
+      alignItems: 'center',
+      marginBottom: 30
+    },
+    imageStyle: {
+      width: 150,
+      height: 175
+    },
+    textStyle: {
+      color: this.colors.primary,
+      marginTop: 10,
+      fontSize: 16,
+      fontWeight: 'bold'
+    },
+    buttonStyle: {
+      marginTop: 10
     }
   })
 
@@ -40,6 +83,7 @@ export default class StylesFactory {
     homeScreenContainer: {
       display: 'flex',
       flex: 1,
+      marginTop: 10,
       backgroundColor: this.colors?.white,
     }
   })
@@ -50,6 +94,7 @@ export default class StylesFactory {
       padding: 16,
       marginVertical: 8,
       marginHorizontal: 16,
+      borderRadius: 10
     },
     title: {
       textAlign: 'center',
@@ -63,18 +108,22 @@ export default class StylesFactory {
       display: 'flex',
       // flex: .1,
       height: 60,
-      backgroundColor: this.colors?.primary,
-    },
-    sectionContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'flex-end',
-      flex: 1,
-      marginRight: 24
+      justifyContent: 'space-between',
+      backgroundColor: this.colors?.primary
     },
-    sectionChildren: {
-      marginRight: 8,
-      color: this.colors.white
+    menuContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      marginRight: 32,
+    },
+    imageContainer: {
+      marginLeft: 10
+    },
+    imageStyle: {
+      width: 40,
+      height: 45
     }
   })
 
@@ -90,4 +139,5 @@ export default class StylesFactory {
       fontSize: 12,
     }
   })
+
 }

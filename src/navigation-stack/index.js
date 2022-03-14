@@ -7,7 +7,7 @@ import { useAuth } from '../contexts'
 import HomeScreen from '../components/home-screen'
 import DetailScreen from '../components/detail-screen'
 import LoginScreen from '../components/login-screen'
-import StylesFactory from '../styles-kitchen'
+import StylesKitchen from '../styles-kitchen'
 import LoadingScreen from '../components/loading-screen'
 import { NavbarHomeScreen } from '../components/navbar'
 
@@ -60,7 +60,7 @@ const LoginStack = (): Node => {
 const NavigationStack = (): Node => {
   const theme = useTheme()
   const { authData, loading } = useAuth()
-  const Styles = new StylesFactory(theme)
+  const Styles = new StylesKitchen(theme)
   const navigationStackStyles = Styles.navigationStackStyles()
 
   if (loading) {

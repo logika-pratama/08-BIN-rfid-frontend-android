@@ -14,4 +14,4 @@ const App = (): Node => {
   )
 }
 
-export default App;
+export default App
