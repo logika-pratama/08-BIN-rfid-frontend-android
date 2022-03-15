@@ -68,6 +68,7 @@ const LoginScreen = (): Node => {
               label={'E-Mail'}
               placeholder={'E-Mail'}
               keyboardType='email-address'
+              left={<TextInput.Icon name='account' />}
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
@@ -82,6 +83,7 @@ const LoginScreen = (): Node => {
               label={'Kata Sandi'}
               placeholder={'Kata Sandi'}
               secureTextEntry={secureText}
+              left={<TextInput.Icon name='key' />}
               right={<TextInput.Icon name={secureText ? 'eye-off' : 'eye'} onPress={handleSecureText} />}
               onChangeText={onChange}
               onBlur={onBlur}

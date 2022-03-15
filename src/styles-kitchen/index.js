@@ -56,9 +56,8 @@ export default class StylesKitchen {
     },
     feildsStyle: {
       width: 320,
-      borderRadius: 0,
       marginBottom: 6,
-      overflow: 'hidden'
+      overflow: 'hidden',
     },
     imageAndTextContainer: {
       alignItems: 'center',
@@ -116,14 +115,18 @@ export default class StylesKitchen {
     menuContainer: {
       display: 'flex',
       flexDirection: 'row',
-      marginRight: 32,
+      marginRight: 8,
     },
     imageContainer: {
-      marginLeft: 10
+      marginLeft: 16
     },
     imageStyle: {
       width: 40,
       height: 45
+    },
+    textStyle: {
+      alignSelf: 'center',
+      color: this.colors?.white
     }
   })
 
@@ -131,12 +134,32 @@ export default class StylesKitchen {
     detailScreenContainer: {
       display: 'flex',
       flex: 1,
+      marginTop: 48,
+      marginLeft: 2,
+      marginRight: 2,
       backgroundColor: this.colors?.white,
     },
-    title: {
-      color: this.colors?.black,
-      textAlign: 'left',
-      fontSize: 12,
+    searchingContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      marginLeft: 16,
+      marginBottom: 24
+    },
+    feildsStyle: {
+      width: 240,
+      overflow: 'hidden'
+    },
+    buttonStyle: {
+      marginLeft: 12
+    },
+    tableContainer: {
+      marginBottom: 24
+    },
+    tableHeaders: {
+      backgroundColor: this.colors?.accent,
+    },
+    tableHeadersTitle: {
+      color: this.colors?.white
     }
   })
 

@@ -26,6 +26,7 @@ const AppStack = ({ token }): Node => {
         options={{
           header: (props) => < NavbarHomeScreen {...props} />
         }}
+        initialParams={{ token }}
       />
       <Stack.Screen
         name='detail'
@@ -37,7 +38,7 @@ const AppStack = ({ token }): Node => {
           },
           headerTintColor: whiteColor,
         })}
-        initialParams={{ token: token }}
+        initialParams={{ token }}
       />
     </Stack.Navigator>
   )
