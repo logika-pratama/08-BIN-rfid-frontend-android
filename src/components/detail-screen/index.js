@@ -1,8 +1,7 @@
-import React, { Node, useState, useEffect } from 'react'
-import { View, Text } from 'react-native'
+import React, { Node, useState, useEffect, useRef } from 'react'
+import { View, Text, TextInput } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
-import { TextInput, useTheme, DataTable } from 'react-native-paper'
-import { useForm, Controller } from 'react-hook-form'
+import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
 import InstanceApi from '../../services'
 import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
@@ -10,12 +9,14 @@ import { Button } from '../../lib/components-ingredients'
 const optionsRowsPerPage = [10, 25, 50]
 
 const DetailScreen = (): Node => {
+  const searchRef = useRef()
   const route = useRoute()
   const navigation = useNavigation()
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const [page, setPage] = useState(0)
-  const [data, setData] = useState([[]])
+  const [data, setData] = useState([])
+  const [searchValue, setSearchValue] = useState('')
   const [finalData, setFinalData] = useState([])
   const [rowsPerPage, setRowsPerPage] = useState(optionsRowsPerPage[0])
   const { id, title, endPoint, tableHeaders, enableSearch, enableConfirm, token } = route.params
@@ -24,11 +25,22 @@ const DetailScreen = (): Node => {
   const getEndPoint = searchText => typeof endPoint === 'function' ? endPoint(searchText) : endPoint
   const Api = new InstanceApi()
 
-  const { control, handleSubmit, formState: { error } } = useForm({
-    defaultValues: {
-      search: ''
+  const sendData = async (searchValue) => {
+    console.log('searchValue')
+    console.log(searchValue)
+
+    const finalEndpoint = getEndPoint(searchValue)
+    const resp = await Api.detailSearch(finalEndpoint, token)
+    console.log('resp')
+    console.log(resp)
+
+    if (resp.status === 200) {
+      const data = resp.data?.data
+      console.log('data')
+      console.log(data)
+      setData(data)
     }
-  })
+  }
 
   const onPageChange = page => () => {
     setPage(page)
@@ -38,22 +50,35 @@ const DetailScreen = (): Node => {
 
   }
 
-  const onSubmit = async data => {
-    const searchValue = data?.search
-    const finalEndpoint = getEndPoint(searchValue)
+  const handleChangeSearchField = e => {
+    const text = e.nativeEvent.text
 
+    const arrText = text.split('\n')
+
+    const finalArrText = [... new Set(arrText)]
+
+    if (finalArrText) {
+      if (id === 3) {
+        const filteredData = finalArrText.filter(el => el !== '' && !data.includes(el))
+        setData(prevData => [...prevData, ...filteredData])
+      } else {
+
+      }
+    }
+
+    // clear
+    e.target.clear()
+  }
+
+  const handleSubmit = async () => {
     if (searchValue) {
-      if (id !== 3) {
-        const resp = await Api.detailSearch(finalEndpoint, token)
-        console.log('resp')
-        console.log(resp)
-
-        if (resp.status === 200) {
-          const data = resp.data?.data
-          console.log('data')
-          console.log(data)
-          setData(data)
-        }
+      if (id === 3) {
+        const dataSearch = [{ 'tag_number': searchValue }]
+        setFinalData(prevData => prevData.some(({ tag_number }) =>
+          tag_number === searchValue) ? [...prevData] : [...prevData, dataSearch[0]])
+      }
+      else {
+        await sendData(searchValue)
       }
     }
   }
@@ -68,34 +93,53 @@ const DetailScreen = (): Node => {
     setPage(0)
   }, [rowsPerPage])
 
+  // useEffect(() => {
+  //   if (searchValue) {
+  //     if (id === 3) {
+  //       const dataSearch = [{ 'tag_number': searchValue }]
+  //       setFinalData(prevData => prevData.some(({ tag_number }) =>
+  //         tag_number === searchValue) ? [...prevData] : [...prevData, dataSearch[0]])
+  //     }
+  //     else {
+  //       sendData(searchValue)
+  //     }
+  //     searchRef.current.clear()
+  //   }
+  //   setSearchValue([])
+  // }, [searchValue])
 
   useEffect(() => {
-    data &&
-      setFinalData(prevData => (data[0] ? [...prevData, data[0]] : [...prevData]))
+    if (data) {
+      if (id === 3) {
+        const objArrData = data.map(el => {
+          return { 'tag_number': el }
+        })
+        setFinalData(objArrData)
+      }
+    }
+    // data &&
+    //   setFinalData(prevData => (data[0] ? [...prevData, data[0]] : [...prevData]))
   }, [data])
 
-  console.log('finalData')
-  console.log(finalData)
+  const searchTextButton = id === 3 ? 'Tambah' : 'Cari'
 
   return (
     <View style={detailScreenStyles.detailScreenContainer}>
       {enableSearch &&
         <View style={detailScreenStyles.searchingContainer}>
-          <Controller
+          <TextInputPaper
             name='search'
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) =>
-              <TextInput
-                style={detailScreenStyles.feildsStyle}
-                label={'Pencarian'}
-                placeholder={'Pencarian'}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                onKeyPress={handleSubmit(onSubmit)}
-              />}
+            style={detailScreenStyles.feildsStyle}
+            autoFocus
+            multiline
+            autoComplete='off'
+            ref={searchRef}
+            onChange={handleChangeSearchField}
+            value={searchValue}
+            label={'Pindai'}
+            placeholder={'Pindai'}
           />
-          <Button onPress={handleSubmit(onSubmit)} text='Cari' customButtonStyles={detailScreenStyles.buttonStyle} />
+          <Button onPress={handleSubmit} text={searchTextButton} customButtonStyles={detailScreenStyles.buttonStyle} />
         </View>
       }
 
@@ -108,6 +152,11 @@ const DetailScreen = (): Node => {
                   {tableHeader}
                 </Text>
               </DataTable.Title>)}
+            <DataTable.Title>
+              <Text style={detailScreenStyles.tableHeadersTitle}>
+                Total:
+              </Text>
+            </DataTable.Title>
           </DataTable.Header>
 
           {/* Pencatatan Stok */}
