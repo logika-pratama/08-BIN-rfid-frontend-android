@@ -10,9 +10,9 @@ export default class InstanceApi {
     }
   })
 
-  async login(endPoint, data) {
+  async login(data) {
     try {
-      return await this.instance.post(endPoint, data)
+      return await this.instance.post('/login', data)
     }
     catch (err) {
       return err
@@ -30,11 +30,11 @@ export default class InstanceApi {
     }
   }
 
-  async detailConfirm(endPoint, data, token) {
+  async detailConfirm(data, token) {
     this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
     try {
-      return await this.instance.post(endPoint, data)
+      return await this.instance.post('/gatescan', data)
     }
     catch (err) {
       return err

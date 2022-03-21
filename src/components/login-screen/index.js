@@ -33,7 +33,7 @@ const LoginScreen = (): Node => {
 
   const onSubmit = async data => {
     setLoadingLogin(true)
-    const resp = await Api.login('/login', data)
+    const resp = await Api.login(data)
     if (resp.status === 200) {
       const jwtToken = resp.data.jwtTokken
       await saveToken({ jwtToken })

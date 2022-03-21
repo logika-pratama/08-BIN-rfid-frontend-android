@@ -97,7 +97,7 @@ export default class StylesKitchen {
     },
     title: {
       textAlign: 'center',
-      fontSize: 12,
+      fontSize: 16,
       color: this.colors?.white
     }
   })

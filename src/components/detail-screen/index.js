@@ -1,7 +1,8 @@
 import React, { Node, useState, useEffect, useRef } from 'react'
-import { View, Text, TextInput } from 'react-native'
+import { View, Text, Keyboard } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
+import decode from 'jwt-decode'
 import InstanceApi from '../../services'
 import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
@@ -20,34 +21,24 @@ const DetailScreen = (): Node => {
   const [finalData, setFinalData] = useState([])
   const [rowsPerPage, setRowsPerPage] = useState(optionsRowsPerPage[0])
   const { id, title, endPoint, tableHeaders, enableSearch, enableConfirm, token } = route.params
+  const { Device_ID: deviceId } = decode(token)
   const detailScreenStyles = Styles.detailScreenStyles()
 
   const getEndPoint = searchText => typeof endPoint === 'function' ? endPoint(searchText) : endPoint
   const Api = new InstanceApi()
 
   const sendData = async (searchValue) => {
-    console.log('searchValue')
-    console.log(searchValue)
-
     const finalEndpoint = getEndPoint(searchValue)
     const resp = await Api.detailSearch(finalEndpoint, token)
-    console.log('resp')
-    console.log(resp)
 
     if (resp.status === 200) {
       const data = resp.data?.data
-      console.log('data')
-      console.log(data)
       setData(data)
     }
   }
 
   const onPageChange = page => () => {
     setPage(page)
-  }
-
-  const handleConfrim = () => {
-
   }
 
   const handleChangeSearchField = e => {
@@ -83,10 +74,29 @@ const DetailScreen = (): Node => {
     }
   }
 
+  const handleConfrim = async () => {
+    if (finalData) {
+      const tags = finalData.map(({ tag_number }) => tag_number)
+      const sendData = [...tags, deviceId].toString()
+      const finalSendData = { 'tag': sendData }
+      const resp = await Api.detailConfirm(finalSendData, token)
+
+      if (resp.status === 200) {
+        setFinalData([])
+      }
+    }
+  }
+
   useEffect(() => {
     navigation.setOptions({
       title
     })
+  }, [])
+
+  useEffect(() => {
+    if (id === 3) {
+      Keyboard.dismiss()
+    }
   }, [])
 
   useEffect(() => {
@@ -117,11 +127,13 @@ const DetailScreen = (): Node => {
         setFinalData(objArrData)
       }
     }
+
     // data &&
     //   setFinalData(prevData => (data[0] ? [...prevData, data[0]] : [...prevData]))
   }, [data])
 
   const searchTextButton = id === 3 ? 'Tambah' : 'Cari'
+  const countScan = finalData ? finalData.length : 0
 
   return (
     <View style={detailScreenStyles.detailScreenContainer}>
@@ -139,7 +151,9 @@ const DetailScreen = (): Node => {
             label={'Pindai'}
             placeholder={'Pindai'}
           />
-          <Button onPress={handleSubmit} text={searchTextButton} customButtonStyles={detailScreenStyles.buttonStyle} />
+          {id !== 3 &&
+            <Button onPress={handleSubmit} text={searchTextButton} customButtonStyles={detailScreenStyles.buttonStyle} />
+          }
         </View>
       }
 
@@ -154,7 +168,7 @@ const DetailScreen = (): Node => {
               </DataTable.Title>)}
             <DataTable.Title>
               <Text style={detailScreenStyles.tableHeadersTitle}>
-                Total:
+                Total: {countScan}
               </Text>
             </DataTable.Title>
           </DataTable.Header>
