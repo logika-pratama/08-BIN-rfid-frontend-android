@@ -1,5 +1,5 @@
-import React, { Node, useState, useEffect, useRef } from 'react'
-import { View, Text, Keyboard } from 'react-native'
+import React, { Node, useState, useEffect } from 'react'
+import { View, Text, ScrollView } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
 import decode from 'jwt-decode'
@@ -7,19 +7,14 @@ import InstanceApi from '../../services'
 import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 
-const optionsRowsPerPage = [10, 25, 50]
-
 const DetailScreen = (): Node => {
-  const searchRef = useRef()
   const route = useRoute()
   const navigation = useNavigation()
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
-  const [page, setPage] = useState(0)
   const [data, setData] = useState([])
-  const [searchValue, setSearchValue] = useState('')
+  const [searchField] = useState('')
   const [finalData, setFinalData] = useState([])
-  const [rowsPerPage, setRowsPerPage] = useState(optionsRowsPerPage[0])
   const { id, title, endPoint, tableHeaders, enableSearch, enableConfirm, token } = route.params
   const { Device_ID: deviceId } = decode(token)
   const detailScreenStyles = Styles.detailScreenStyles()
@@ -37,15 +32,13 @@ const DetailScreen = (): Node => {
     }
   }
 
-  const onPageChange = page => () => {
-    setPage(page)
+  const handleFocus = (e) => {
+    // trigger back button
   }
 
-  const handleChangeSearchField = e => {
+  const handleChangeSearchField = async e => {
     const text = e.nativeEvent.text
-
     const arrText = text.split('\n')
-
     const finalArrText = [... new Set(arrText)]
 
     if (finalArrText) {
@@ -53,25 +46,22 @@ const DetailScreen = (): Node => {
         const filteredData = finalArrText.filter(el => el !== '' && !data.includes(el))
         setData(prevData => [...prevData, ...filteredData])
       } else {
-
+        const filteredData = finalArrText.filter(el =>
+          el && data.map(({ tag_number }) => {
+            if (el !== tag_number) {
+              return el
+            }
+          })
+        )
+        for (let i in filteredData) {
+          const searchValue = filteredData[i]
+          await sendData(searchValue)
+        }
       }
     }
 
     // clear
     e.target.clear()
-  }
-
-  const handleSubmit = async () => {
-    if (searchValue) {
-      if (id === 3) {
-        const dataSearch = [{ 'tag_number': searchValue }]
-        setFinalData(prevData => prevData.some(({ tag_number }) =>
-          tag_number === searchValue) ? [...prevData] : [...prevData, dataSearch[0]])
-      }
-      else {
-        await sendData(searchValue)
-      }
-    }
   }
 
   const handleConfrim = async () => {
@@ -94,45 +84,22 @@ const DetailScreen = (): Node => {
   }, [])
 
   useEffect(() => {
-    if (id === 3) {
-      Keyboard.dismiss()
-    }
-  }, [])
-
-  useEffect(() => {
-    setPage(0)
-  }, [rowsPerPage])
-
-  // useEffect(() => {
-  //   if (searchValue) {
-  //     if (id === 3) {
-  //       const dataSearch = [{ 'tag_number': searchValue }]
-  //       setFinalData(prevData => prevData.some(({ tag_number }) =>
-  //         tag_number === searchValue) ? [...prevData] : [...prevData, dataSearch[0]])
-  //     }
-  //     else {
-  //       sendData(searchValue)
-  //     }
-  //     searchRef.current.clear()
-  //   }
-  //   setSearchValue([])
-  // }, [searchValue])
-
-  useEffect(() => {
     if (data) {
       if (id === 3) {
         const objArrData = data.map(el => {
           return { 'tag_number': el }
         })
         setFinalData(objArrData)
+      } else {
+        data &&
+          setFinalData(prevData => {
+            const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
+            return [...prevData, ...newData]
+          })
       }
     }
-
-    // data &&
-    //   setFinalData(prevData => (data[0] ? [...prevData, data[0]] : [...prevData]))
   }, [data])
 
-  const searchTextButton = id === 3 ? 'Tambah' : 'Cari'
   const countScan = finalData ? finalData.length : 0
 
   return (
@@ -145,19 +112,17 @@ const DetailScreen = (): Node => {
             autoFocus
             multiline
             autoComplete='off'
-            ref={searchRef}
+            onFocus={handleFocus}
             onChange={handleChangeSearchField}
-            value={searchValue}
+            value={searchField}
             label={'Pindai'}
             placeholder={'Pindai'}
           />
-          {id !== 3 &&
-            <Button onPress={handleSubmit} text={searchTextButton} customButtonStyles={detailScreenStyles.buttonStyle} />
-          }
         </View>
       }
 
-      <View style={detailScreenStyles.tableContainer}>
+      <ScrollView style={detailScreenStyles.tableContainer}>
+
         <DataTable>
           <DataTable.Header style={detailScreenStyles.tableHeaders}>
             {tableHeaders.map(tableHeader =>
@@ -237,22 +202,14 @@ const DetailScreen = (): Node => {
               </DataTable.Row>
             )}
 
-          <DataTable.Pagination
-            numberOfPages={3}
-            onPageChange={(page) => onPageChange(page)}
-            // label="1-2 of 6"
-            optionsPerPage={optionsRowsPerPage}
-            itemsPerPage={rowsPerPage}
-            setItemsPerPage={setRowsPerPage}
-            showFastPagination
-            optionsLabel={'Baris per Halaman'}
-          />
         </DataTable>
-      </View>
+
+      </ScrollView>
 
       {enableConfirm &&
-        <Button onPress={handleConfrim} text='Konfirmasi' />
+        <Button onPress={handleConfrim} text='Konfirmasi' customButtonStyles={detailScreenStyles.buttonStyle} />
       }
+
     </View>
   )
 }

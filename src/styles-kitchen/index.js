@@ -55,7 +55,7 @@ export default class StylesKitchen {
       justifyContent: 'flex-end',
     },
     feildsStyle: {
-      width: 320,
+      width: '80%',
       marginBottom: 6,
       overflow: 'hidden',
     },
@@ -106,7 +106,7 @@ export default class StylesKitchen {
     navbarContainer: {
       display: 'flex',
       // flex: .1,
-      height: 60,
+      height: 65,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -121,8 +121,8 @@ export default class StylesKitchen {
       marginLeft: 16
     },
     imageStyle: {
-      width: 40,
-      height: 45
+      width: 33,
+      height: 39
     },
     textStyle: {
       alignSelf: 'center',
@@ -146,11 +146,12 @@ export default class StylesKitchen {
       marginBottom: 24
     },
     feildsStyle: {
-      width: 240,
+      width: '70%',
       overflow: 'hidden'
     },
     buttonStyle: {
-      marginLeft: 12
+      marginTop: 10,
+      marginBottom: 40,
     },
     tableContainer: {
       marginBottom: 24
