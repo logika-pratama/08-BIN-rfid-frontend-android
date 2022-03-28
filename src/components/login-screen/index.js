@@ -1,7 +1,6 @@
 import React, { Node, useState } from 'react'
-import { SafeAreaView, Image, View, Text } from 'react-native'
+import { SafeAreaView, Image, View, Text, Alert } from 'react-native'
 import { TextInput, useTheme } from 'react-native-paper'
-import { useForm, Controller } from 'react-hook-form'
 import { useAuth } from '../../contexts'
 import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
@@ -9,39 +8,66 @@ import InstanceApi from '../../services'
 import LoadingScreen from '../loading-screen'
 import LogistikPolri from '../../assets/images/logistik_polri.png'
 
+const errorAlertTitle = 'Kesalahan'
+
 const LoginScreen = (): Node => {
   const { saveToken } = useAuth()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loadingLogin, setLoadingLogin] = useState(false)
   const [secureText, setSecureText] = useState(true)
-  const theme = useTheme()
 
-  const { control, handleSubmit, formState: { error } } = useForm({
-    defaultValues: {
-      email: '',
-      password: ''
-    }
-  })
+  const theme = useTheme()
 
   const Styles = new StylesKitchen(theme)
   const loginScreenStyles = Styles.loginScreenStyles()
 
   const Api = new InstanceApi()
 
+  const handleChangeEmail = text => {
+    setEmail(text)
+  }
+
+  const handleChangePassword = text => {
+    setPassword(text)
+  }
+
   const handleSecureText = () => {
     setSecureText(prev => !prev)
   }
 
-  const onSubmit = async data => {
+  const handleSubmit = async () => {
     setLoadingLogin(true)
+    const data = { email, password }
     const resp = await Api.login(data)
-    if (resp.status === 200) {
-      const jwtToken = resp.data.jwtTokken
-      await saveToken({ jwtToken })
+
+    if (resp.status) {
+      if (resp.status === 200) {
+        const jwtToken = resp.data.jwtTokken
+        await saveToken({ jwtToken })
+      }
+      else {
+        if (resp.status === 401) {
+          const message = resp.data.message
+          Alert.alert(
+            errorAlertTitle,
+            message
+          )
+        }
+        setLoadingLogin(false)
+      }
     }
     else {
+      const message = resp
+      Alert.alert(
+        errorAlertTitle,
+        message
+      )
       setLoadingLogin(false)
     }
   }
+
+  const isDisabled = email && password ? false : true
 
   if (loadingLogin) {
     return <LoadingScreen />
@@ -59,39 +85,33 @@ const LoginScreen = (): Node => {
         </Text>
       </View>
       <View style={loginScreenStyles.formContainer}>
-        <Controller
+        <TextInput
           name='email'
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) =>
-            <TextInput
-              style={loginScreenStyles.feildsStyle}
-              label={'E-Mail'}
-              placeholder={'E-Mail'}
-              keyboardType='email-address'
-              left={<TextInput.Icon name='account' />}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-            />}
+          style={loginScreenStyles.feildsStyle}
+          onChangeText={handleChangeEmail}
+          label={'E-Mail'}
+          placeholder={'E-Mail'}
+          keyboardType='email-address'
+          left={<TextInput.Icon name='account' />}
+          value={email}
         />
-        <Controller
+        <TextInput
           name='password'
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) =>
-            <TextInput
-              style={loginScreenStyles.feildsStyle}
-              label={'Kata Sandi'}
-              placeholder={'Kata Sandi'}
-              secureTextEntry={secureText}
-              left={<TextInput.Icon name='key' />}
-              right={<TextInput.Icon name={secureText ? 'eye-off' : 'eye'} onPress={handleSecureText} />}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-            />}
+          style={loginScreenStyles.feildsStyle}
+          onChangeText={handleChangePassword}
+          label={'Kata Sandi'}
+          placeholder={'Kata Sandi'}
+          secureTextEntry={secureText}
+          left={<TextInput.Icon name='key' />}
+          right={<TextInput.Icon name={secureText ? 'eye-off' : 'eye'} onPress={handleSecureText} />}
+          value={password}
         />
       </View>
-      <Button onPress={handleSubmit(onSubmit)} text='Masuk' customButtonStyles={loginScreenStyles.buttonStyle} />
+      <Button
+        onPress={handleSubmit}
+        text='Masuk'
+        isDisabled={isDisabled}
+        customButtonStyles={loginScreenStyles.buttonStyle} />
     </SafeAreaView >
   )
 }
