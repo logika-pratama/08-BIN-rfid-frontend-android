@@ -3,6 +3,9 @@ package com.polrirfidfrontendandroid;
 import com.facebook.react.ReactActivity;
 import android.os.Bundle;
 
+// splashscreen 
+import org.devio.rn.splashscreen.SplashScreen;
+
 public class MainActivity extends ReactActivity {
 
   /**
@@ -16,6 +19,9 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    // splashscreen
+    SplashScreen.show(this);
+    
     super.onCreate(null);
   }
 }

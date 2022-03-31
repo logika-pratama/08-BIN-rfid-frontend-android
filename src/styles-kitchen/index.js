@@ -130,38 +130,54 @@ export default class StylesKitchen {
     }
   })
 
-  detailScreenStyles = () => this.createStyles({
-    detailScreenContainer: {
-      display: 'flex',
-      flex: 1,
-      marginTop: 48,
-      marginLeft: 2,
-      marginRight: 2,
-      backgroundColor: this.colors?.white,
-    },
-    searchingContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      marginLeft: 16,
-      marginBottom: 24
-    },
-    feildsStyle: {
-      width: '70%',
-      overflow: 'hidden'
-    },
-    buttonStyle: {
-      marginTop: 10,
-      marginBottom: 40,
-    },
-    tableContainer: {
-      marginBottom: 24
-    },
-    tableHeaders: {
-      backgroundColor: this.colors?.accent,
-    },
-    tableHeadersTitle: {
-      color: this.colors?.white
+  detailScreenStyles = (id) => {
+    let flexSize = null
+    if (id === 0) {
+      flexSize = .4
+    } else if (id === 1) {
+      flexSize = .3
+    } else if (id === 2) {
+      flexSize = .7
+    } else if (id === 3) {
+      flexSize = .2
     }
-  })
+
+    return this.createStyles({
+      detailScreenContainer: {
+        display: 'flex',
+        flex: 1,
+        marginTop: 48,
+        marginLeft: 2,
+        marginRight: 2,
+        backgroundColor: this.colors?.white,
+      },
+      searchingContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginLeft: 16,
+        marginBottom: 24
+      },
+      feildsStyle: {
+        width: '70%',
+        overflow: 'hidden'
+      },
+      buttonStyle: {
+        marginTop: 10,
+        marginBottom: 40,
+      },
+      tableContainer: {
+        marginBottom: 24
+      },
+      tableHeaders: {
+        backgroundColor: this.colors?.accent,
+      },
+      tableCellCount: {
+        flex: flexSize
+      },
+      tableHeadersTitleText: {
+        color: this.colors?.white
+      }
+    })
+  }
 
 }

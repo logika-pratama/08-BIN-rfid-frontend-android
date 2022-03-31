@@ -16,7 +16,7 @@ const selectHomeScreen = (Device_ID) => {
         'No. RFID',
         'Jumlah',
         'SKU',
-        'Kode Barang'
+        // 'Kode Barang'
       ],
       enableSearch: true,
       enableConfirm: false
