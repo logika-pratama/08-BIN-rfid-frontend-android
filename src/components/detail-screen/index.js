@@ -165,9 +165,6 @@ const DetailScreen = (): Node => {
                 <DataTable.Cell>
                   {row.SKU}
                 </DataTable.Cell>
-                <DataTable.Cell>
-                  {row.Item_code}
-                </DataTable.Cell>
                 <DataTable.Cell style={detailScreenStyles.tableCellCount}>
                   {''}
                 </DataTable.Cell>
