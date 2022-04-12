@@ -131,15 +131,15 @@ export default class StylesKitchen {
   })
 
   detailScreenStyles = (id) => {
-    let flexSize = null
+    let flexSizeCount = null
     if (id === 0) {
-      flexSize = .4
+      flexSizeCount = .4
     } else if (id === 1) {
-      flexSize = .3
+      flexSizeCount = .3
     } else if (id === 2) {
-      flexSize = .7
+      flexSizeCount = .4
     } else if (id === 3) {
-      flexSize = .2
+      flexSizeCount = .2
     }
 
     return this.createStyles({
@@ -172,7 +172,7 @@ export default class StylesKitchen {
         backgroundColor: this.colors?.accent,
       },
       tableCellCount: {
-        flex: flexSize
+        flex: flexSizeCount
       },
       tableHeadersTitleText: {
         color: this.colors?.white

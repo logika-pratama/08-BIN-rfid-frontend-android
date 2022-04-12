@@ -138,24 +138,33 @@ const DetailScreen = (): Node => {
       <ScrollView style={detailScreenStyles.tableContainer}>
 
         <DataTable>
-          <DataTable.Header style={detailScreenStyles.tableHeaders}>
-            {tableHeaders.map(tableHeader =>
-              <DataTable.Title>
+          {/* Table Header */}
+          {tableHeaders.map((tableHeader) => {
+            const keyNameArr = Object.getOwnPropertyNames(tableHeader)
+            return <DataTable.Header style={detailScreenStyles.tableHeaders}>
+              {keyNameArr.map((keyName, idx) =>
+                <DataTable.Title key={idx}>
+                  <Text
+                    key={id}
+                    style={detailScreenStyles.tableHeadersTitleText}>
+                    {tableHeader[keyName]}
+                  </Text>
+                </DataTable.Title>
+              )}
+              <DataTable.Title style={detailScreenStyles.tableCellCount}>
                 <Text style={detailScreenStyles.tableHeadersTitleText}>
-                  {tableHeader}
+                  Total: {countScan}
                 </Text>
-              </DataTable.Title>)}
-            <DataTable.Title style={detailScreenStyles.tableCellCount}>
-              <Text style={detailScreenStyles.tableHeadersTitleText}>
-                Total: {countScan}
-              </Text>
-            </DataTable.Title>
-          </DataTable.Header>
+              </DataTable.Title>
+            </DataTable.Header>
+          })}
 
+          {/* Table Body */}
           {/* Pencatatan Stok */}
-          {id === 0 &&
-            finalData?.map(row =>
-              <DataTable.Row>
+          {
+            id === 0 &&
+            finalData?.map((row, idx) =>
+              <DataTable.Row key={idx}>
                 <DataTable.Cell>
                   {row.tag_number}
                 </DataTable.Cell>
@@ -169,12 +178,14 @@ const DetailScreen = (): Node => {
                   {''}
                 </DataTable.Cell>
               </DataTable.Row>
-            )}
+            )
+          }
 
           {/* Memindai Barang */}
-          {id === 1 &&
-            finalData?.map(row =>
-              <DataTable.Row>
+          {
+            id === 1 &&
+            finalData?.map((row, idx) =>
+              <DataTable.Row key={idx}>
                 <DataTable.Cell>
                   {row.tag_number}
                 </DataTable.Cell>
@@ -185,12 +196,14 @@ const DetailScreen = (): Node => {
                   {''}
                 </DataTable.Cell>
               </DataTable.Row>
-            )}
+            )
+          }
 
           {/* Pengecekan Barang */}
-          {id === 2 &&
-            finalData?.map(row =>
-              <DataTable.Row>
+          {
+            id === 2 &&
+            finalData?.map((row, idx) =>
+              <DataTable.Row key={idx}>
                 <DataTable.Cell>
                   {row.tag_number}
                 </DataTable.Cell>
@@ -198,24 +211,20 @@ const DetailScreen = (): Node => {
                   {row.Name}
                 </DataTable.Cell>
                 <DataTable.Cell>
-                  {row.Line_number}
-                </DataTable.Cell>
-                <DataTable.Cell>
-                  {row.Rak_number}
-                </DataTable.Cell>
-                <DataTable.Cell>
-                  {row.Bin_number}
+                  {row.Line_number}/{row.Rak_number}/{row.Bin_number}
                 </DataTable.Cell>
                 <DataTable.Cell style={detailScreenStyles.tableCellCount}>
                   {''}
                 </DataTable.Cell>
               </DataTable.Row>
-            )}
+            )
+          }
 
           {/* Gerbang Pemindaian */}
-          {id === 3 &&
-            finalData?.map(row =>
-              <DataTable.Row>
+          {
+            id === 3 &&
+            finalData?.map((row, idx) =>
+              <DataTable.Row key={idx}>
                 <DataTable.Cell>
                   {row.tag_number}
                 </DataTable.Cell>
@@ -223,17 +232,19 @@ const DetailScreen = (): Node => {
                   {''}
                 </DataTable.Cell>
               </DataTable.Row>
-            )}
+            )
+          }
 
         </DataTable>
 
-      </ScrollView>
+      </ScrollView >
 
-      {enableConfirm &&
+      {
+        enableConfirm &&
         <Button onPress={handleConfrim} text='Konfirmasi' customButtonStyles={detailScreenStyles.buttonStyle} />
       }
 
-    </View>
+    </View >
   )
 }
 

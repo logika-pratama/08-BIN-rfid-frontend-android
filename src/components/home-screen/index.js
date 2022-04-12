@@ -12,12 +12,12 @@ const selectHomeScreen = (Device_ID) => {
       id: 0,
       title: 'Pencatatan Stok',
       endPoint: searchText => `/stoktake/${encodeURIComponent(searchText)}`,
-      tableHeaders: [
-        'No. RFID',
-        'Jumlah',
-        'SKU',
+      tableHeaders: [{
+        'noRfid': 'No. RFID',
+        'jml': 'Jumlah',
+        'sku': 'SKU',
         // 'Kode Barang'
-      ],
+      }],
       enableSearch: true,
       enableConfirm: false
     },
@@ -25,15 +25,15 @@ const selectHomeScreen = (Device_ID) => {
       id: 1,
       title: 'Memindai Barang',
       endPoint: searchText => `/item/search/${encodeURIComponent(searchText)}`,
-      tableHeaders: [
-        'No. RFID',
+      tableHeaders: [{
+        'noRfid': 'No. RFID',
         // 'Jumlah',
         // 'SKU',
         // 'Kode Barang',
-        'Nama',
+        'nama': 'Nama',
         // 'Deskripsi',
         // 'Satuan'
-      ],
+      }],
       enableSearch: true,
       enableConfirm: false
     },
@@ -41,19 +41,17 @@ const selectHomeScreen = (Device_ID) => {
       id: 2,
       title: 'Pengecekan Barang',
       endPoint: searchText => `/tm/search/${encodeURIComponent(searchText)}`,
-      tableHeaders: [
-        'No. RFID',
+      tableHeaders: [{
+        'noRfid': 'No. RFID',
         // 'Jumlah',
         // 'SKU',
         // 'Kode Barang',
-        'Nama',
+        'nama': 'Nama',
         // 'Deskripsi',
         // 'Satuan',
-        'No. Baris',
-        'No. Rak',
-        'No. Kotak',
+        'lokasi': 'Baris/Rak/Kotak',
         // 'Waktu Pantau'
-      ],
+      }],
       enableSearch: true,
       enableConfirm: false
     }
@@ -63,7 +61,9 @@ const selectHomeScreen = (Device_ID) => {
     id: 3,
     title: 'Gerbang Pemindaian',
     endPoint: `/gatescan`,
-    tableHeaders: ['No. RFID'],
+    tableHeaders: [{
+      'noRfid': 'No. RFID'
+    }],
     enableSearch: true,
     enableConfirm: true
   }] : homeScreen
