@@ -81,7 +81,7 @@ const LoginScreen = (): Node => {
           source={LogistikPolri}
         />
         <Text style={loginScreenStyles.textStyle}>
-          ITAM-RFID
+          ITAT-RFID
         </Text>
       </View>
       <View style={loginScreenStyles.formContainer}>
