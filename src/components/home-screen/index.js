@@ -10,7 +10,7 @@ const selectHomeScreen = (Device_ID) => {
   let homeScreen = [
     {
       id: 0,
-      title: 'Pencatatan Stok',
+      title: 'Catat Stok',
       endPoint: searchText => `/stoktake/${encodeURIComponent(searchText)}`,
       tableHeaders: [{
         'noRfid': 'No. RFID',
