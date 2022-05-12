@@ -49,7 +49,7 @@ const selectHomeScreen = (Device_ID) => {
         'nama': 'Nama',
         // 'Deskripsi',
         // 'Satuan',
-        'lokasi': 'Baris/Rak/Kotak',
+        'lokasi': 'Lokasi',
         // 'Waktu Pantau'
       }],
       enableSearch: true,
@@ -91,7 +91,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
   )
 }
 
-const HomeScreen = (): Node => {
+const HomeScreen = () => {
   const route = useRoute()
   const navigation = useNavigation()
   const theme = useTheme()

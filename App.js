@@ -5,7 +5,7 @@ import { AuthProvider } from './src/contexts'
 import NavigationStack from './src/navigation-stack'
 import { Theme } from './src/lib/styles-ingredients'
 
-const App = (): Node => {
+const App = () => {
 
   useEffect(() => {
     SplashScreen.hide()

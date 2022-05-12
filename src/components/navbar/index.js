@@ -5,9 +5,9 @@ import { useTheme, IconButton } from 'react-native-paper'
 import decode from 'jwt-decode'
 import { useAuth } from '../../contexts'
 import StylesKitchen from '../../styles-kitchen'
-import LogistikPolri from '../../assets/images/logistik_polri.png'
+import DivTikPolri from '../../assets/images/logo_divtik_verysmall.png'
 
-const NavbarHomeScreen = (): Node => {
+const NavbarHomeScreen = () => {
   const { deleteToken } = useAuth()
   const route = useRoute()
   const theme = useTheme()
@@ -28,7 +28,7 @@ const NavbarHomeScreen = (): Node => {
       <View style={navBarStyles.imageContainer} >
         <Image
           style={navBarStyles.imageStyle}
-          source={LogistikPolri}
+          source={DivTikPolri}
         />
       </View>
       <View style={navBarStyles.menuContainer}>

@@ -3,7 +3,7 @@ import { SafeAreaView, ActivityIndicator } from 'react-native'
 import { useTheme } from 'react-native-paper'
 import StylesKitchen from '../../styles-kitchen'
 
-const LoadingScreen = (): Node => {
+const LoadingScreen = () => {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const loadingStyles = Styles.loadingStyles()

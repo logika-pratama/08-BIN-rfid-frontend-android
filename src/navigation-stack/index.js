@@ -13,7 +13,7 @@ import { NavbarHomeScreen } from '../components/navbar'
 
 const Stack = createNativeStackNavigator()
 
-const AppStack = ({ token }): Node => {
+const AppStack = ({ token }) => {
   const theme = useTheme()
   const whiteColor = theme.colors.white
   const primaryColor = theme.colors.primary
@@ -44,7 +44,7 @@ const AppStack = ({ token }): Node => {
   )
 }
 
-const LoginStack = (): Node => {
+const LoginStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -58,7 +58,7 @@ const LoginStack = (): Node => {
   )
 }
 
-const NavigationStack = (): Node => {
+const NavigationStack = () => {
   const theme = useTheme()
   const { authData, loading } = useAuth()
   const Styles = new StylesKitchen(theme)

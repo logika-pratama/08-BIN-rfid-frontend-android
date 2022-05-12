@@ -3,7 +3,7 @@ import { Text, View } from 'react-native'
 import { useTheme } from 'react-native-paper'
 import StylesKitchen from '../../styles-kitchen'
 
-const MenuScreen = ({ title }): Node => {
+const MenuScreen = ({ title }) => {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const menuScreenStyles = Styles.menuScreenStyles()

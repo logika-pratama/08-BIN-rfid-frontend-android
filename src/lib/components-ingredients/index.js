@@ -3,7 +3,7 @@ import { Pressable, View, Text } from 'react-native'
 import { useTheme } from 'react-native-paper'
 import StylesKitchen from '../../styles-kitchen'
 
-export function Button({ onPress, text, isDisabled, customButtonStyles, customTextStyles }): Node {
+export function Button({ onPress, text, isDisabled, customButtonStyles, customTextStyles }) {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const buttonStyles = Styles.buttonStyles()

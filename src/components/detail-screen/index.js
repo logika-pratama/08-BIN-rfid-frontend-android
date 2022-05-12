@@ -7,7 +7,7 @@ import InstanceApi from '../../services'
 import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 
-const DetailScreen = (): Node => {
+const DetailScreen = () => {
   const route = useRoute()
   const navigation = useNavigation()
   const theme = useTheme()
@@ -138,19 +138,25 @@ const DetailScreen = (): Node => {
       <ScrollView style={detailScreenStyles.tableContainer}>
 
         <DataTable>
+
           {/* Table Header */}
           {tableHeaders.map((tableHeader) => {
             const keyNameArr = Object.getOwnPropertyNames(tableHeader)
             return <DataTable.Header style={detailScreenStyles.tableHeaders}>
-              {keyNameArr.map((keyName, idx) =>
-                <DataTable.Title key={idx}>
+              {keyNameArr.map((keyName, idx) => {
+                // cellsStyle must by array (containt custom style each cell) or null.
+                const cellsStyle = keyName === 'noRfid' && [detailScreenStyles.noRfidCellCount]
+                return <DataTable.Title
+                  key={idx}
+                  style={cellsStyle}
+                >
                   <Text
                     key={id}
                     style={detailScreenStyles.tableHeadersTitleText}>
                     {tableHeader[keyName]}
                   </Text>
                 </DataTable.Title>
-              )}
+              })}
               <DataTable.Title style={detailScreenStyles.tableCellCount}>
                 <Text style={detailScreenStyles.tableHeadersTitleText}>
                   Total: {countScan}
@@ -160,12 +166,13 @@ const DetailScreen = (): Node => {
           })}
 
           {/* Table Body */}
-          {/* Pencatatan Stok */}
+
+          {/* Catat Stok */}
           {
             id === 0 &&
             finalData?.map((row, idx) =>
               <DataTable.Row key={idx}>
-                <DataTable.Cell>
+                <DataTable.Cell style={detailScreenStyles.noRfidCellCount}>
                   {row.tag_number}
                 </DataTable.Cell>
                 <DataTable.Cell>
@@ -186,7 +193,7 @@ const DetailScreen = (): Node => {
             id === 1 &&
             finalData?.map((row, idx) =>
               <DataTable.Row key={idx}>
-                <DataTable.Cell>
+                <DataTable.Cell style={detailScreenStyles.noRfidCellCount}>
                   {row.tag_number}
                 </DataTable.Cell>
                 <DataTable.Cell>
@@ -204,14 +211,14 @@ const DetailScreen = (): Node => {
             id === 2 &&
             finalData?.map((row, idx) =>
               <DataTable.Row key={idx}>
-                <DataTable.Cell>
+                <DataTable.Cell style={detailScreenStyles.noRfidCellCount}>
                   {row.tag_number}
                 </DataTable.Cell>
                 <DataTable.Cell>
                   {row.Name}
                 </DataTable.Cell>
                 <DataTable.Cell>
-                  {row.Line_number}/{row.Rak_number}/{row.Bin_number}
+                  {row.Line_number}/{row.Rack_number}/{row.Bin_number}
                 </DataTable.Cell>
                 <DataTable.Cell style={detailScreenStyles.tableCellCount}>
                   {''}
@@ -225,7 +232,7 @@ const DetailScreen = (): Node => {
             id === 3 &&
             finalData?.map((row, idx) =>
               <DataTable.Row key={idx}>
-                <DataTable.Cell>
+                <DataTable.Cell style={detailScreenStyles.noRfidCellCount}>
                   {row.tag_number}
                 </DataTable.Cell>
                 <DataTable.Cell style={detailScreenStyles.tableCellCount}>

@@ -6,11 +6,11 @@ import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 import InstanceApi from '../../services'
 import LoadingScreen from '../loading-screen'
-import LogistikPolri from '../../assets/images/logistik_polri.png'
+import LogistikPolri from '../../assets/images/logo_divtik_small.png'
 
 const errorAlertTitle = 'Kesalahan'
 
-const LoginScreen = (): Node => {
+const LoginScreen = () => {
   const { saveToken } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

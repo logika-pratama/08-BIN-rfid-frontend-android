@@ -64,7 +64,7 @@ export default class StylesKitchen {
       marginBottom: 30
     },
     imageStyle: {
-      width: 150,
+      width: 164,
       height: 175
     },
     textStyle: {
@@ -121,7 +121,7 @@ export default class StylesKitchen {
       marginLeft: 16
     },
     imageStyle: {
-      width: 33,
+      width: 36,
       height: 39
     },
     textStyle: {
@@ -131,14 +131,20 @@ export default class StylesKitchen {
   })
 
   detailScreenStyles = (id) => {
+    let noRfidSizeCount = null
     let flexSizeCount = null
+
     if (id === 0) {
+      noRfidSizeCount = 3
       flexSizeCount = .4
     } else if (id === 1) {
+      noRfidSizeCount = 1.6
       flexSizeCount = .3
     } else if (id === 2) {
+      noRfidSizeCount = 3
       flexSizeCount = .4
     } else if (id === 3) {
+      noRfidSizeCount = 1
       flexSizeCount = .2
     }
 
@@ -170,6 +176,9 @@ export default class StylesKitchen {
       },
       tableHeaders: {
         backgroundColor: this.colors?.accent,
+      },
+      noRfidCellCount: {
+        flex: noRfidSizeCount
       },
       tableCellCount: {
         flex: flexSizeCount
