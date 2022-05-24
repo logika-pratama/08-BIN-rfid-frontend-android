@@ -11,75 +11,83 @@ const selectHomeScreen = (Device_ID) => {
     {
       id: 0,
       title: 'Catat Stok',
-      endPoint: searchText => `/stoktake/${encodeURIComponent(searchText)}`,
+      endPointSearch: searchText => `/stoktake?asset_id=${encodeURIComponent(searchText)}`,
       tableHeaders: [{
-        'noRfid': 'No. RFID',
+        'noRfid': 'ID Asset',
         'jml': 'Jumlah',
-        'sku': 'SKU',
+        'sku': 'No. SAKTI',
         // 'Kode Barang'
       }],
       enableSearch: true,
+      enableTable: true,
       enableConfirm: false
     },
     {
       id: 1,
       title: 'Memindai Barang',
-      endPoint: searchText => `/item/search/${encodeURIComponent(searchText)}`,
+      endPointSearch: searchText => `/item/search?asset_id=${encodeURIComponent(searchText)}`,
       tableHeaders: [{
-        'noRfid': 'No. RFID',
+        'noRfid': 'ID Asset',
         // 'Jumlah',
         // 'SKU',
         // 'Kode Barang',
-        'nama': 'Nama',
+        'nama': 'Nama Aseet',
         // 'Deskripsi',
         // 'Satuan'
       }],
       enableSearch: true,
+      enableTable: true,
       enableConfirm: false
     },
     {
       id: 2,
       title: 'Pengecekan Barang',
-      endPoint: searchText => `/tm/search/${encodeURIComponent(searchText)}`,
+      endPointSearch: searchText => `/tm/search?asset_id=${encodeURIComponent(searchText)}`,
       tableHeaders: [{
-        'noRfid': 'No. RFID',
+        'noRfid': 'ID Asset',
         // 'Jumlah',
         // 'SKU',
         // 'Kode Barang',
-        'nama': 'Nama',
+        'nama': 'Nama Asset',
         // 'Deskripsi',
         // 'Satuan',
         'lokasi': 'Lokasi',
         // 'Waktu Pantau'
       }],
       enableSearch: true,
+      enableTable: true,
       enableConfirm: false
     }
   ]
 
-  homeScreen = Device_ID ? [...homeScreen, {
+  const deviceScreen = {
     id: 3,
     title: 'Gerbang Pemindaian',
-    endPoint: `/gatescan`,
+    endPointSearch: searchText => `/gatescan?tag_number=${encodeURIComponent(searchText)}`,
     tableHeaders: [{
-      'noRfid': 'No. RFID'
+      'noRfid': 'ID Asset',
+      'nama': 'Nama Asset'
     }],
     enableSearch: true,
-    enableConfirm: true
-  }] : homeScreen
+    enableTable: false,
+    enableConfirm: false
+  }
+
+  homeScreen = Device_ID ? [...homeScreen, deviceScreen] : homeScreen
 
   return homeScreen
 }
 
 const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
-  const { id, title, endPoint, tableHeaders, enableSearch, enableConfirm } = item
+  const { id, title, endPointSearch, tableHeaders, enableSearch, enableTable, enableConfirm } = item
   const onPress = () => {
     return navigation.navigate('detail', {
       id,
       title,
-      endPoint,
+      endPointSearch,
       tableHeaders,
       enableSearch,
+      enableTable,
       enableConfirm
     })
   }

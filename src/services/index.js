@@ -24,11 +24,25 @@ export default class InstanceApi {
     }
   }
 
-  async detailSearch(endPoint, token) {
+  async detailSearchGet(endPointSearch, token) {
     this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
     try {
-      return await this.instance.get(endPoint)
+      return await this.instance.get(endPointSearch)
+    }
+    catch (err) {
+      if (err.response) {
+        return err.response
+      }
+      return errorConnection
+    }
+  }
+
+  async detailSearchPost(endPointSearch, token) {
+    this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
+
+    try {
+      return await this.instance.post(endPointSearch)
     }
     catch (err) {
       if (err.response) {

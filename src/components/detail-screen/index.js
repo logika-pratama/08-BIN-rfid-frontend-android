@@ -1,4 +1,4 @@
-import React, { Node, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, ScrollView } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
@@ -15,11 +15,11 @@ const DetailScreen = () => {
   const [data, setData] = useState([])
   const [searchField, setSearchField] = useState('')
   const [finalData, setFinalData] = useState([])
-  const { id, title, endPoint, tableHeaders, enableSearch, enableConfirm, token } = route.params
+  const { id, title, endPointSearch, tableHeaders, enableSearch, enableTable, enableConfirm, token } = route.params
   const { Device_ID: deviceId } = decode(token)
   const detailScreenStyles = Styles.detailScreenStyles(id)
 
-  const getEndPoint = searchText => typeof endPoint === 'function' ? endPoint(searchText) : endPoint
+  const getEndPointSearch = searchText => endPointSearch(searchText)
   const Api = new InstanceApi()
 
   const processToSendData = async searchField => {
@@ -30,21 +30,16 @@ const DetailScreen = () => {
       const finalArrText = [... new Set(arrText)]
 
       if (finalArrText) {
-        if (id === 3) {
-          const filteredData = finalArrText.filter(el => el !== '' && !data.includes(el))
-          setData(prevData => [...prevData, ...filteredData])
-        } else {
-          const filteredData = finalArrText.filter(el =>
-            el && data.map(({ tag_number }) => {
-              if (el !== tag_number) {
-                return el
-              }
-            })
-          )
-          for (let i in filteredData) {
-            const searchValue = filteredData[i]
-            await sendData(searchValue)
-          }
+        const filteredData = finalArrText.filter(el =>
+          el && data.map(({ tag_number }) => {
+            if (el !== tag_number) {
+              return el
+            }
+          })
+        )
+        for (let i in filteredData) {
+          const searchValue = filteredData[i]
+          await sendData(searchValue)
         }
       }
 
@@ -54,12 +49,16 @@ const DetailScreen = () => {
   }
 
   const sendData = async (searchValue) => {
-    const finalEndpoint = getEndPoint(searchValue)
-    const resp = await Api.detailSearch(finalEndpoint, token)
+    const finalEndpoint = getEndPointSearch(searchValue)
+    if (id === 3) {
+      await Api.detailSearchPost(finalEndpoint, token)
+    } else {
+      const resp = await Api.detailSearchGet(finalEndpoint, token)
 
-    if (resp.status === 200) {
-      const data = resp.data?.data
-      setData(data)
+      if (resp.status === 200) {
+        const data = resp.data?.data
+        setData(data)
+      }
     }
   }
 
@@ -99,18 +98,11 @@ const DetailScreen = () => {
 
   useEffect(() => {
     if (data) {
-      if (id === 3) {
-        const objArrData = data.map(el => {
-          return { 'tag_number': el }
+      data &&
+        setFinalData(prevData => {
+          const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
+          return [...prevData, ...newData]
         })
-        setFinalData(objArrData)
-      } else {
-        data &&
-          setFinalData(prevData => {
-            const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
-            return [...prevData, ...newData]
-          })
-      }
     }
   }, [data])
 
@@ -135,116 +127,140 @@ const DetailScreen = () => {
         </View>
       }
 
-      <ScrollView style={detailScreenStyles.tableContainer}>
+      {/* <View style={detailScreenStyles.boxContainer}>
+        <View style={detailScreenStyles.boxModel}>
+          <Text style={detailScreenStyles.boxText}>
+            Total: {countScan}
+          </Text>
+        </View>
+      </View> */}
 
-        <DataTable>
+      {enableTable &&
+        <ScrollView style={detailScreenStyles.tableContainer}>
 
-          {/* Table Header */}
-          {tableHeaders.map((tableHeader) => {
-            const keyNameArr = Object.getOwnPropertyNames(tableHeader)
-            return <DataTable.Header style={detailScreenStyles.tableHeaders}>
-              {keyNameArr.map((keyName, idx) => {
-                // cellsStyle must by array (containt custom style each cell) or null.
-                const cellsStyle = keyName === 'noRfid' && [detailScreenStyles.noRfidCellCount]
-                return <DataTable.Title
-                  key={idx}
-                  style={cellsStyle}
-                >
-                  <Text
-                    key={id}
-                    style={detailScreenStyles.tableHeadersTitleText}>
-                    {tableHeader[keyName]}
+          <DataTable>
+
+            {/* Table Header */}
+            {tableHeaders.map((tableHeader) => {
+              const keyNameArr = Object.getOwnPropertyNames(tableHeader)
+              return <DataTable.Header style={detailScreenStyles.tableHeaders}>
+                {keyNameArr.map((keyName, idx) => {
+                  // cellsStyle must by array (containt custom style each cell) or null.
+                  const cellsStyle = keyName === 'noRfid' && [detailScreenStyles.noRfidCellWidth]
+                  return <DataTable.Title
+                    key={idx}
+                    style={cellsStyle}
+                  >
+                    <Text
+                      key={id}
+                      style={detailScreenStyles.tableHeadersTitleText}>
+                      {tableHeader[keyName]}
+                    </Text>
+                  </DataTable.Title>
+                })}
+                <DataTable.Title style={detailScreenStyles.countCellWidth}>
+                  <Text style={detailScreenStyles.tableHeadersTitleText}>
+                    Total: {countScan}
                   </Text>
                 </DataTable.Title>
-              })}
-              <DataTable.Title style={detailScreenStyles.tableCellCount}>
-                <Text style={detailScreenStyles.tableHeadersTitleText}>
+              </DataTable.Header>
+            })}
+
+            {/* Table Body */}
+
+            {/* Catat Stok */}
+            {
+              id === 0 &&
+              finalData?.map((row, idx) =>
+                <DataTable.Row key={idx}>
+                  <DataTable.Cell style={detailScreenStyles.noRfidCellWidth}>
+                    {row.tag_number}
+                  </DataTable.Cell>
+                  <DataTable.Cell>
+                    {row.Quantity}
+                  </DataTable.Cell>
+                  <DataTable.Cell>
+                    {row.SKU}
+                  </DataTable.Cell>
+                  <DataTable.Cell style={detailScreenStyles.countCellWidth}>
+                    {''}
+                  </DataTable.Cell>
+                </DataTable.Row>
+              )
+            }
+
+            {/* Memindai Barang */}
+            {
+              id === 1 &&
+              finalData?.map((row, idx) =>
+                <DataTable.Row key={idx}>
+                  <DataTable.Cell style={detailScreenStyles.noRfidCellWidth}>
+                    {row.tag_number}
+                  </DataTable.Cell>
+                  <DataTable.Cell>
+                    {row.Name}
+                  </DataTable.Cell>
+                  <DataTable.Cell style={detailScreenStyles.countCellWidth}>
+                    {''}
+                  </DataTable.Cell>
+                </DataTable.Row>
+              )
+            }
+
+            {/* Pengecekan Barang */}
+            {
+              id === 2 &&
+              finalData?.map((row, idx) =>
+                <DataTable.Row key={idx}>
+                  <DataTable.Cell style={detailScreenStyles.noRfidCellWidth}>
+                    {row.tag_number}
+                  </DataTable.Cell>
+                  <DataTable.Cell>
+                    {row.Name}
+                  </DataTable.Cell>
+                  <DataTable.Cell>
+                    {row.Line_number}/{row.Rack_number}/{row.Bin_number}
+                  </DataTable.Cell>
+                  <DataTable.Cell style={detailScreenStyles.countCellWidth}>
+                    {''}
+                  </DataTable.Cell>
+                </DataTable.Row>
+              )
+            }
+
+            {/* Gerbang Pemindaian */}
+            {
+              id === 3 &&
+              finalData?.map((row, idx) =>
+                <DataTable.Row key={idx}>
+                  <DataTable.Cell style={detailScreenStyles.noRfidCellWidth}>
+                    {row.tag_number}
+                  </DataTable.Cell>
+                  <DataTable.Cell>
+                    {row.Name}
+                  </DataTable.Cell>
+                  <DataTable.Cell style={detailScreenStyles.countCellWidth}>
+                    {''}
+                  </DataTable.Cell>
+                </DataTable.Row>
+              )
+            }
+
+            {/* Table Footer */}
+            {/* <DataTable.Header style={[detailScreenStyles.tableHeaders, { flex: 1, flexDirection: 'row' }]}>
+            <DataTable.Cell numeric style={[detailScreenStyles.cellsFooter, { flex: 1, flexDirection: 'row', textAlign: 'right' }]}>
+              <View style={{ flex: 1, flexDirection: 'row' }}>
+                <Text style={detailScreenStyles.tableFootersTitleText}>
                   Total: {countScan}
                 </Text>
-              </DataTable.Title>
-            </DataTable.Header>
-          })}
+              </View>
+            </DataTable.Cell>
+          </DataTable.Header> */}
 
-          {/* Table Body */}
+          </DataTable>
 
-          {/* Catat Stok */}
-          {
-            id === 0 &&
-            finalData?.map((row, idx) =>
-              <DataTable.Row key={idx}>
-                <DataTable.Cell style={detailScreenStyles.noRfidCellCount}>
-                  {row.tag_number}
-                </DataTable.Cell>
-                <DataTable.Cell>
-                  {row.Quantity}
-                </DataTable.Cell>
-                <DataTable.Cell>
-                  {row.SKU}
-                </DataTable.Cell>
-                <DataTable.Cell style={detailScreenStyles.tableCellCount}>
-                  {''}
-                </DataTable.Cell>
-              </DataTable.Row>
-            )
-          }
-
-          {/* Memindai Barang */}
-          {
-            id === 1 &&
-            finalData?.map((row, idx) =>
-              <DataTable.Row key={idx}>
-                <DataTable.Cell style={detailScreenStyles.noRfidCellCount}>
-                  {row.tag_number}
-                </DataTable.Cell>
-                <DataTable.Cell>
-                  {row.Name}
-                </DataTable.Cell>
-                <DataTable.Cell style={detailScreenStyles.tableCellCount}>
-                  {''}
-                </DataTable.Cell>
-              </DataTable.Row>
-            )
-          }
-
-          {/* Pengecekan Barang */}
-          {
-            id === 2 &&
-            finalData?.map((row, idx) =>
-              <DataTable.Row key={idx}>
-                <DataTable.Cell style={detailScreenStyles.noRfidCellCount}>
-                  {row.tag_number}
-                </DataTable.Cell>
-                <DataTable.Cell>
-                  {row.Name}
-                </DataTable.Cell>
-                <DataTable.Cell>
-                  {row.Line_number}/{row.Rack_number}/{row.Bin_number}
-                </DataTable.Cell>
-                <DataTable.Cell style={detailScreenStyles.tableCellCount}>
-                  {''}
-                </DataTable.Cell>
-              </DataTable.Row>
-            )
-          }
-
-          {/* Gerbang Pemindaian */}
-          {
-            id === 3 &&
-            finalData?.map((row, idx) =>
-              <DataTable.Row key={idx}>
-                <DataTable.Cell style={detailScreenStyles.noRfidCellCount}>
-                  {row.tag_number}
-                </DataTable.Cell>
-                <DataTable.Cell style={detailScreenStyles.tableCellCount}>
-                  {''}
-                </DataTable.Cell>
-              </DataTable.Row>
-            )
-          }
-
-        </DataTable>
-
-      </ScrollView >
+        </ScrollView >
+      }
 
       {
         enableConfirm &&

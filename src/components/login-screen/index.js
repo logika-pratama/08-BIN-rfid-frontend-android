@@ -1,4 +1,4 @@
-import React, { Node, useState } from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView, Image, View, Text, Alert } from 'react-native'
 import { TextInput, useTheme } from 'react-native-paper'
 import { useAuth } from '../../contexts'

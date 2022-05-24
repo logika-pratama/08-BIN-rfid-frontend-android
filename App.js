@@ -1,4 +1,4 @@
-import React, { Node, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper'
 import SplashScreen from 'react-native-splash-screen';
 import { AuthProvider } from './src/contexts'

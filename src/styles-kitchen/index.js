@@ -131,21 +131,18 @@ export default class StylesKitchen {
   })
 
   detailScreenStyles = (id) => {
-    let noRfidSizeCount = null
-    let flexSizeCount = null
+    let noRfidWidth = null
+    let countWidth = null
 
     if (id === 0) {
-      noRfidSizeCount = 3
-      flexSizeCount = .4
-    } else if (id === 1) {
-      noRfidSizeCount = 1.6
-      flexSizeCount = .3
+      noRfidWidth = 3
+      countWidth = .4
+    } else if (id === 1 || id === 3) {
+      noRfidWidth = 1.6
+      countWidth = .3
     } else if (id === 2) {
-      noRfidSizeCount = 3
-      flexSizeCount = .4
-    } else if (id === 3) {
-      noRfidSizeCount = 1
-      flexSizeCount = .2
+      noRfidWidth = 3
+      countWidth = .4
     }
 
     return this.createStyles({
@@ -163,6 +160,25 @@ export default class StylesKitchen {
         marginLeft: 16,
         marginBottom: 24
       },
+      boxContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginBottom: 12,
+        marginRight: 12
+      },
+      boxModel: {
+        // borderWidth: '1',
+        borderColor: 'red',
+        height: 60,
+        width: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: this.colors?.accent
+      },
+      boxText: {
+        color: this.colors.white
+      },
       feildsStyle: {
         width: '70%',
         overflow: 'hidden'
@@ -177,14 +193,21 @@ export default class StylesKitchen {
       tableHeaders: {
         backgroundColor: this.colors?.accent,
       },
-      noRfidCellCount: {
-        flex: noRfidSizeCount
+      noRfidCellWidth: {
+        flex: noRfidWidth
       },
-      tableCellCount: {
-        flex: flexSizeCount
+      countCellWidth: {
+        flex: countWidth
+      },
+      cellsFooter: {
+        textAlign: 'right'
       },
       tableHeadersTitleText: {
         color: this.colors?.white
+      },
+      tableFootersTitleText: {
+        color: this.colors?.white,
+        textAlign: 'right'
       }
     })
   }
