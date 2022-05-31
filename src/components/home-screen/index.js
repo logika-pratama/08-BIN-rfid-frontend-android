@@ -13,19 +13,22 @@ const selectHomeScreen = (role) => {
       id: 0,
       title: 'Tracking 3D',
       urlScreen: TRACKING_3D_URL,
-      outScreen: true
+      outScreen: true,
+      integrationModuleScreen: false
     },
     {
       id: 1,
       title: 'Admin',
       urlScreen: ADMIN_URL,
       outScreen: true,
+      integrationModuleScreen: false
     },
     {
       id: 2,
       title: 'Integration Module',
       urlScreen: '',
-      outScreen: false
+      outScreen: false,
+      integrationModuleScreen: true
     }
   ]
 
@@ -33,7 +36,8 @@ const selectHomeScreen = (role) => {
     id: 3,
     title: 'Setting',
     urlScreen: '',
-    outScreen: false
+    outScreen: false,
+    integrationModuleScreen: false
   }
 
   homeScreen = role === '1' ? [...homeScreen, superAdminScreen] : homeScreen
@@ -46,7 +50,8 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
     id,
     title,
     urlScreen,
-    outScreen
+    outScreen,
+    integrationModuleScreen
   } = item
   const onPress = () => {
     if (outScreen) {
@@ -57,12 +62,21 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
         outScreen
       })
     } else {
-      return navigation.navigate('integration_module', {
-        id,
-        title,
-        urlScreen,
-        outScreen
-      })
+      if (integrationModuleScreen) {
+        return navigation.navigate('integration_module', {
+          id,
+          title,
+          urlScreen,
+          outScreen
+        })
+      } else {
+        return navigation.navigate('detail', {
+          id,
+          title,
+          urlScreen,
+          outScreen
+        })
+      }
     }
   }
 
