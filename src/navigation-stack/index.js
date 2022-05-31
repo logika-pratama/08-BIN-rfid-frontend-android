@@ -6,6 +6,7 @@ import { useTheme } from 'react-native-paper'
 import { useAuth } from '../contexts'
 import HomeScreen from '../components/home-screen'
 import DetailScreen from '../components/detail-screen'
+import IntegrationModuleScreen from '../components/integration-module-screen'
 import LoginScreen from '../components/login-screen'
 import StylesKitchen from '../styles-kitchen'
 import LoadingScreen from '../components/loading-screen'
@@ -26,6 +27,18 @@ const AppStack = ({ token }) => {
         options={{
           header: (props) => < NavbarHomeScreen {...props} />
         }}
+        initialParams={{ token }}
+      />
+      <Stack.Screen
+        name='integration_module'
+        component={IntegrationModuleScreen}
+        options={({ route }) => ({
+          title: route.params.title,
+          headerStyle: {
+            backgroundColor: primaryColor
+          },
+          headerTintColor: whiteColor,
+        })}
         initialParams={{ token }}
       />
       <Stack.Screen

@@ -1,7 +1,5 @@
 import axios from 'axios'
-import { API_URL } from 'react-native-dotenv'
-
-const errorConnection = 'Koneksi Terganggu'
+import { API_URL, ERROR_CONNECTION } from 'react-native-dotenv'
 
 export default class InstanceApi {
   instance = axios.create({
@@ -20,7 +18,7 @@ export default class InstanceApi {
       if (err.response) {
         return err.response
       }
-      return errorConnection
+      return ERROR_CONNECTION
     }
   }
 
@@ -34,7 +32,7 @@ export default class InstanceApi {
       if (err.response) {
         return err.response
       }
-      return errorConnection
+      return ERROR_CONNECTION
     }
   }
 
@@ -48,7 +46,7 @@ export default class InstanceApi {
       if (err.response) {
         return err.response
       }
-      return errorConnection
+      return ERROR_CONNECTION
     }
   }
 
@@ -62,7 +60,7 @@ export default class InstanceApi {
       if (err.response) {
         return err.response
       }
-      return errorConnection
+      return ERROR_CONNECTION
     }
   }
 }

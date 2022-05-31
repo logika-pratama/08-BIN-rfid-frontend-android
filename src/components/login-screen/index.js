@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import { SafeAreaView, Image, View, Text, Alert } from 'react-native'
 import { TextInput, useTheme } from 'react-native-paper'
+import { ERROR_TITLE } from 'react-native-dotenv'
 import { useAuth } from '../../contexts'
 import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 import InstanceApi from '../../services'
 import LoadingScreen from '../loading-screen'
 import LogistikPolri from '../../assets/images/logo_divtik_small.png'
-
-const errorAlertTitle = 'Kesalahan'
 
 const LoginScreen = () => {
   const { saveToken } = useAuth()
@@ -50,7 +49,7 @@ const LoginScreen = () => {
         if (resp.status === 401) {
           const message = resp.data.message
           Alert.alert(
-            errorAlertTitle,
+            ERROR_TITLE,
             message
           )
         }
@@ -60,7 +59,7 @@ const LoginScreen = () => {
     else {
       const message = resp
       Alert.alert(
-        errorAlertTitle,
+        ERROR_TITLE,
         message
       )
       setLoadingLogin(false)

@@ -87,6 +87,15 @@ export default class StylesKitchen {
     }
   })
 
+  integrationModuleScreenStyles = () => this.createStyles({
+    integrationModuleScreenContainer: {
+      display: 'flex',
+      flex: 1,
+      marginTop: 10,
+      backgroundColor: this.colors?.white,
+    }
+  })
+
   menuScreenStyles = () => this.createStyles({
     menuScreenContainer: {
       backgroundColor: this.colors?.accent,
@@ -130,23 +139,23 @@ export default class StylesKitchen {
     }
   })
 
-  detailScreenStyles = (id) => {
+  rfidScreenStyles = (id) => {
     let noRfidWidth = null
     let countWidth = null
 
     if (id === 0) {
-      noRfidWidth = 3
-      countWidth = .4
-    } else if (id === 1 || id === 3) {
       noRfidWidth = 1.6
+      countWidth = .5
+    } else if (id === 1 || id === 3) {
+      noRfidWidth = 1
       countWidth = .3
     } else if (id === 2) {
-      noRfidWidth = 3
-      countWidth = .4
+      noRfidWidth = 1.8
+      countWidth = .6
     }
 
     return this.createStyles({
-      detailScreenContainer: {
+      rfidScreenContainer: {
         display: 'flex',
         flex: 1,
         marginTop: 48,

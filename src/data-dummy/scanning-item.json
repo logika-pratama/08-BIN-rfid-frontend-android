@@ -1,0 +1,22 @@
+[
+  {
+    "asset_id": "1000000000009",
+    "name_asset": "Laptop"
+  },
+  {
+    "asset_id": "1000000000010",
+    "name_asset": "Handphone"
+  },
+  {
+    "asset_id": "1000000000011",
+    "name_asset": "Tas"
+  },
+  {
+    "asset_id": "1000000000012",
+    "name_asset": "Telepon"
+  },
+  {
+    "asset_id": "1000000000013",
+    "name_asset": "Buku"
+  }
+]

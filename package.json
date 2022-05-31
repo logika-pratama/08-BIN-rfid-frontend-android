@@ -24,6 +24,7 @@
     "react-native-screens": "^3.11.0",
     "react-native-splash-screen": "^3.3.0",
     "react-native-vector-icons": "^9.1.0",
+    "react-native-webview": "^11.18.2",
     "react-query": "^3.34.15"
   },
   "devDependencies": {

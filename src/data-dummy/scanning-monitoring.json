@@ -1,0 +1,27 @@
+[
+  {
+    "asset_id": "1000000000009",
+    "name_asset": "Laptop",
+    "location_asset": "WHC-A-05-A"
+  },
+  {
+    "asset_id": "1000000000010",
+    "name_asset": "Handphone",
+    "location_asset": "WHC-A-05-B"
+  },
+  {
+    "asset_id": "1000000000011",
+    "name_asset": "Tas",
+    "location_asset": "WHC-A-05-C"
+  },
+  {
+    "asset_id": "1000000000012",
+    "name_asset": "Telepon",
+    "location_asset": "WHC-B-04-A"
+  },
+  {
+    "asset_id": "1000000000013",
+    "name_asset": "Buku",
+    "location_asset": "WHC-B-04-B"
+  }
+]

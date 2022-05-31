@@ -1,0 +1,27 @@
+[
+  {
+    "asset_id": "1000000000009",
+    "name_asset": "Laptop",
+    "code_sakti": "3.10.01.02.001"
+  },
+  {
+    "asset_id": "1000000000010",
+    "name_asset": "Handphone",
+    "code_sakti": "3.10.01.02.001"
+  },
+  {
+    "asset_id": "1000000000011",
+    "name_asset": "Tas",
+    "code_sakti": "3.10.01.02.002"
+  },
+  {
+    "asset_id": "1000000000012",
+    "name_asset": "Telepon",
+    "code_sakti": "3.10.01.02.002"
+  },
+  {
+    "asset_id": "1000000000013",
+    "name_asset": "Buku",
+    "code_sakti": "3.10.01.02.002"
+  }
+]
