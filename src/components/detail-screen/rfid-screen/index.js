@@ -5,7 +5,7 @@ import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-p
 import decode from 'jwt-decode'
 import InstanceApi from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
-import { Button } from '../../../lib/components-ingredients'
+import { Button, Field } from '../../../lib/components-ingredients'
 
 // for testing
 import DataStockTake from '../../../data-dummy/stock-take.json'
@@ -20,8 +20,20 @@ const RfidScreen = () => {
   const Styles = new StylesKitchen(theme)
   const [data, setData] = useState([])
   const [searchField, setSearchField] = useState('')
+  const [url, setUrl] = useState('')
   const [finalData, setFinalData] = useState([])
-  const { id, title, endPointSearch, tableHeaders, enableSearch, enableTable, enableConfirm, token } = route.params
+  const {
+    id,
+    title,
+    urlList,
+    endPointSearch,
+    tableHeaders,
+    enableSearch,
+    enableTable,
+    enableConfirm,
+    enableSettingUrl,
+    token
+  } = route.params
   const { Device_ID: deviceId } = decode(token)
   const rfidScreenStyles = Styles.rfidScreenStyles(id)
 
@@ -56,7 +68,7 @@ const RfidScreen = () => {
 
   const sendData = async (searchValue) => {
     const finalEndpoint = getEndPointSearch(searchValue)
-    if (id === 3) {
+    if (id === 23) {
       await Api.detailSearchPost(finalEndpoint, token)
     } else {
       const resp = await Api.detailSearchGet(finalEndpoint, token)
@@ -75,6 +87,10 @@ const RfidScreen = () => {
   const handleChangeSearchField = async e => {
     const text = e.nativeEvent.text
     setSearchField(text)
+  }
+
+  const handleChangeUrl = (text) => {
+    setUrl(text)
   }
 
   const handleConfrim = async () => {
@@ -113,11 +129,11 @@ const RfidScreen = () => {
   // }, [data]) // for running
 
   useEffect(() => {
-    if (id === 0) {
+    if (id === 20) {
       setFinalData(DataStockTake)
-    } else if (id === 1) {
+    } else if (id === 21) {
       setFinalData(DataScanningItem)
-    } else if (id === 2) {
+    } else if (id === 22) {
       setFinalData(DataScanningMonitoring)
     }
   }, []) // for testing
@@ -187,7 +203,7 @@ const RfidScreen = () => {
 
             {/* Catat Stok */}
             {
-              id === 0 &&
+              id === 20 &&
               finalData?.map((row, idx) =>
                 <DataTable.Row key={idx}>
                   <DataTable.Cell style={rfidScreenStyles.noRfidCellWidth}>
@@ -208,7 +224,7 @@ const RfidScreen = () => {
 
             {/* Memindai Barang */}
             {
-              id === 1 &&
+              id === 21 &&
               finalData?.map((row, idx) =>
                 <DataTable.Row key={idx}>
                   <DataTable.Cell style={rfidScreenStyles.noRfidCellWidth}>
@@ -226,7 +242,7 @@ const RfidScreen = () => {
 
             {/* Pengecekan Barang */}
             {
-              id === 2 &&
+              id === 22 &&
               finalData?.map((row, idx) =>
                 <DataTable.Row key={idx}>
                   <DataTable.Cell style={rfidScreenStyles.noRfidCellWidth}>
@@ -247,7 +263,7 @@ const RfidScreen = () => {
 
             {/* Gerbang Pemindaian */}
             {
-              id === 3 &&
+              id === 23 &&
               finalData?.map((row, idx) =>
                 <DataTable.Row key={idx}>
                   <DataTable.Cell style={rfidScreenStyles.noRfidCellWidth}>
@@ -277,6 +293,15 @@ const RfidScreen = () => {
           </DataTable>
 
         </ScrollView >
+      }
+
+      {
+        enableSettingUrl && urlList &&
+        urlList.map((row, idx) => {
+          return <View>
+            <Field key={idx} name={row.name} uri={row.uri} changeUrl={handleChangeUrl} />
+          </View>
+        })
       }
 
       {

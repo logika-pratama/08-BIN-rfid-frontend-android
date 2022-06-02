@@ -1,6 +1,6 @@
-import React, { Node } from 'react'
+import React from 'react'
 import { Pressable, View, Text } from 'react-native'
-import { useTheme } from 'react-native-paper'
+import { useTheme, TextInput as TextInputPaper } from 'react-native-paper'
 import StylesKitchen from '../../styles-kitchen'
 
 export function Button({ onPress, text, isDisabled, customButtonStyles, customTextStyles }) {
@@ -19,6 +19,28 @@ export function Button({ onPress, text, isDisabled, customButtonStyles, customTe
           {text}
         </Text>
       </Pressable>
+    </View>
+  )
+}
+
+export function Field({ name, uri, changeUrl }) {
+  const theme = useTheme()
+  const Styles = new StylesKitchen(theme)
+
+  const handleChangeField = (e) => {
+    const text = e.nativeEvent.text
+    changeUrl(text)
+  }
+
+  return (
+    <View>
+      <TextInputPaper
+        name='url'
+        onChange={handleChangeField}
+        value={uri}
+        label={`URL ${name}`}
+        placeholder={'url'}
+      />
     </View>
   )
 }

@@ -10,9 +10,10 @@ import StylesKitchen from '../../styles-kitchen'
 const selectIntegrationModuleScreen = (Device_ID) => {
 	let homeScreen = [
 		{
-			id: 0,
+			id: 20,
 			title: 'Catat Stok',
 			urlScreen: '',
+			urlList: [],
 			alertUrlEorrTitle: '',
 			alertUrlErrorConnection: '',
 			alertUrlErrorCommon: '',
@@ -26,14 +27,17 @@ const selectIntegrationModuleScreen = (Device_ID) => {
 			enableSearch: true,
 			enableTable: true,
 			enableConfirm: false,
+			enableSettingUrl: false,
 			outScreen: false
 		},
 		{
+			id: 21,
+			title: 'Memindai Barang',
 			urlScreen: '',
+			urlList: [],
 			alertUrlEorrTitle: '',
 			alertUrlErrorConnection: '',
-			alertUrlErrorCommon: '', id: 1,
-			title: 'Memindai Barang',
+			alertUrlErrorCommon: '',
 			urlScreen: '',
 			endPointSearch: searchText => `/item/search?asset_id=${encodeURIComponent(searchText)}`,
 			tableHeaders: [{
@@ -48,12 +52,14 @@ const selectIntegrationModuleScreen = (Device_ID) => {
 			enableSearch: true,
 			enableTable: true,
 			enableConfirm: false,
+			enableSettingUrl: false,
 			outScreen: false
 		},
 		{
-			id: 2,
+			id: 22,
 			title: 'Pengecekan Barang',
 			urlScreen: '',
+			urlList: [],
 			alertUrlEorrTitle: '',
 			alertUrlErrorConnection: '',
 			alertUrlErrorCommon: '',
@@ -72,14 +78,16 @@ const selectIntegrationModuleScreen = (Device_ID) => {
 			enableSearch: true,
 			enableTable: true,
 			enableConfirm: false,
+			enableSettingUrl: false,
 			outScreen: false
 		}
 	]
 
 	const deviceScreen = {
-		id: 3,
+		id: 23,
 		title: 'Gerbang Pemindaian',
 		urlScreen: '',
+		urlList: [],
 		alertUrlEorrTitle: '',
 		alertUrlErrorConnection: '',
 		alertUrlErrorCommon: '',
@@ -91,13 +99,15 @@ const selectIntegrationModuleScreen = (Device_ID) => {
 		enableSearch: true,
 		enableTable: false,
 		enableConfirm: false,
+		enableSettingUrl: false,
 		outScreen: false
 	}
 
 	const itamScreen = {
-		id: 4,
+		id: 24,
 		title: 'Aset Gudang',
 		urlScreen: ITAM_URL,
+		urlList: [],
 		alertUrlEorrTitle: ERROR_TITLE,
 		alertUrlErrorConnection: ERROR_CONNECTION,
 		alertUrlErrorCommon: ERROR_COMMON,
@@ -106,13 +116,15 @@ const selectIntegrationModuleScreen = (Device_ID) => {
 		enableSearch: false,
 		enableTable: false,
 		enableConfirm: false,
+		enableSettingUrl: false,
 		outScreen: true
 	}
 
 	const bleScreen = {
-		id: 5,
+		id: 25,
 		title: 'Penandaan',
 		urlScreen: BLE_URL,
+		urlList: [],
 		alertUrlEorrTitle: ERROR_TITLE,
 		alertUrlErrorConnection: ERROR_CONNECTION,
 		alertUrlErrorCommon: ERROR_COMMON,
@@ -121,6 +133,7 @@ const selectIntegrationModuleScreen = (Device_ID) => {
 		enableSearch: false,
 		enableTable: false,
 		enableConfirm: false,
+		enableSettingUrl: false,
 		outScreen: true
 	}
 
@@ -134,6 +147,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
 		id,
 		title,
 		urlScreen,
+		urlList,
 		alertUrlEorrTitle,
 		alertUrlErrorConnection,
 		alertUrlErrorCommon,
@@ -142,12 +156,14 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
 		enableSearch,
 		enableTable,
 		enableConfirm,
+		enableSettingUrl,
 		outScreen } = item
 	const onPress = () => {
 		return navigation.navigate('detail', {
 			id,
 			title,
 			urlScreen,
+			urlList,
 			alertUrlEorrTitle,
 			alertUrlErrorConnection,
 			alertUrlErrorCommon,
@@ -156,6 +172,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
 			enableSearch,
 			enableTable,
 			enableConfirm,
+			enableSettingUrl,
 			outScreen
 		})
 	}

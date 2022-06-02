@@ -4,38 +4,64 @@ import MenuScreen from '../menu-screen'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { useTheme } from 'react-native-paper'
 import decode from 'jwt-decode'
-import { TRACKING_3D_URL, ADMIN_URL } from 'react-native-dotenv'
+import { TRACKING_3D_URL, ADMIN_URL, BLE_URL, ITAM_URL, } from 'react-native-dotenv'
 import StylesKitchen from '../../styles-kitchen'
 
 const selectHomeScreen = (role) => {
   let homeScreen = [
     {
-      id: 0,
+      id: 10,
       title: 'Tracking 3D',
       urlScreen: TRACKING_3D_URL,
+      urlList: [],
+      enableSettingUrl: false,
       outScreen: true,
       integrationModuleScreen: false
     },
     {
-      id: 1,
+      id: 11,
       title: 'Admin',
       urlScreen: ADMIN_URL,
+      urlList: [],
+      enableSettingUrl: false,
       outScreen: true,
       integrationModuleScreen: false
     },
     {
-      id: 2,
+      id: 12,
       title: 'Integration Module',
       urlScreen: '',
+      urlList: [],
+      enableSettingUrl: false,
       outScreen: false,
       integrationModuleScreen: true
     }
   ]
 
   const superAdminScreen = {
-    id: 3,
+    id: 13,
     title: 'Setting',
     urlScreen: '',
+    urlList: [
+      {
+        name: 'tracking',
+        uri: TRACKING_3D_URL
+      },
+      {
+        name: 'admin',
+        uri: ADMIN_URL
+      },
+      {
+        name: 'itam',
+        uri: ITAM_URL
+      },
+      {
+        name: 'ble',
+        uri: BLE_URL
+      }
+    ],
+    enableSettingUrl: true,
+    enableConfirm: true,
     outScreen: false,
     integrationModuleScreen: false
   }
@@ -50,6 +76,9 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
     id,
     title,
     urlScreen,
+    urlList,
+    enableSettingUrl,
+    enableConfirm,
     outScreen,
     integrationModuleScreen
   } = item
@@ -74,6 +103,9 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
           id,
           title,
           urlScreen,
+          urlList,
+          enableSettingUrl,
+          enableConfirm,
           outScreen
         })
       }
