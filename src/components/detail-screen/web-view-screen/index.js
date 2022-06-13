@@ -2,17 +2,13 @@ import React, { useState } from 'react';
 import { Alert } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import { WebView } from 'react-native-webview';
+import { ERROR_TITLE, ERROR_CONNECTION, ERROR_COMMON } from 'react-native-dotenv'
 import LoadingScreen from '../../loading-screen';
 
-const OutScreen = () => {
+const WebViewScreen = () => {
 	const [loading, setLoading] = useState(false)
 	const route = useRoute()
-	const {
-		urlScreen,
-		alertUrlEorrTitle,
-		alertUrlErrorConnection,
-		alertUrlErrorCommon,
-	} = route.params
+	const { url_screen } = route.params
 
 	const onLoadStart = () => {
 		setLoading(true)
@@ -23,31 +19,31 @@ const OutScreen = () => {
 
 	const onError = () => {
 		Alert.alert(
-			alertUrlEorrTitle,
-			alertUrlErrorCommon
+			ERROR_TITLE,
+			ERROR_COMMON
 		)
 	}
 
 	const onHttpError = () => {
 		Alert.alert(
-			alertUrlEorrTitle,
-			alertUrlErrorConnection
+			ERROR_TITLE,
+			ERROR_CONNECTION
 		)
 	}
 
 	if (loading) {
 		return <LoadingScreen />
-	} else {
-		return (
-			<WebView
-				source={{ uri: urlScreen }}
-				// onLoadStart={onLoadStart}
-				// onLoad={onLoad}
-				onError={onError}
-				onHttpError={onHttpError}
-			/>
-		)
 	}
+
+	return (
+		<WebView
+			source={{ uri: url_screen }}
+			// onLoadStart={onLoadStart}
+			// onLoad={onLoad}
+			onError={onError}
+			onHttpError={onHttpError}
+		/>
+	)
 }
 
-export default OutScreen
+export default WebViewScreen

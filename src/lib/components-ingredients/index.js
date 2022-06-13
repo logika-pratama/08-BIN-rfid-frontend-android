@@ -1,6 +1,6 @@
 import React from 'react'
 import { Pressable, View, Text } from 'react-native'
-import { useTheme, TextInput as TextInputPaper } from 'react-native-paper'
+import { useTheme, TextInput as TextInputPaper, Snackbar } from 'react-native-paper'
 import StylesKitchen from '../../styles-kitchen'
 
 export function Button({ onPress, text, isDisabled, customButtonStyles, customTextStyles }) {
@@ -23,24 +23,48 @@ export function Button({ onPress, text, isDisabled, customButtonStyles, customTe
   )
 }
 
-export function Field({ name, uri, changeUrl }) {
+export function Field({ selectedIndex, selectedMenuId, selectedUrlScreen, selectedTitle, changeUrl, customFieldStyles }) {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
+  const fieldStyles = Styles.fieldStyles()
 
-  const handleChangeField = (e) => {
-    const text = e.nativeEvent.text
-    changeUrl(text)
+  const handleChangeField = (selectedIndex, selectedMenuId, selectedTitle, changeUrl) => (e) => {
+    const finalUrlScreen = e.nativeEvent.text
+    changeUrl(selectedIndex, selectedMenuId, selectedTitle, finalUrlScreen)
   }
 
   return (
-    <View>
+    <View style={fieldStyles.fieldContainer}>
       <TextInputPaper
+        style={[fieldStyles.fieldStyle, customFieldStyles]}
         name='url'
-        onChange={handleChangeField}
-        value={uri}
-        label={`URL ${name}`}
+        onChange={handleChangeField(selectedIndex, selectedMenuId, selectedTitle, changeUrl)}
+        value={selectedUrlScreen}
+        label={`URL ${selectedTitle}`}
         placeholder={'url'}
       />
+    </View>
+  )
+}
+
+export function Notification({ visible, children, message, duration, onDismiss, customNotificationStyle }) {
+  const theme = useTheme()
+  const Styles = new StylesKitchen(theme)
+  const notificationStyles = Styles.notificationStyles()
+
+  const handleDismiss = () => {
+    onDismiss()
+  }
+
+  return (
+    <View style={notificationStyles.notificationContainer}>
+      <Snackbar
+        style={[notificationStyles.notificationStyle, customNotificationStyle]}
+        visible={visible}
+        duration={duration}
+        onDismiss={handleDismiss}>
+        {children ? children : message}
+      </Snackbar>
     </View>
   )
 }

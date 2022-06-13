@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { Alert, View, Text, ScrollView } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
 import decode from 'jwt-decode'
-import InstanceApi from '../../../services'
+import { ERROR_TITLE } from 'react-native-dotenv'
+import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
-import { Button, Field } from '../../../lib/components-ingredients'
+import { getEndPointSearch } from '../../../lib/function-ingredients'
+import { Button, Field, Notification } from '../../../lib/components-ingredients'
+import LoadingScreen from '../../loading-screen'
 
 // for testing
 import DataStockTake from '../../../data-dummy/stock-take.json'
@@ -20,25 +23,33 @@ const RfidScreen = () => {
   const Styles = new StylesKitchen(theme)
   const [data, setData] = useState([])
   const [searchField, setSearchField] = useState('')
-  const [url, setUrl] = useState('')
   const [finalData, setFinalData] = useState([])
+  const [urlList, setUrlList] = useState([])
+  const [messageConfirm, setMessageConfirm] = useState('')
+  const [loadingConfirm, setLoadingConfirm] = useState(false)
+  const [loadingUrlList, setLoadingUrlList] = useState(false)
+
   const {
-    id,
     title,
-    urlList,
-    endPointSearch,
-    tableHeaders,
-    enableSearch,
-    enableTable,
-    enableConfirm,
-    enableSettingUrl,
+    table_headers,
+    table,
+    search_field,
+    confirm_button,
+    setting_url_form,
+    config_menu_rfid_screen,
     token
   } = route.params
-  const { Device_ID: deviceId } = decode(token)
-  const rfidScreenStyles = Styles.rfidScreenStyles(id)
 
-  const getEndPointSearch = searchText => endPointSearch(searchText)
-  const Api = new InstanceApi()
+  const { Device_ID: deviceId } = decode(token)
+  const rfidScreenStyles = Styles.rfidScreenStyles(config_menu_rfid_screen)
+
+  const enableStockOpname = config_menu_rfid_screen.enable_stock_opname
+  const enableScanItem = config_menu_rfid_screen.enable_scan_item
+  const enableScanMonitoring = config_menu_rfid_screen.enable_scan_monitoring
+  const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning
+  const enableSetting = config_menu_rfid_screen.enable_setting
+
+  const Service = new InstanceServices()
 
   const processToSendData = async searchField => {
     const lastCharSearchField = searchField.charAt(searchField.length - 1)
@@ -57,7 +68,7 @@ const RfidScreen = () => {
         )
         for (let i in filteredData) {
           const searchValue = filteredData[i]
-          await sendData(searchValue)
+          await sendData(config_menu_rfid_screen, searchValue)
         }
       }
 
@@ -66,12 +77,12 @@ const RfidScreen = () => {
     }
   }
 
-  const sendData = async (searchValue) => {
-    const finalEndpoint = getEndPointSearch(searchValue)
-    if (id === 23) {
-      await Api.detailSearchPost(finalEndpoint, token)
+  const sendData = async (config_menu_rfid_screen, searchValue) => {
+    const finalEndpoint = getEndPointSearch(config_menu_rfid_screen, searchValue)
+    if (enableGateScanning) {
+      await Service.detailSearchPost(finalEndpoint, token)
     } else {
-      const resp = await Api.detailSearchGet(finalEndpoint, token)
+      const resp = await Service.detailSearchGet(finalEndpoint, token)
 
       if (resp.status === 200) {
         const data = resp.data?.data
@@ -89,21 +100,65 @@ const RfidScreen = () => {
     setSearchField(text)
   }
 
-  const handleChangeUrl = (text) => {
-    setUrl(text)
+  const handleChangeUrl = (selectedIndex, selectedMenuId, selectedTitle, finalUrlScreen) => {
+
+    setUrlList(prevData => {
+      const newData = [...prevData]
+
+      newData[selectedIndex] = {
+        'menu_id': selectedMenuId,
+        'title': selectedTitle,
+        'url_screen': finalUrlScreen
+      }
+
+      return newData
+    })
   }
 
   const handleConfrim = async () => {
-    if (finalData) {
-      const tags = finalData.map(({ tag_number }) => tag_number)
-      const sendData = [...tags, deviceId].toString()
-      const finalSendData = { 'tag': sendData }
-      const resp = await Api.detailConfirm(finalSendData, token)
+    if (enableGateScanning) {
+      if (finalData) {
+        const tags = finalData.map(({ tag_number }) => tag_number)
+        const sendData = [...tags, deviceId].toString()
+        const finalSendData = { 'tag': sendData }
+        const resp = await Service.detailConfirm(finalSendData, token)
 
-      if (resp.status === 200) {
-        setFinalData([])
+        if (resp.status === 200) {
+          setFinalData([])
+        }
+      }
+    } else if (enableSetting) {
+      if (urlList) {
+        const resp = await Service.uriUpdate(urlList, token)
+        if (resp.status) {
+          if (resp.status === 200) {
+            const message = resp.data?.message
+            setMessageConfirm(message)
+          }
+          else {
+            if (resp.status === 401) {
+              const message = resp.data.message
+              Alert.alert(
+                ERROR_TITLE,
+                message
+              )
+            }
+          }
+        }
+        else {
+          const message = resp
+          Alert.alert(
+            ERROR_TITLE,
+            message
+          )
+        }
+        setLoadingConfirm(false)
       }
     }
+  }
+
+  const handleDismissNotification = () => {
+    setMessageConfirm('')
   }
 
   useEffect(() => {
@@ -118,31 +173,68 @@ const RfidScreen = () => {
     }
   }, [searchField])
 
+  useEffect(() => {
+    const getUrlList = async () => {
+      setLoadingUrlList(true)
+      const resp = await Service.detailUrlList(token)
+
+      if (resp.status) {
+        if (resp.status === 200) {
+          const data = resp.data?.data
+          setUrlList(data)
+        }
+        else {
+          if (resp.status === 401) {
+            const message = resp.data.message
+            Alert.alert(
+              ERROR_TITLE,
+              message
+            )
+          }
+        }
+      }
+      else {
+        const message = resp
+        Alert.alert(
+          ERROR_TITLE,
+          message
+        )
+      }
+      setLoadingUrlList(false)
+    }
+
+    getUrlList()
+  }, [])
+
   // useEffect(() => {
-  // 	if (data) {
-  // 		data &&
-  // 			setFinalData(prevData => {
-  // 				const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
-  // 				return [...prevData, ...newData]
-  // 			})
-  // 	}
+  //   if (data) {
+  //     data &&
+  //       setFinalData(prevData => {
+  //         const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
+  //         return [...prevData, ...newData]
+  //       })
+  //   }
   // }, [data]) // for running
 
   useEffect(() => {
-    if (id === 20) {
+    if (enableStockOpname) {
       setFinalData(DataStockTake)
-    } else if (id === 21) {
+    } else if (enableScanItem) {
       setFinalData(DataScanningItem)
-    } else if (id === 22) {
+    } else if (enableScanMonitoring) {
       setFinalData(DataScanningMonitoring)
     }
   }, []) // for testing
 
   const countScan = finalData ? finalData.length : 0
 
+  if (loadingUrlList || loadingConfirm) {
+    return <LoadingScreen />
+  }
+
   return (
     <View style={rfidScreenStyles.rfidScreenContainer} >
-      {enableSearch &&
+      {search_field &&
         <View style={rfidScreenStyles.searchingContainer}>
           <TextInputPaper
             name='search'
@@ -168,110 +260,37 @@ const RfidScreen = () => {
       </View> */}
 
       {
-        enableTable &&
+        table &&
         <ScrollView style={rfidScreenStyles.tableContainer}>
 
           <DataTable>
 
             {/* Table Header */}
-            {tableHeaders.map((tableHeader) => {
-              const keyNameArr = Object.getOwnPropertyNames(tableHeader)
-              return <DataTable.Header style={rfidScreenStyles.tableHeaders}>
-                {keyNameArr.map((keyName, idx) => {
-                  // cellsStyle must by array (containt custom style each cell) or null.
-                  const cellsStyle = keyName === 'noRfid' && [rfidScreenStyles.noRfidCellWidth]
-                  return <DataTable.Title
-                    key={idx}
-                    style={cellsStyle}
-                  >
-                    <Text
-                      key={id}
-                      style={rfidScreenStyles.tableHeadersTitleText}>
-                      {tableHeader[keyName]}
-                    </Text>
-                  </DataTable.Title>
-                })}
-                <DataTable.Title style={rfidScreenStyles.countCellWidth}>
+            <DataTable.Header style={rfidScreenStyles.tableHeaders}>
+              {table_headers.map(({ label: col }, idx) => {
+                return <DataTable.Title key={idx} style={rfidScreenStyles.noRfidCellWidth}>
                   <Text style={rfidScreenStyles.tableHeadersTitleText}>
-                    Total: {countScan}
+                    {col}
                   </Text>
                 </DataTable.Title>
-              </DataTable.Header>
-            })}
+              })}
+
+              <DataTable.Title style={rfidScreenStyles.countCellWidth}>
+                <Text style={rfidScreenStyles.tableHeadersTitleText}>
+                  Total: {countScan}
+                </Text>
+              </DataTable.Title>
+            </DataTable.Header>
 
             {/* Table Body */}
 
-            {/* Catat Stok */}
             {
-              id === 20 &&
               finalData?.map((row, idx) =>
                 <DataTable.Row key={idx}>
-                  <DataTable.Cell style={rfidScreenStyles.noRfidCellWidth}>
-                    {row.asset_id}
-                  </DataTable.Cell>
-                  <DataTable.Cell>
-                    {row.name_asset}
-                  </DataTable.Cell>
-                  <DataTable.Cell>
-                    {row.code_sakti}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={rfidScreenStyles.countCellWidth}>
-                    {''}
-                  </DataTable.Cell>
-                </DataTable.Row>
-              )
-            }
-
-            {/* Memindai Barang */}
-            {
-              id === 21 &&
-              finalData?.map((row, idx) =>
-                <DataTable.Row key={idx}>
-                  <DataTable.Cell style={rfidScreenStyles.noRfidCellWidth}>
-                    {row.asset_id}
-                  </DataTable.Cell>
-                  <DataTable.Cell>
-                    {row.name_asset}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={rfidScreenStyles.countCellWidth}>
-                    {''}
-                  </DataTable.Cell>
-                </DataTable.Row>
-              )
-            }
-
-            {/* Pengecekan Barang */}
-            {
-              id === 22 &&
-              finalData?.map((row, idx) =>
-                <DataTable.Row key={idx}>
-                  <DataTable.Cell style={rfidScreenStyles.noRfidCellWidth}>
-                    {row.asset_id}
-                  </DataTable.Cell>
-                  <DataTable.Cell>
-                    {row.name_asset}
-                  </DataTable.Cell>
-                  <DataTable.Cell>
-                    {row.location_asset}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={rfidScreenStyles.countCellWidth}>
-                    {''}
-                  </DataTable.Cell>
-                </DataTable.Row>
-              )
-            }
-
-            {/* Gerbang Pemindaian */}
-            {
-              id === 23 &&
-              finalData?.map((row, idx) =>
-                <DataTable.Row key={idx}>
-                  <DataTable.Cell style={rfidScreenStyles.noRfidCellWidth}>
-                    {row.tag_number}
-                  </DataTable.Cell>
-                  <DataTable.Cell>
-                    {row.Name}
-                  </DataTable.Cell>
+                  {table_headers?.map(({ name: col }, idx) =>
+                    <DataTable.Cell key={idx} style={rfidScreenStyles.noRfidCellWidth}>
+                      {row[col]}
+                    </DataTable.Cell>)}
                   <DataTable.Cell style={rfidScreenStyles.countCellWidth}>
                     {''}
                   </DataTable.Cell>
@@ -280,7 +299,7 @@ const RfidScreen = () => {
             }
 
             {/* Table Footer */}
-            {/* <DataTable.Header style={[rfidScreenStyles.tableHeaders, { flex: 1, flexDirection: 'row' }]}>
+            {/* <DataTable.Header style={[rfidScreenStyles.table_headers, { flex: 1, flexDirection: 'row' }]}>
             <DataTable.Cell numeric style={[rfidScreenStyles.cellsFooter, { flex: 1, flexDirection: 'row', textAlign: 'right' }]}>
               <View style={{ flex: 1, flexDirection: 'row' }}>
                 <Text style={rfidScreenStyles.tableFootersTitleText}>
@@ -296,17 +315,26 @@ const RfidScreen = () => {
       }
 
       {
-        enableSettingUrl && urlList &&
-        urlList.map((row, idx) => {
-          return <View>
-            <Field key={idx} name={row.name} uri={row.uri} changeUrl={handleChangeUrl} />
-          </View>
+        setting_url_form && urlList &&
+        urlList?.map((row, idx) => {
+          return <Field
+            key={idx}
+            selectedIndex={idx}
+            selectedMenuId={row.menu_id}
+            selectedTitle={row.title}
+            selectedUrlScreen={row.url_screen}
+            changeUrl={handleChangeUrl} />
         })
       }
 
       {
-        enableConfirm &&
+        confirm_button &&
         <Button onPress={handleConfrim} text='Konfirmasi' customButtonStyles={rfidScreenStyles.buttonStyle} />
+      }
+
+      {
+        !!messageConfirm &&
+        <Notification visible={!!messageConfirm} duration={3000} message={messageConfirm} onDismiss={handleDismissNotification} />
       }
 
     </View >

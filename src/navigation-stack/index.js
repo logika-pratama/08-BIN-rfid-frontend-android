@@ -1,4 +1,4 @@
-import React, { Node } from 'react'
+import React from 'react'
 import { SafeAreaView } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -73,11 +73,11 @@ const LoginStack = () => {
 
 const NavigationStack = () => {
   const theme = useTheme()
-  const { authData, loading } = useAuth()
+  const { authData, loadingAuth } = useAuth()
   const Styles = new StylesKitchen(theme)
   const navigationStackStyles = Styles.navigationStackStyles()
 
-  if (loading) {
+  if (loadingAuth) {
     return <LoadingScreen />
   }
 

@@ -42,6 +42,29 @@ export default class StylesKitchen {
     }
   })
 
+  fieldStyles = () => this.createStyles({
+    fieldContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 5
+    },
+    fieldStyle: {
+      width: '90%',
+      overflow: 'hidden',
+    }
+  })
+  notificationStyles = () => this.createStyles({
+    notificationContainer: {
+      display: 'flex',
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    notificationStyle: {
+    }
+  })
+
   loginScreenStyles = () => this.createStyles({
     loginScreenContainer: {
       display: 'flex',
@@ -139,17 +162,22 @@ export default class StylesKitchen {
     }
   })
 
-  rfidScreenStyles = (id) => {
+  rfidScreenStyles = (config_menu_rfid_screen) => {
     let noRfidWidth = null
     let countWidth = null
 
-    if (id === 20) {
+    const enableStockOpname = config_menu_rfid_screen.enable_stock_opname
+    const enableScanItem = config_menu_rfid_screen.enable_scan_item
+    const enableScanMonitoring = config_menu_rfid_screen.enable_scan_monitoring
+    const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning
+
+    if (enableStockOpname) {
       noRfidWidth = 1.6
       countWidth = .5
-    } else if (id === 21 || id === 23) {
+    } else if (enableScanItem || enableGateScanning) {
       noRfidWidth = 1
       countWidth = .3
-    } else if (id === 22) {
+    } else if (enableScanMonitoring) {
       noRfidWidth = 1.8
       countWidth = .6
     }

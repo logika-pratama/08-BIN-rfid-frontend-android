@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import decode from 'jwt-decode'
+import InstanceServices from '../services'
 
 type AuthData = {
   jwtToken: string
@@ -10,7 +11,7 @@ type tokenFunction = Promise<void>
 
 type AuthContextData = {
   authData: AuthData,
-  loading: boolean,
+  loadingAuth: boolean,
   saveToken: tokenFunction,
   deleteToken: tokenFunction
 }
@@ -45,7 +46,7 @@ const AuthContex = createContext<AuthContextData>({} as AuthContextData)
 
 const AuthProvider: React.FC = ({ children }) => {
   const [authData, setAuthData] = useState<AuthData>()
-  const [loading, setLoading] = useState(true)
+  const [loadingAuth, setLoadingAuth] = useState(true)
 
   useEffect(() => {
     loadToken()
@@ -62,7 +63,7 @@ const AuthProvider: React.FC = ({ children }) => {
     } catch (err) {
       console.log('Failed get token from async storage', err)
     } finally {
-      setLoading(false)
+      setLoadingAuth(false)
     }
   }
 
@@ -77,19 +78,19 @@ const AuthProvider: React.FC = ({ children }) => {
   }
 
   async function deleteToken(): tokenFunction {
-    setLoading(true)
+    setLoadingAuth(true)
     try {
       setAuthData(undefined)
     } catch (err) {
       console.error('Failed delete token in async storage', err)
     } finally {
       await AsyncStorage.removeItem('@jwtToken')
-      setLoading(false)
+      setLoadingAuth(false)
     }
   }
 
   return (
-    <AuthContex.Provider value={{ authData, loading, saveToken, deleteToken }}>
+    <AuthContex.Provider value={{ authData, loadingAuth, saveToken, deleteToken }}>
       {children}
     </AuthContex.Provider>
   )

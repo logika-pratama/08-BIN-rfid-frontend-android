@@ -5,7 +5,7 @@ import { ERROR_TITLE } from 'react-native-dotenv'
 import { useAuth } from '../../contexts'
 import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
-import InstanceApi from '../../services'
+import InstanceServices from '../../services'
 import LoadingScreen from '../loading-screen'
 import LogistikPolri from '../../assets/images/logo_divtik_small.png'
 
@@ -21,7 +21,7 @@ const LoginScreen = () => {
   const Styles = new StylesKitchen(theme)
   const loginScreenStyles = Styles.loginScreenStyles()
 
-  const Api = new InstanceApi()
+  const Service = new InstanceServices()
 
   const handleChangeEmail = text => {
     setEmail(text)
@@ -38,7 +38,7 @@ const LoginScreen = () => {
   const handleSubmit = async () => {
     setLoadingLogin(true)
     const data = { email, password }
-    const resp = await Api.login(data)
+    const resp = await Service.login(data)
 
     if (resp.status) {
       if (resp.status === 200) {
