@@ -17,6 +17,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
     table,
     table_headers,
     search_field,
+    box,
     setting_url_form,
     confirm_button,
     config_menu_rfid_screen,
@@ -38,6 +39,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
           table,
           table_headers,
           search_field,
+          box,
           setting_url_form,
           confirm_button,
           config_menu_rfid_screen

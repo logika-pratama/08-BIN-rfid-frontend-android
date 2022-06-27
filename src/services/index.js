@@ -1,10 +1,10 @@
 import axios from 'axios'
-import { API_URL, ERROR_CONNECTION } from 'react-native-dotenv'
+import { API_URL, TIME_OUT, ERROR_CONNECTION } from 'react-native-dotenv'
 
 export default class InstanceServices {
   instance = axios.create({
     baseURL: API_URL,
-    timeout: 1000,
+    timeout: Number(TIME_OUT),
     headers: {
       'Accept-Language': 'id',
     }

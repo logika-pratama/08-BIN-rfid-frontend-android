@@ -12,10 +12,12 @@ const renderItem = (navigation, integrationModuleScreenStyles) => ({ item }) => 
   const {
     id,
     title,
+    integration_module_screen,
     rfid_screen,
     table,
     table_headers,
     search_field,
+    box,
     confirm_button,
     setting_url_form,
     config_menu_rfid_screen,
@@ -30,6 +32,7 @@ const renderItem = (navigation, integrationModuleScreenStyles) => ({ item }) => 
       table,
       table_headers,
       search_field,
+      box,
       setting_url_form,
       confirm_button,
       config_menu_rfid_screen,
@@ -37,11 +40,12 @@ const renderItem = (navigation, integrationModuleScreenStyles) => ({ item }) => 
     })
   }
 
-  return (
-    <Pressable style={integrationModuleScreenStyles.homeButton} onPress={onPress}>
-      <MenuScreen title={item.title} />
-    </Pressable>
-  )
+  if (integration_module_screen)
+    return (
+      <Pressable style={integrationModuleScreenStyles.homeButton} onPress={onPress}>
+        <MenuScreen title={item.title} />
+      </Pressable>
+    )
 }
 
 const IntegrationModuleScreen = () => {

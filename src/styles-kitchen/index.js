@@ -54,6 +54,24 @@ export default class StylesKitchen {
       overflow: 'hidden',
     }
   })
+
+  boxStyles = () => this.createStyles({
+    boxContainer: {
+      display: 'flex',
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      marginRight: 10,
+      marginBottom: 15
+    },
+    boxStyle: {
+      padding: 8,
+      height: 40,
+      width: 80,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  })
+
   notificationStyles = () => this.createStyles({
     notificationContainer: {
       display: 'flex',
@@ -186,7 +204,7 @@ export default class StylesKitchen {
       rfidScreenContainer: {
         display: 'flex',
         flex: 1,
-        marginTop: 48,
+        // marginTop: 48,
         marginLeft: 2,
         marginRight: 2,
         backgroundColor: this.colors?.white,
@@ -194,6 +212,7 @@ export default class StylesKitchen {
       searchingContainer: {
         display: 'flex',
         flexDirection: 'row',
+        marginTop: 40,
         marginLeft: 16,
         marginBottom: 24
       },
@@ -214,7 +233,8 @@ export default class StylesKitchen {
         backgroundColor: this.colors?.accent
       },
       boxText: {
-        color: this.colors.white
+        color: this.colors.black,
+        fontWeight: '600'
       },
       feildsStyle: {
         width: '70%',

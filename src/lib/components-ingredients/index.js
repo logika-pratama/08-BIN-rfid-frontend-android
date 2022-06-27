@@ -1,6 +1,6 @@
 import React from 'react'
 import { Pressable, View, Text } from 'react-native'
-import { useTheme, TextInput as TextInputPaper, Snackbar } from 'react-native-paper'
+import { useTheme, TextInput as TextInputPaper, Snackbar, Surface as SurfacePaper } from 'react-native-paper'
 import StylesKitchen from '../../styles-kitchen'
 
 export function Button({ onPress, text, isDisabled, customButtonStyles, customTextStyles }) {
@@ -65,6 +65,20 @@ export function Notification({ visible, children, message, duration, onDismiss, 
         onDismiss={handleDismiss}>
         {children ? children : message}
       </Snackbar>
+    </View>
+  )
+}
+
+export function Surface({ children, elevation, customBoxStyle }) {
+  const theme = useTheme()
+  const Styles = new StylesKitchen(theme)
+  const boxStyles = Styles.boxStyles()
+
+  return (
+    <View style={[boxStyles.boxContainer, customBoxStyle]}>
+      <SurfacePaper style={boxStyles.boxStyle} elevation={elevation}>
+        {children}
+      </SurfacePaper>
     </View>
   )
 }

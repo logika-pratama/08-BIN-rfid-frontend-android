@@ -7,11 +7,12 @@ import { ERROR_TITLE } from 'react-native-dotenv'
 import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
 import { getEndPointSearch } from '../../../lib/function-ingredients'
-import { Button, Field, Notification } from '../../../lib/components-ingredients'
+import { Surface as Box, Button, Field, Notification } from '../../../lib/components-ingredients'
 import LoadingScreen from '../../loading-screen'
 
 // for testing
 import DataStockTake from '../../../data-dummy/stock-take.json'
+import DataMaterialTest from '../../../data-dummy/material-test.json'
 import DataScanningItem from '../../../data-dummy/scanning-item.json'
 import DataScanningMonitoring from '../../../data-dummy/scanning-monitoring.json'
 // end 
@@ -31,9 +32,10 @@ const RfidScreen = () => {
 
   const {
     title,
+    search_field,
+    box,
     table_headers,
     table,
-    search_field,
     confirm_button,
     setting_url_form,
     config_menu_rfid_screen,
@@ -43,11 +45,12 @@ const RfidScreen = () => {
   const { Device_ID: deviceId } = decode(token)
   const rfidScreenStyles = Styles.rfidScreenStyles(config_menu_rfid_screen)
 
-  const enableStockOpname = config_menu_rfid_screen.enable_stock_opname
-  const enableScanItem = config_menu_rfid_screen.enable_scan_item
-  const enableScanMonitoring = config_menu_rfid_screen.enable_scan_monitoring
-  const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning
-  const enableSetting = config_menu_rfid_screen.enable_setting
+  const enableStockOpname = config_menu_rfid_screen.enable_stock_opname || false
+  const enableMaterialTest = config_menu_rfid_screen.enable_material_test || false
+  const enableScanItem = config_menu_rfid_screen.enable_scan_item || false
+  const enableScanMonitoring = config_menu_rfid_screen.enable_scan_monitoring || false
+  const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning || false
+  const enableSetting = config_menu_rfid_screen.enable_setting || false
 
   const Service = new InstanceServices()
 
@@ -203,7 +206,9 @@ const RfidScreen = () => {
       setLoadingUrlList(false)
     }
 
-    getUrlList()
+    if (enableSetting) {
+      getUrlList()
+    }
   }, [])
 
   // useEffect(() => {
@@ -219,6 +224,8 @@ const RfidScreen = () => {
   useEffect(() => {
     if (enableStockOpname) {
       setFinalData(DataStockTake)
+    } else if (enableMaterialTest) {
+      setFinalData(DataMaterialTest)
     } else if (enableScanItem) {
       setFinalData(DataScanningItem)
     } else if (enableScanMonitoring) {
@@ -251,13 +258,13 @@ const RfidScreen = () => {
         </View>
       }
 
-      {/* <View style={rfidScreenStyles.boxContainer}>
-        <View style={rfidScreenStyles.boxModel}>
+      {box &&
+        <Box elevation={4}>
           <Text style={rfidScreenStyles.boxText}>
             Total: {countScan}
           </Text>
-        </View>
-      </View> */}
+        </Box>
+      }
 
       {
         table &&
@@ -268,46 +275,26 @@ const RfidScreen = () => {
             {/* Table Header */}
             <DataTable.Header style={rfidScreenStyles.tableHeaders}>
               {table_headers.map(({ label: col }, idx) => {
-                return <DataTable.Title key={idx} style={rfidScreenStyles.noRfidCellWidth}>
+                return <DataTable.Title key={idx}>
                   <Text style={rfidScreenStyles.tableHeadersTitleText}>
                     {col}
                   </Text>
                 </DataTable.Title>
               })}
-
-              <DataTable.Title style={rfidScreenStyles.countCellWidth}>
-                <Text style={rfidScreenStyles.tableHeadersTitleText}>
-                  Total: {countScan}
-                </Text>
-              </DataTable.Title>
             </DataTable.Header>
 
             {/* Table Body */}
-
             {
               finalData?.map((row, idx) =>
                 <DataTable.Row key={idx}>
-                  {table_headers?.map(({ name: col }, idx) =>
-                    <DataTable.Cell key={idx} style={rfidScreenStyles.noRfidCellWidth}>
+                  {table_headers?.map(({ name: col }, idx) => {
+                    return <DataTable.Cell key={idx}>
                       {row[col]}
-                    </DataTable.Cell>)}
-                  <DataTable.Cell style={rfidScreenStyles.countCellWidth}>
-                    {''}
-                  </DataTable.Cell>
+                    </DataTable.Cell>
+                  })}
                 </DataTable.Row>
               )
             }
-
-            {/* Table Footer */}
-            {/* <DataTable.Header style={[rfidScreenStyles.table_headers, { flex: 1, flexDirection: 'row' }]}>
-            <DataTable.Cell numeric style={[rfidScreenStyles.cellsFooter, { flex: 1, flexDirection: 'row', textAlign: 'right' }]}>
-              <View style={{ flex: 1, flexDirection: 'row' }}>
-                <Text style={rfidScreenStyles.tableFootersTitleText}>
-                  Total: {countScan}
-                </Text>
-              </View>
-            </DataTable.Cell>
-          </DataTable.Header> */}
 
           </DataTable>
 
