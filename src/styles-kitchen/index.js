@@ -17,9 +17,13 @@ export default class StylesKitchen {
 
   loadingStyles = () => this.createStyles({
     loadingContainer: {
+      display: 'flex',
       flex: 1,
+      position: 'absolute',
+      height: '100%',
+      width: '100%',
       justifyContent: 'center',
-      backgroundColor: this.colors?.white,
+      backgroundColor: this.colors?.accent,
     }
   })
 
@@ -268,5 +272,12 @@ export default class StylesKitchen {
       }
     })
   }
+
+  webViewStyles = () => this.createStyles({
+    webViewContainer: {
+      display: 'flex',
+      flex: 1,
+    }
+  })
 
 }

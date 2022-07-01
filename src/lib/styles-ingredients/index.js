@@ -2,7 +2,7 @@ import { configureFonts, DefaultTheme } from 'react-native-paper'
 
 export const Colors = {
   primary: '#342A29',
-  secondary: 'yellow',
+  secondary: '#ffd700',
   accent: '#504141',
   white: '#eeeeee',
   lightGray: '#D3D3D3',
