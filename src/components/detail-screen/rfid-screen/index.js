@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Alert, View, Text, ScrollView } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
-import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
+import { TextInput as TextInputPaper, useTheme, DataTable, Modal, Provider, Portal } from 'react-native-paper'
 import decode from 'jwt-decode'
 import { ERROR_TITLE } from 'react-native-dotenv'
 import InstanceServices from '../../../services'
@@ -29,6 +29,7 @@ const RfidScreen = () => {
   const [messageConfirm, setMessageConfirm] = useState('')
   const [loadingConfirm, setLoadingConfirm] = useState(false)
   const [loadingUrlList, setLoadingUrlList] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
 
   const {
     title,
@@ -86,12 +87,15 @@ const RfidScreen = () => {
       await Service.detailSearchPost(finalEndpoint, token)
     } else {
       const resp = await Service.detailSearchGet(finalEndpoint, token)
-
       if (resp.status === 200) {
         const data = resp.data?.data
         setData(data)
       }
     }
+  }
+
+  const handlePressRow = () => {
+    setOpenModal(true)
   }
 
   const handleFocus = (e) => {
@@ -211,26 +215,30 @@ const RfidScreen = () => {
     }
   }, [])
 
-  // useEffect(() => {
-  //   if (data) {
-  //     data &&
-  //       setFinalData(prevData => {
-  //         const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
-  //         return [...prevData, ...newData]
-  //       })
-  //   }
-  // }, [data]) // for running
+  useEffect(() => {
+    if (data) {
+
+      if (!enableStockOpname || !enableMaterialTest) {
+        data &&
+          setFinalData(prevData => {
+            const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
+            return [...prevData, ...newData]
+          })
+      } // stockOpname and materialTest still using testing (dummy)
+    }
+  }, [data]) // for running
 
   useEffect(() => {
     if (enableStockOpname) {
       setFinalData(DataStockTake)
     } else if (enableMaterialTest) {
       setFinalData(DataMaterialTest)
-    } else if (enableScanItem) {
-      setFinalData(DataScanningItem)
-    } else if (enableScanMonitoring) {
-      setFinalData(DataScanningMonitoring)
     }
+    // else if (enableScanItem) {
+    //   setFinalData(DataScanningItem)
+    // } else if (enableScanMonitoring) {
+    //   setFinalData(DataScanningMonitoring)
+    // }
   }, []) // for testing
 
   const countScan = finalData ? finalData.length : 0
@@ -239,8 +247,17 @@ const RfidScreen = () => {
     return <LoadingScreen />
   }
 
+  const containerStyle = { backgroundColor: 'white', padding: 20 };
+
   return (
     <View style={rfidScreenStyles.rfidScreenContainer} >
+      {/* <Modal visible={openModal}
+        // onDismiss={hideModal} 
+        contentContainerStyle={containerStyle}
+      >
+        <Text>Example Modal.  Click outside this area to dismiss.</Text>
+      </Modal> */}
+
       {search_field &&
         <View style={rfidScreenStyles.searchingContainer}>
           <TextInputPaper
@@ -286,10 +303,12 @@ const RfidScreen = () => {
             {/* Table Body */}
             {
               finalData?.map((row, idx) =>
-                <DataTable.Row key={idx}>
+                <DataTable.Row key={idx} onPress={handlePressRow}>
                   {table_headers?.map(({ name: col }, idx) => {
                     return <DataTable.Cell key={idx}>
-                      {row[col]}
+                      <Text>
+                        {row[col]}
+                      </Text>
                     </DataTable.Cell>
                   })}
                 </DataTable.Row>
