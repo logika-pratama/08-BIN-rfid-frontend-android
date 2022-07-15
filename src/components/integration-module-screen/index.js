@@ -17,6 +17,7 @@ const renderItem = (navigation, integrationModuleScreenStyles) => ({ item }) => 
     table,
     table_headers,
     search_field,
+    dropdown,
     box,
     confirm_button,
     setting_url_form,
@@ -32,6 +33,7 @@ const renderItem = (navigation, integrationModuleScreenStyles) => ({ item }) => 
       table,
       table_headers,
       search_field,
+      dropdown,
       box,
       setting_url_form,
       confirm_button,
@@ -58,12 +60,12 @@ const IntegrationModuleScreen = () => {
   const integrationModuleScreenStyles = Styles.integrationModuleScreenStyles()
   const { token } = route.params
 
-  const Service = new InstanceServices()
+  const RfidService = new InstanceServices()
 
   useEffect(() => {
     const getIntegrationModuleMenuList = async () => {
       setLoadingMenu(true)
-      const resp = await Service.integrationModuleMenuList(token)
+      const resp = await RfidService.integrationModuleMenuList(token)
 
       if (resp.status) {
         if (resp.status === 200) {

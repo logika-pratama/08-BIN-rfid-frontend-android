@@ -1,14 +1,27 @@
 import axios from 'axios'
-import { API_URL, TIME_OUT, ERROR_CONNECTION } from 'react-native-dotenv'
+import { RFID_API_URL, RFID_TIME_OUT, ERROR_CONNECTION } from 'react-native-dotenv'
 
 export default class InstanceServices {
-  instance = axios.create({
-    baseURL: API_URL,
-    timeout: Number(TIME_OUT),
-    headers: {
-      'Accept-Language': 'id',
-    }
-  })
+  constructor(anotherApiUrl, anotherTimeOut, anotherApiKey = null) {
+    this.initInstance(anotherApiUrl, anotherTimeOut, anotherApiKey)
+  }
+
+  apiKey(anotherApiKey) {
+    return anotherApiKey ? {
+      'apikey': anotherApiKey
+    } : {}
+  }
+
+  initInstance(anotherApiUrl, anotherTimeOut, anotherApiKey) {
+    this.instance = axios.create({
+      baseURL: anotherApiUrl || RFID_API_URL,
+      timeout: Number(anotherTimeOut || RFID_TIME_OUT),
+      headers: {
+        'Accept-Language': 'id',
+        ...this.apiKey(anotherApiKey)
+      }
+    })
+  }
 
   async login(data) {
     try {
@@ -64,7 +77,7 @@ export default class InstanceServices {
     }
   }
 
-  async detailSearchGet(endPointSearch, token) {
+  async searchGet(endPointSearch, token) {
     this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
     try {
@@ -78,7 +91,7 @@ export default class InstanceServices {
     }
   }
 
-  async detailSearchPost(endPointSearch, token) {
+  async searchAdd(endPointSearch, token) {
     this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
     try {
@@ -92,11 +105,11 @@ export default class InstanceServices {
     }
   }
 
-  async detailSearchPost(endPointSearch, token) {
+  async detailSPrintList(endPointSPrint, token) {
     this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
     try {
-      return await this.instance.post(endPointSearch)
+      return await this.instance.get(endPointSPrint)
     }
     catch (err) {
       if (err.response) {

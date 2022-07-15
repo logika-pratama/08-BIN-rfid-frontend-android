@@ -16,6 +16,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
     rfid_screen,
     table,
     table_headers,
+    dropdown,
     search_field,
     box,
     setting_url_form,
@@ -38,6 +39,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
           rfid_screen,
           table,
           table_headers,
+          dropdown,
           search_field,
           box,
           setting_url_form,
@@ -73,7 +75,7 @@ const HomeScreen = () => {
   const homeScreenStyles = Styles.homeScreenStyles()
   const { token } = route.params
 
-  const Service = new InstanceServices()
+  const RfidService = new InstanceServices()
 
   useEffect(() => {
     if (homeMenu) {
@@ -97,7 +99,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const getHomeMenuList = async () => {
       setLoadingMenu(true)
-      const resp = await Service.homeMenuList(token)
+      const resp = await RfidService.homeMenuList(token)
 
       if (resp.status) {
         if (resp.status === 200) {

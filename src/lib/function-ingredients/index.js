@@ -1,4 +1,4 @@
-export function getEndPointSearch(config_menu_rfid_screen, searchValue) {
+function getEndPointSearch(config_menu_rfid_screen, searchValue, selectedSPrint = null) {
 
   const enableStockOpname = config_menu_rfid_screen.enable_stock_opname || false
   const enableMaterialTest = config_menu_rfid_screen.enable_material_test || false
@@ -9,7 +9,7 @@ export function getEndPointSearch(config_menu_rfid_screen, searchValue) {
   let endPoint = ''
 
   if (enableStockOpname) {
-    endPoint = `/stoktake?tag_number=${encodeURIComponent(searchValue)}`
+    endPoint = `/stoktake?tag_number=${encodeURIComponent(searchValue)}&sprint=${encodeURIComponent(selectedSPrint)}`
   } else if (enableMaterialTest) {
     endPoint = `/material_test?tag_number=${encodeURIComponent(searchValue)}`
   } else if (enableScanItem) {
@@ -22,3 +22,20 @@ export function getEndPointSearch(config_menu_rfid_screen, searchValue) {
 
   return endPoint
 }
+
+function getEndPointSPrint(config_menu_rfid_screen) {
+  const enableStockOpname = config_menu_rfid_screen.enable_stock_opname || false
+  const enableMaterialTest = config_menu_rfid_screen.enable_material_test || false
+
+  let endPoint = ''
+
+  if (enableStockOpname) {
+    endPoint = '/stock_opname/list'
+  } else if (enableMaterialTest) {
+    endPoint = '/uji_mat/list'
+  }
+
+  return endPoint
+}
+
+export { getEndPointSearch, getEndPointSPrint }

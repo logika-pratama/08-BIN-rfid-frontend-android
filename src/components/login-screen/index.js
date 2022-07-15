@@ -21,7 +21,7 @@ const LoginScreen = () => {
   const Styles = new StylesKitchen(theme)
   const loginScreenStyles = Styles.loginScreenStyles()
 
-  const Service = new InstanceServices()
+  const RfidService = new InstanceServices()
 
   const handleChangeEmail = text => {
     setEmail(text)
@@ -38,7 +38,7 @@ const LoginScreen = () => {
   const handleSubmit = async () => {
     setLoadingLogin(true)
     const data = { email, password }
-    const resp = await Service.login(data)
+    const resp = await RfidService.login(data)
 
     if (resp.status) {
       if (resp.status === 200) {

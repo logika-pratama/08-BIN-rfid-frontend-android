@@ -220,6 +220,13 @@ export default class StylesKitchen {
         marginLeft: 16,
         marginBottom: 24
       },
+      searchingContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginTop: 40,
+        marginLeft: 16,
+        marginBottom: 24
+      },
       boxContainer: {
         display: 'flex',
         flexDirection: 'row',
