@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { Alert, View, Text, ScrollView } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
-import { TextInput as TextInputPaper, useTheme, DataTable, Modal, Provider, Portal } from 'react-native-paper'
+import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
+import Dropdown from 'react-native-paper-dropdown'
 import decode from 'jwt-decode'
 import { ITAM_API_URL, ITAM_TIME_OUT, ITAM_API_KEY, ERROR_TITLE } from 'react-native-dotenv'
 import InstanceServices from '../../../services'
-import Dropdown from 'react-native-paper-dropdown'
 import StylesKitchen from '../../../styles-kitchen'
 import { getEndPointSearch, getEndPointSPrint } from '../../../lib/function-ingredients'
 import { Surface as Box, Button, Field, Notification } from '../../../lib/components-ingredients'
 import LoadingScreen from '../../loading-screen'
 
 // for testing
-import DataStockTake from '../../../data-dummy/stock-take.json'
 import DataMaterialTest from '../../../data-dummy/material-test.json'
-import DataScanningItem from '../../../data-dummy/scanning-item.json'
-import DataScanningMonitoring from '../../../data-dummy/scanning-monitoring.json'
 // end 
 
 const RfidScreen = () => {
@@ -32,7 +29,6 @@ const RfidScreen = () => {
   const [loadingConfirm, setLoadingConfirm] = useState(false)
   const [loadingUrlList, setLoadingUrlList] = useState(false)
   const [loadingSprintStockOpname, setLoadingSprintStockOpname] = useState(false)
-  const [openModal, setOpenModal] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(false)
   const [selectedSPrint, setSelectedSPrint] = useState('')
 
@@ -50,12 +46,10 @@ const RfidScreen = () => {
   } = route.params
 
   const { Device_ID: deviceId } = decode(token)
-  const rfidScreenStyles = Styles.rfidScreenStyles(config_menu_rfid_screen)
+  const rfidScreenStyles = Styles.rfidScreenStyles()
 
   const enableStockOpname = config_menu_rfid_screen.enable_stock_opname || false
   const enableMaterialTest = config_menu_rfid_screen.enable_material_test || false
-  const enableScanItem = config_menu_rfid_screen.enable_scan_item || false
-  const enableScanMonitoring = config_menu_rfid_screen.enable_scan_monitoring || false
   const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning || false
   const enableSetting = config_menu_rfid_screen.enable_setting || false
 
@@ -107,10 +101,6 @@ const RfidScreen = () => {
 
   const handleCloseDropdown = () => {
     setOpenDropdown(false)
-  }
-
-  const handlePressRow = () => {
-    setOpenModal(true)
   }
 
   const handleFocus = (e) => {
@@ -280,32 +270,16 @@ const RfidScreen = () => {
     if (enableMaterialTest) {
       setFinalData(DataMaterialTest)
     }
-    // else if (enableStockOpname) {
-    //   setFinalData(DataStockTake)
-    // }
-    // else if (enableScanItem) {
-    //   setFinalData(DataScanningItem)
-    // } else if (enableScanMonitoring) {
-    //   setFinalData(DataScanningMonitoring)
-    // }
   }, []) // for testing
 
   const countScan = finalData ? finalData.length : 0
 
-  if (loadingUrlList || loadingConfirm) {
-    return <LoadingScreen />
+  if (loadingUrlList || loadingConfirm || loadingSprintStockOpname) {
+    return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
   }
-
-  const containerStyle = { backgroundColor: 'white', padding: 20 };
 
   return (
     <View style={rfidScreenStyles.rfidScreenContainer} >
-      {/* <Modal visible={openModal}
-        // onDismiss={hideModal} 
-        contentContainerStyle={containerStyle}
-      >
-        <Text>Example Modal.  Click outside this area to dismiss.</Text>
-      </Modal> */}
 
       {dropdown &&
         <View style={rfidScreenStyles.dropdownContainer}>
@@ -369,9 +343,9 @@ const RfidScreen = () => {
           <DataTable>
 
             {/* Table Header */}
-            <DataTable.Header style={rfidScreenStyles.tableHeaders}>
+            <DataTable.Header style={rfidScreenStyles.tableHeadersStyle}>
               {table_headers.map(({ label: col }, idx) => {
-                return <DataTable.Title key={idx}>
+                return <DataTable.Title key={idx} style={rfidScreenStyles.tableHeaderTitleStyle}>
                   <Text style={rfidScreenStyles.tableHeadersTitleText}>
                     {col}
                   </Text>
@@ -382,13 +356,13 @@ const RfidScreen = () => {
             {/* Table Body */}
             {
               finalData?.map((row, idx) =>
-                <DataTable.Row key={idx} onPress={handlePressRow}>
+                <DataTable.Row key={idx}>
                   {table_headers?.map(({ name: col }, idx) => {
-                    return <DataTable.Cell key={idx}>
-                      <Text>
+                    return <View key={idx} style={rfidScreenStyles.tableBodyStyle}>
+                      <Text numberOfLines={5} maxLength={10} style={rfidScreenStyles.tableBodyTitleText}>
                         {row[col]}
                       </Text>
-                    </DataTable.Cell>
+                    </View>
                   })}
                 </DataTable.Row>
               )

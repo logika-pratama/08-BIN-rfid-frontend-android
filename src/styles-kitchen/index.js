@@ -184,101 +184,92 @@ export default class StylesKitchen {
     }
   })
 
-  rfidScreenStyles = (config_menu_rfid_screen) => {
-    let noRfidWidth = null
-    let countWidth = null
-
-    const enableStockOpname = config_menu_rfid_screen.enable_stock_opname
-    const enableScanItem = config_menu_rfid_screen.enable_scan_item
-    const enableScanMonitoring = config_menu_rfid_screen.enable_scan_monitoring
-    const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning
-
-    if (enableStockOpname) {
-      noRfidWidth = 1.6
-      countWidth = .5
-    } else if (enableScanItem || enableGateScanning) {
-      noRfidWidth = 1
-      countWidth = .3
-    } else if (enableScanMonitoring) {
-      noRfidWidth = 1.8
-      countWidth = .6
+  rfidScreenStyles = () => this.createStyles({
+    rfidScreenContainer: {
+      display: 'flex',
+      flex: 1,
+      // marginTop: 48,
+      marginLeft: 2,
+      marginRight: 2,
+      backgroundColor: this.colors?.white,
+    },
+    searchingContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      marginTop: 40,
+      marginLeft: 16,
+      marginBottom: 24
+    },
+    dropdownContainer: {
+      display: 'flex',
+      width: '75%',
+      marginTop: 40,
+      marginLeft: 16,
+      marginBottom: 24,
+    },
+    boxContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      marginBottom: 12,
+      marginRight: 12
+    },
+    customLoadingContainer: {
+      backgroundColor: 'background: rgba(52,42,41,0.3)'
+    },
+    boxModel: {
+      // borderWidth: '1',
+      borderColor: 'red',
+      height: 60,
+      width: 60,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: this.colors?.accent
+    },
+    boxText: {
+      color: this.colors.black,
+      fontWeight: '600'
+    },
+    feildsStyle: {
+      width: '70%',
+      overflow: 'hidden'
+    },
+    buttonStyle: {
+      marginTop: 10,
+      marginBottom: 40,
+    },
+    tableContainer: {
+      marginBottom: 24
+    },
+    tableHeadersStyle: {
+      backgroundColor: this.colors?.accent,
+    },
+    tableBodyStyle: {
+      display: 'flex',
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginRight: 15
+    },
+    cellsFooter: {
+      textAlign: 'right'
+    },
+    tableHeaderTitleStyle: {
+      marginRight: 15
+    },
+    tableHeadersTitleText: {
+      color: this.colors?.white
+    },
+    tableBodyTitleText: {
+      display: 'flex',
+      backgroundColor: this.colors?.white,
+      color: this.colors?.primary
+    },
+    tableFootersTitleText: {
+      color: this.colors?.white,
+      textAlign: 'right'
     }
-
-    return this.createStyles({
-      rfidScreenContainer: {
-        display: 'flex',
-        flex: 1,
-        // marginTop: 48,
-        marginLeft: 2,
-        marginRight: 2,
-        backgroundColor: this.colors?.white,
-      },
-      searchingContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        marginTop: 40,
-        marginLeft: 16,
-        marginBottom: 24
-      },
-      searchingContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        marginTop: 40,
-        marginLeft: 16,
-        marginBottom: 24
-      },
-      boxContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginBottom: 12,
-        marginRight: 12
-      },
-      boxModel: {
-        // borderWidth: '1',
-        borderColor: 'red',
-        height: 60,
-        width: 60,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: this.colors?.accent
-      },
-      boxText: {
-        color: this.colors.black,
-        fontWeight: '600'
-      },
-      feildsStyle: {
-        width: '70%',
-        overflow: 'hidden'
-      },
-      buttonStyle: {
-        marginTop: 10,
-        marginBottom: 40,
-      },
-      tableContainer: {
-        marginBottom: 24
-      },
-      tableHeaders: {
-        backgroundColor: this.colors?.accent,
-      },
-      noRfidCellWidth: {
-        flex: noRfidWidth
-      },
-      countCellWidth: {
-        flex: countWidth
-      },
-      cellsFooter: {
-        textAlign: 'right'
-      },
-      tableHeadersTitleText: {
-        color: this.colors?.white
-      },
-      tableFootersTitleText: {
-        color: this.colors?.white,
-        textAlign: 'right'
-      }
-    })
-  }
+  })
 
   webViewStyles = () => this.createStyles({
     webViewContainer: {

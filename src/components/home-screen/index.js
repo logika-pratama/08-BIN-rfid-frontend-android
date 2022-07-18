@@ -132,7 +132,7 @@ const HomeScreen = () => {
   const data = homeMenu
 
   if (loadingMenu) {
-    <LoadingScreen />
+    return <LoadingScreen />
   }
 
   return (
