@@ -80,7 +80,7 @@ const LoginScreen = () => {
           source={LogistikPolri}
         />
         <Text style={loginScreenStyles.textStyle}>
-          ITAT-RFID
+          ITAT Mobile
         </Text>
       </View>
       <View style={loginScreenStyles.formContainer}>

@@ -98,7 +98,7 @@ const IntegrationModuleScreen = () => {
   const data = integrationModuleMenu
 
   if (loadingMenu) {
-    <LoadingScreen />
+    return <LoadingScreen />
   }
 
   return (

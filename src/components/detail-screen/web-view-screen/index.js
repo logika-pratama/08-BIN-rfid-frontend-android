@@ -8,19 +8,12 @@ import LoadingScreen from '../../loading-screen';
 import StylesKitchen from '../../../styles-kitchen'
 
 const WebViewScreen = () => {
-	const [loading, setLoading] = useState(false)
 	const route = useRoute()
 	const theme = useTheme()
 	const Styles = new StylesKitchen(theme)
 	const webViewStyles = Styles.webViewStyles()
+	const rfidScreenStyles = Styles.rfidScreenStyles()
 	const { url_screen } = route.params
-
-	const onLoadStart = () => {
-		setLoading(true)
-	}
-	const onLoad = () => {
-		setLoading(false)
-	}
 
 	const onError = () => {
 		Alert.alert(
@@ -36,18 +29,12 @@ const WebViewScreen = () => {
 		)
 	}
 
-	if (loading) {
-		return <LoadingScreen />
-	}
-
-	const renderLoading = () => <LoadingScreen />
+	const renderLoading = () => <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
 
 	return (
 		<View style={webViewStyles.webViewContainer}>
 			<WebView
 				source={{ uri: url_screen }}
-				// onLoadStart={onLoadStart}
-				// onLoad={onLoad}
 				startInLoadingState
 				renderLoading={renderLoading}
 				onError={onError}

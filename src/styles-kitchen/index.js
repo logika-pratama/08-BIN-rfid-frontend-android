@@ -215,7 +215,7 @@ export default class StylesKitchen {
       marginRight: 12
     },
     customLoadingContainer: {
-      backgroundColor: 'background: rgba(52,42,41,0.3)'
+      backgroundColor: 'background: rgba(52,42,41,.5)'
     },
     boxModel: {
       // borderWidth: '1',
