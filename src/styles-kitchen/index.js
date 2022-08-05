@@ -28,45 +28,32 @@ export default class StylesKitchen {
   })
 
   buttonStyles = () => this.createStyles({
-    buttonContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
     buttonStyle: {
       borderRadius: 20,
-      width: 100,
-      height: 40,
+      width: 110,
+      height: 50,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: this.colors?.accent
-    },
-    textStyle: {
+      backgroundColor: this.colors?.accent,
       color: this.colors?.white
     }
   })
 
   fieldStyles = () => this.createStyles({
-    fieldContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 5
-    },
     fieldStyle: {
       width: '90%',
       overflow: 'hidden',
     }
   })
 
+  surfaceStyles = () => this.createStyles({
+    surfaceStyle: {
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  })
+
   boxStyles = () => this.createStyles({
-    boxContainer: {
-      display: 'flex',
-      alignItems: 'flex-end',
-      justifyContent: 'center',
-      marginRight: 10,
-      marginBottom: 15
-    },
     boxStyle: {
       padding: 8,
       height: 40,
@@ -77,12 +64,6 @@ export default class StylesKitchen {
   })
 
   notificationStyles = () => this.createStyles({
-    notificationContainer: {
-      display: 'flex',
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
     notificationStyle: {
     }
   })
@@ -98,6 +79,11 @@ export default class StylesKitchen {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'flex-end',
+    },
+    buttonLoginContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
     },
     feildsStyle: {
       width: '80%',
@@ -118,8 +104,8 @@ export default class StylesKitchen {
       fontSize: 16,
       fontWeight: 'bold'
     },
-    buttonStyle: {
-      marginTop: 10
+    buttonLoginStyle: {
+      marginTop: 15
     }
   })
 
@@ -207,26 +193,49 @@ export default class StylesKitchen {
       marginLeft: 16,
       marginBottom: 24,
     },
-    boxContainer: {
+    boxCountContainer: {
       display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      marginBottom: 12,
-      marginRight: 12
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      marginRight: 12,
+      marginBottom: 12
     },
     customLoadingContainer: {
       backgroundColor: 'background: rgba(52,42,41,.5)'
     },
-    boxModel: {
-      // borderWidth: '1',
-      borderColor: 'red',
-      height: 60,
-      width: 60,
+    surfaceScanBleTagContainer: {
+      display: 'flex',
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      margin: 5,
+      marginTop: 40,
+      height: 100,
+      backgroundColor: this.colors?.white
+    },
+    buttonScanBleTagStyle: {
+      marginRight: 15,
+      width: 165
+    },
+    buttonConfirmContainer: {
+      display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: this.colors?.accent
     },
-    boxText: {
+    fieldUrlContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: 5,
+      marginTop: 40,
+      marginBottom: 0
+    },
+    notificationUrlContainer: {
+      flex: 1,
+    },
+    fieldUrlStyle: {
+      marginBottom: 10
+    },
+    boxTextStyle: {
       color: this.colors.black,
       fontWeight: '600'
     },
@@ -234,9 +243,10 @@ export default class StylesKitchen {
       width: '70%',
       overflow: 'hidden'
     },
-    buttonStyle: {
-      marginTop: 10,
+    buttonConfirmStyle: {
+      marginTop: 20,
       marginBottom: 40,
+      width: 140
     },
     tableContainer: {
       marginBottom: 24

@@ -1,9 +1,9 @@
 import React from 'react'
-import { Pressable, View, Text } from 'react-native'
-import { useTheme, TextInput as TextInputPaper, Snackbar, Surface as SurfacePaper } from 'react-native-paper'
+import { ActivityIndicator } from 'react-native'
+import { useTheme, TextInput as TextInputPaper, Snackbar, Surface as SurfacePaper, FAB } from 'react-native-paper'
 import StylesKitchen from '../../styles-kitchen'
 
-export function Button({ onPress, text, isDisabled, customButtonStyles, customTextStyles }) {
+export function Button({ customButtonStyles, label, loading, icon, onPress }) {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const buttonStyles = Styles.buttonStyles()
@@ -13,13 +13,12 @@ export function Button({ onPress, text, isDisabled, customButtonStyles, customTe
   }
 
   return (
-    <View style={buttonStyles.buttonContainer}>
-      <Pressable style={[buttonStyles.buttonStyle, customButtonStyles]} onPress={handlePress} disabled={isDisabled}>
-        <Text style={[buttonStyles.textStyle, customTextStyles]}>
-          {text}
-        </Text>
-      </Pressable>
-    </View>
+    <FAB
+      style={[buttonStyles.buttonStyle, customButtonStyles]}
+      icon={icon}
+      label={label}
+      loading={loading}
+      onPress={handlePress} />
   )
 }
 
@@ -34,16 +33,14 @@ export function Field({ selectedIndex, selectedMenuId, selectedUrlScreen, select
   }
 
   return (
-    <View style={fieldStyles.fieldContainer}>
-      <TextInputPaper
-        style={[fieldStyles.fieldStyle, customFieldStyles]}
-        name='url'
-        onChange={handleChangeField(selectedIndex, selectedMenuId, selectedTitle, changeUrl)}
-        value={selectedUrlScreen}
-        label={`URL ${selectedTitle}`}
-        placeholder={'url'}
-      />
-    </View>
+    <TextInputPaper
+      style={[fieldStyles.fieldStyle, customFieldStyles]}
+      name='url'
+      onChange={handleChangeField(selectedIndex, selectedMenuId, selectedTitle, changeUrl)}
+      value={selectedUrlScreen}
+      label={`URL ${selectedTitle}`}
+      placeholder={'url'}
+    />
   )
 }
 
@@ -57,28 +54,42 @@ export function Notification({ visible, children, message, duration, onDismiss, 
   }
 
   return (
-    <View style={notificationStyles.notificationContainer}>
-      <Snackbar
-        style={[notificationStyles.notificationStyle, customNotificationStyle]}
-        visible={visible}
-        duration={duration}
-        onDismiss={handleDismiss}>
-        {children ? children : message}
-      </Snackbar>
-    </View>
+    <Snackbar
+      style={[notificationStyles.notificationStyle, customNotificationStyle]}
+      visible={visible}
+      duration={duration}
+      onDismiss={handleDismiss}>
+      {children ? children : message}
+    </Snackbar>
   )
 }
 
-export function Surface({ children, elevation, customBoxStyle }) {
+export function Box({ children, customBoxStyle, elevation }) {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const boxStyles = Styles.boxStyles()
 
   return (
-    <View style={[boxStyles.boxContainer, customBoxStyle]}>
-      <SurfacePaper style={boxStyles.boxStyle} elevation={elevation}>
-        {children}
-      </SurfacePaper>
-    </View>
+    <SurfacePaper style={[boxStyles.boxStyle, customBoxStyle]} elevation={elevation}>
+      {children}
+    </SurfacePaper>
+  )
+}
+
+export function Surface({ children, customSurfaceStyle, elevation }) {
+  const theme = useTheme()
+  const Styles = new StylesKitchen(theme)
+  const surfaceStyles = Styles.surfaceStyles()
+
+  return (
+    <SurfacePaper style={[surfaceStyles.surfaceStyle, customSurfaceStyle]} elevation={elevation}>
+      {children}
+    </SurfacePaper>
+  )
+}
+
+export function Loading({ color }) {
+  return (
+    <ActivityIndicator color={color} animating={true} size="small" />
   )
 }

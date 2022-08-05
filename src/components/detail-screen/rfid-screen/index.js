@@ -8,7 +8,7 @@ import { ITAM_API_URL, ITAM_TIME_OUT, ITAM_API_KEY, ERROR_TITLE } from 'react-na
 import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
 import { getEndPointSearch, getEndPointSPrint } from '../../../lib/function-ingredients'
-import { Surface as Box, Button, Field, Notification } from '../../../lib/components-ingredients'
+import { Surface, Box, Button, Field, Notification } from '../../../lib/components-ingredients'
 import LoadingScreen from '../../loading-screen'
 
 // for testing
@@ -21,6 +21,7 @@ const RfidScreen = () => {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const [data, setData] = useState([])
+  const [activeCamera, setActiveCamera] = useState(false)
   const [searchField, setSearchField] = useState('')
   const [sPrintList, setSPrintList] = useState([])
   const [finalData, setFinalData] = useState([])
@@ -34,6 +35,7 @@ const RfidScreen = () => {
 
   const {
     title,
+    camera_action,
     dropdown,
     search_field,
     box,
@@ -93,6 +95,10 @@ const RfidScreen = () => {
         setData(data)
       }
     }
+  }
+
+  const handleCamera = () => {
+    setActiveCamera(true)
   }
 
   const handleOpenDropdown = () => {
@@ -256,7 +262,7 @@ const RfidScreen = () => {
   useEffect(() => {
     if (data) {
 
-      if (!enableMaterialTest) { // this  if will be deleted if uji mat not testing
+      if (!enableMaterialTest) { // this is will be deleted if uji mat not testing
         data &&
           setFinalData(prevData => {
             const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
@@ -278,10 +284,28 @@ const RfidScreen = () => {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
   }
 
+  if (activeCamera) {
+    return (
+      <View style={rfidScreenStyles.rfidScreenContainer} >
+        {/* <View style={rfidScreenStyles.cameraBoxContainer}> // style camera view */}
+        <Text>
+          {'Camera'}
+        </Text>
+        {/* </View> */}
+      </View>
+    )
+  }
+
   return (
     <View style={rfidScreenStyles.rfidScreenContainer} >
+      {camera_action &&
+        <Surface elevation={7} customSurfaceStyle={rfidScreenStyles.surfaceScanBleTagContainer}>
+          <Button onPress={handleCamera} label='Pindai Tag BLE' customButtonStyles={rfidScreenStyles.buttonScanBleTagStyle} />
+        </Surface>
+      }
 
-      {dropdown &&
+      {
+        dropdown &&
         <View style={rfidScreenStyles.dropdownContainer}>
           <Dropdown
             label={"Surat Perintah"}
@@ -296,44 +320,48 @@ const RfidScreen = () => {
         </View>
       }
 
-      {enableStockOpname || enableMaterialTest ?
-        search_field && !!selectedSPrint &&
-        <View style={rfidScreenStyles.searchingContainer}>
-          <TextInputPaper
-            name='search'
-            style={rfidScreenStyles.feildsStyle}
-            autoFocus
-            multiline
-            autoComplete='off'
-            onFocus={handleFocus}
-            onChange={handleChangeSearchField}
-            value={searchField}
-            label={'Pindai'}
-            placeholder={'Pindai'}
-          />
-        </View> : search_field &&
-        <View style={rfidScreenStyles.searchingContainer}>
-          <TextInputPaper
-            name='search'
-            style={rfidScreenStyles.feildsStyle}
-            autoFocus
-            multiline
-            autoComplete='off'
-            onFocus={handleFocus}
-            onChange={handleChangeSearchField}
-            value={searchField}
-            label={'Pindai'}
-            placeholder={'Pindai'}
-          />
-        </View>
+      {
+        enableStockOpname || enableMaterialTest ?
+          search_field && !!selectedSPrint &&
+          <View style={rfidScreenStyles.searchingContainer}>
+            <TextInputPaper
+              name='search'
+              style={rfidScreenStyles.feildsStyle}
+              autoFocus
+              multiline
+              autoComplete='off'
+              onFocus={handleFocus}
+              onChange={handleChangeSearchField}
+              value={searchField}
+              label={'Pindai'}
+              placeholder={'Pindai'}
+            />
+          </View> : search_field &&
+          <View style={rfidScreenStyles.searchingContainer}>
+            <TextInputPaper
+              name='search'
+              style={rfidScreenStyles.feildsStyle}
+              autoFocus
+              multiline
+              autoComplete='off'
+              onFocus={handleFocus}
+              onChange={handleChangeSearchField}
+              value={searchField}
+              label={'Pindai'}
+              placeholder={'Pindai'}
+            />
+          </View>
       }
 
-      {box &&
-        <Box elevation={4}>
-          <Text style={rfidScreenStyles.boxText}>
-            Total: {countScan}
-          </Text>
-        </Box>
+      {
+        box &&
+        <View style={rfidScreenStyles.boxCountContainer}>
+          <Box elevation={4}>
+            <Text style={rfidScreenStyles.boxTextStyle}>
+              Total: {countScan}
+            </Text>
+          </Box>
+        </View>
       }
 
       {
@@ -375,25 +403,34 @@ const RfidScreen = () => {
 
       {
         setting_url_form && urlList &&
-        urlList?.map((row, idx) => {
-          return <Field
-            key={idx}
-            selectedIndex={idx}
-            selectedMenuId={row.menu_id}
-            selectedTitle={row.title}
-            selectedUrlScreen={row.url_screen}
-            changeUrl={handleChangeUrl} />
-        })
+        <View style={rfidScreenStyles.fieldUrlContainer}>
+          {urlList?.map((row, idx) => {
+            return (
+              <Field
+                key={idx}
+                customFieldStyles={rfidScreenStyles.fieldUrlStyle}
+                selectedIndex={idx}
+                selectedMenuId={row.menu_id}
+                selectedTitle={row.title}
+                selectedUrlScreen={row.url_screen}
+                changeUrl={handleChangeUrl} />
+            )
+          })}
+        </View>
       }
 
       {
         confirm_button &&
-        <Button onPress={handleConfrim} text='Konfirmasi' customButtonStyles={rfidScreenStyles.buttonStyle} />
+        <View style={rfidScreenStyles.buttonConfirmContainer}>
+          <Button onPress={handleConfrim} label='Konfirmasi' customButtonStyles={rfidScreenStyles.buttonConfirmStyle} />
+        </View>
       }
 
       {
         !!messageConfirm &&
-        <Notification visible={!!messageConfirm} duration={3000} message={messageConfirm} onDismiss={handleDismissNotification} />
+        <View style={rfidScreenStyles.notificationUrlContainer}>
+          <Notification visible={!!messageConfirm} duration={3000} message={messageConfirm} onDismiss={handleDismissNotification} />
+        </View>
       }
 
     </View >

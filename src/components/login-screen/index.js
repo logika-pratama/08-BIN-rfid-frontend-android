@@ -6,7 +6,6 @@ import { useAuth } from '../../contexts'
 import StylesKitchen from '../../styles-kitchen'
 import { Button } from '../../lib/components-ingredients'
 import InstanceServices from '../../services'
-import LoadingScreen from '../loading-screen'
 import LogistikPolri from '../../assets/images/logo_divtik_small.png'
 
 const LoginScreen = () => {
@@ -66,12 +65,6 @@ const LoginScreen = () => {
     }
   }
 
-  const isDisabled = email && password ? false : true
-
-  if (loadingLogin) {
-    return <LoadingScreen />
-  }
-
   return (
     <SafeAreaView style={loginScreenStyles.loginScreenContainer}>
       <View style={loginScreenStyles.imageAndTextContainer}>
@@ -106,11 +99,13 @@ const LoginScreen = () => {
           value={password}
         />
       </View>
-      <Button
-        onPress={handleSubmit}
-        text='Masuk'
-        isDisabled={isDisabled}
-        customButtonStyles={loginScreenStyles.buttonStyle} />
+      <View style={loginScreenStyles.buttonLoginContainer}>
+        <Button
+          customButtonStyles={loginScreenStyles.buttonLoginStyle}
+          label={'Masuk'}
+          loading={loadingLogin}
+          onPress={handleSubmit} />
+      </View>
     </SafeAreaView >
   )
 }
