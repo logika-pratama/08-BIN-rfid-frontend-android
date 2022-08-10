@@ -21,7 +21,8 @@ const RfidScreen = () => {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const [data, setData] = useState([])
-  const [activeCamera, setActiveCamera] = useState(false)
+  const [activeCameraBle, setActiveCameraBle] = useState(false)
+  const [activeCameraRfid, setActiveCameraRfid] = useState(false)
   const [searchField, setSearchField] = useState('')
   const [sPrintList, setSPrintList] = useState([])
   const [finalData, setFinalData] = useState([])
@@ -35,7 +36,8 @@ const RfidScreen = () => {
 
   const {
     title,
-    camera_action,
+    camera_action_ble,
+    camera_action_rfid,
     dropdown,
     search_field,
     box,
@@ -97,8 +99,14 @@ const RfidScreen = () => {
     }
   }
 
-  const handleCamera = () => {
-    setActiveCamera(true)
+  const handleCameraBle = () => {
+    setActiveCameraBle(true)
+    setActiveCameraRfid(false)
+  }
+
+  const handleCameraRfid = () => {
+    setActiveCameraRfid(true)
+    setActiveCameraBle(false)
   }
 
   const handleOpenDropdown = () => {
@@ -284,7 +292,17 @@ const RfidScreen = () => {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
   }
 
-  if (activeCamera) {
+  if (activeCameraBle) {
+    return (
+      <View style={rfidScreenStyles.rfidScreenContainer} >
+        {/* <View style={rfidScreenStyles.cameraBoxContainer}> // style camera view */}
+        <Text>
+          {'Camera'}
+        </Text>
+        {/* </View> */}
+      </View>
+    )
+  } else if (activeCameraRfid) {
     return (
       <View style={rfidScreenStyles.rfidScreenContainer} >
         {/* <View style={rfidScreenStyles.cameraBoxContainer}> // style camera view */}
@@ -298,9 +316,32 @@ const RfidScreen = () => {
 
   return (
     <View style={rfidScreenStyles.rfidScreenContainer} >
-      {camera_action &&
-        <Surface elevation={7} customSurfaceStyle={rfidScreenStyles.surfaceScanBleTagContainer}>
-          <Button onPress={handleCamera} label='Pindai Tag BLE' customButtonStyles={rfidScreenStyles.buttonScanBleTagStyle} />
+      {camera_action_ble &&
+        <Surface elevation={7} customSurfaceStyle={rfidScreenStyles.surfaceScanQrBleTagContainer}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+            <Text style={rfidScreenStyles.qrBleTextStyle}>
+              Tidak ada qr code yang dipindai
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+            <Button onPress={handleCameraBle} label='Pindai QR Code Tag BLE'
+              customButtonStyles={rfidScreenStyles.buttonScanQrBleTagStyle} />
+          </View>
+        </Surface>
+      }
+
+      {
+        camera_action_rfid &&
+        <Surface elevation={7} customSurfaceStyle={rfidScreenStyles.surfaceScanQrRfidTagContainer}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+            <Text style={rfidScreenStyles.qrRfidTextStyle}>
+              Tidak ada qr code yang dipindai
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+            <Button onPress={handleCameraRfid} label='Pindai QR Code Tag RFID'
+              customButtonStyles={rfidScreenStyles.buttonScanQrRfidTagStyle} />
+          </View>
         </Surface>
       }
 

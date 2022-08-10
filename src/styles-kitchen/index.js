@@ -203,16 +203,29 @@ export default class StylesKitchen {
     customLoadingContainer: {
       backgroundColor: 'background: rgba(52,42,41,.5)'
     },
-    surfaceScanBleTagContainer: {
+    surfaceScanQrBleTagContainer: {
       display: 'flex',
-      alignItems: 'flex-end',
+      flexDirection: 'row',
       justifyContent: 'center',
       margin: 5,
       marginTop: 40,
       height: 100,
       backgroundColor: this.colors?.white
     },
-    buttonScanBleTagStyle: {
+    surfaceScanQrRfidTagContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      margin: 5,
+      marginTop: 40,
+      height: 100,
+      backgroundColor: this.colors?.white
+    },
+    buttonScanQrBleTagStyle: {
+      marginRight: 15,
+      width: 165
+    },
+    buttonScanQrRfidTagStyle: {
       marginRight: 15,
       width: 165
     },
@@ -234,6 +247,14 @@ export default class StylesKitchen {
     },
     fieldUrlStyle: {
       marginBottom: 10
+    },
+    qrBleTextStyle: {
+      color: this.colors.black,
+      fontSize: 10,
+    },
+    qrRfidTextStyle: {
+      color: this.colors.black,
+      fontSize: 10,
     },
     boxTextStyle: {
       color: this.colors.black,
