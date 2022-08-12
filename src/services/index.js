@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { RFID_API_URL, RFID_TIME_OUT, ERROR_CONNECTION } from 'react-native-dotenv'
+import { RFID_API_URL_STAGING, RFID_TIME_OUT, ERROR_CONNECTION } from 'react-native-dotenv'
 
 export default class InstanceServices {
   constructor(anotherApiUrl, anotherTimeOut, anotherApiKey = null) {
@@ -14,7 +14,7 @@ export default class InstanceServices {
 
   initInstance(anotherApiUrl, anotherTimeOut, anotherApiKey) {
     this.instance = axios.create({
-      baseURL: anotherApiUrl || RFID_API_URL,
+      baseURL: anotherApiUrl || RFID_API_URL_STAGING,
       timeout: Number(anotherTimeOut || RFID_TIME_OUT),
       headers: {
         'Accept-Language': 'id',

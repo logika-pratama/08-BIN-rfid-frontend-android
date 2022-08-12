@@ -4,7 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
 import Dropdown from 'react-native-paper-dropdown'
 import decode from 'jwt-decode'
-import { ITAM_API_URL, ITAM_TIME_OUT, ITAM_API_KEY, ERROR_TITLE } from 'react-native-dotenv'
+import { ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY, ERROR_TITLE } from 'react-native-dotenv'
 import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
 import { getEndPointSearch, getEndPointSPrint } from '../../../lib/function-ingredients'
@@ -58,7 +58,7 @@ const RfidScreen = () => {
   const enableSetting = config_menu_rfid_screen.enable_setting || false
 
   const RfidService = new InstanceServices()
-  const ItamService = new InstanceServices(ITAM_API_URL, ITAM_TIME_OUT, ITAM_API_KEY)
+  const ItamService = new InstanceServices(ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY)
 
   const processToSendData = async searchField => {
     const lastCharSearchField = searchField.charAt(searchField.length - 1)
@@ -69,8 +69,8 @@ const RfidScreen = () => {
 
       if (finalArrText) {
         const filteredData = finalArrText.filter(el =>
-          el && data.map(({ tag_number }) => {
-            if (el !== tag_number) {
+          el && data.map(({ asset_id }) => {
+            if (el !== asset_id) {
               return el
             }
           })
@@ -88,7 +88,8 @@ const RfidScreen = () => {
 
   const sendData = async (config_menu_rfid_screen, searchValue, selectedSPrint = null) => {
     const endPointSearch = getEndPointSearch(config_menu_rfid_screen, searchValue, selectedSPrint)
-    if (enableGateScanning || enableStockOpname) {
+    // if (enableGateScanning || enableStockOpname) { // for testing
+    if (enableGateScanning || enableStockOpname || enableMaterialTest) { // for running
       await RfidService.searchAdd(endPointSearch, token)
     } else {
       const resp = await RfidService.searchGet(endPointSearch, token)
@@ -144,7 +145,7 @@ const RfidScreen = () => {
   const handleConfrim = async () => {
     if (enableGateScanning) {
       if (finalData) {
-        const tags = finalData.map(({ tag_number }) => tag_number)
+        const tags = finalData.map(({ asset_id }) => asset_id)
         const sendData = [...tags, deviceId].toString()
         const finalSendData = { 'tag': sendData }
         const resp = await RfidService.detailConfirm(finalSendData, token)
@@ -269,22 +270,21 @@ const RfidScreen = () => {
 
   useEffect(() => {
     if (data) {
-
-      if (!enableMaterialTest) { // this is will be deleted if uji mat not testing
-        data &&
-          setFinalData(prevData => {
-            const newData = data.filter(({ tag_number: tagCurr }) => !prevData.some(({ tag_number: tagPrev }) => tagPrev === tagCurr))
-            return [...prevData, ...newData]
-          })
-      } // materialTest still using testing (dummy)
+      // if (!enableMaterialTest) { // this is will be deleted if uji mat not testing
+      data &&
+        setFinalData(prevData => {
+          const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
+          return [...prevData, ...newData]
+        })
+      // } // materialTest still using testing (dummy)
     }
   }, [data]) // for running
 
-  useEffect(() => {
-    if (enableMaterialTest) {
-      setFinalData(DataMaterialTest)
-    }
-  }, []) // for testing
+  // useEffect(() => {
+  //   if (enableMaterialTest) {
+  //     setFinalData(DataMaterialTest)
+  //   }
+  // }, []) // for testing
 
   const countScan = finalData ? finalData.length : 0
 
