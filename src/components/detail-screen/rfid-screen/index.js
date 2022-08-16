@@ -20,7 +20,6 @@ const RfidScreen = () => {
   const navigation = useNavigation()
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
-  const [data, setData] = useState([])
   const [activeCameraBle, setActiveCameraBle] = useState(false)
   const [activeCameraRfid, setActiveCameraRfid] = useState(false)
   const [searchField, setSearchField] = useState('')
@@ -56,6 +55,7 @@ const RfidScreen = () => {
   const enableMaterialTest = config_menu_rfid_screen.enable_material_test || false
   const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning || false
   const enableSetting = config_menu_rfid_screen.enable_setting || false
+  const enableScanning = config_menu_rfid_screen.enable_scanning || false
 
   const RfidService = new InstanceServices()
   const ItamService = new InstanceServices(ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY)
@@ -68,16 +68,39 @@ const RfidScreen = () => {
       const finalArrText = [... new Set(arrText)]
 
       if (finalArrText) {
-        const filteredData = finalArrText.filter(el =>
-          el && data.map(({ asset_id }) => {
-            if (el !== asset_id) {
-              return el
-            }
-          })
-        )
+        const filteredData = finalArrText.filter(el => {
+          if (enableScanning) {
+            return el && finalData.map(({ rfid_tag }) => {
+              if (el !== rfid_tag) {
+                return el
+              }
+            })
+          }
+          else {
+            return el && finalData.map(({ asset_id }) => {
+              if (el !== asset_id) {
+                return el
+              }
+            })
+          }
+        })
+
         for (let i in filteredData) {
           const searchValue = filteredData[i]
-          await sendData(config_menu_rfid_screen, searchValue, selectedSPrint)
+
+          if (enableScanning) {
+            const data = [{
+              "rfid_tag": searchValue,
+            }]
+
+            setFinalData(prevData => {
+              const newData = data.filter(({ rfid_tag: tagCurr }) => !prevData.some(({ rfid_tag: tagPrev }) => tagPrev === tagCurr))
+              return [...prevData, ...newData]
+            })
+          }
+          else {
+            await sendData(config_menu_rfid_screen, searchValue, selectedSPrint)
+          }
         }
       }
 
@@ -95,7 +118,11 @@ const RfidScreen = () => {
       const resp = await RfidService.searchGet(endPointSearch, token)
       if (resp.status === 200) {
         const data = resp.data?.data
-        setData(data)
+
+        setFinalData(prevData => {
+          const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
+          return [...prevData, ...newData]
+        })
       }
     }
   }
@@ -128,7 +155,6 @@ const RfidScreen = () => {
   }
 
   const handleChangeUrl = (selectedIndex, selectedMenuId, selectedTitle, finalUrlScreen) => {
-
     setUrlList(prevData => {
       const newData = [...prevData]
 
@@ -164,7 +190,7 @@ const RfidScreen = () => {
           }
           else {
             if (resp.status === 401) {
-              const message = resp.data.message
+              const message = resp.data?.message
               Alert.alert(
                 ERROR_TITLE,
                 message
@@ -268,17 +294,17 @@ const RfidScreen = () => {
     }
   }, [])
 
-  useEffect(() => {
-    if (data) {
-      // if (!enableMaterialTest) { // this is will be deleted if uji mat not testing
-      data &&
-        setFinalData(prevData => {
-          const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
-          return [...prevData, ...newData]
-        })
-      // } // materialTest still using testing (dummy)
-    }
-  }, [data]) // for running
+  // useEffect(() => {
+  //   if (data) {
+  //     // if (!enableMaterialTest) { // this is will be deleted if uji mat not testing
+  //     data &&
+  //       setFinalData(prevData => {
+  //         const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
+  //         return [...prevData, ...newData]
+  //       })
+  //     // } // materialTest still using testing (dummy)
+  //   }
+  // }, [data]) // for running
 
   // useEffect(() => {
   //   if (enableMaterialTest) {
