@@ -5,6 +5,7 @@ function getEndPointSearch(config_menu_rfid_screen, searchValue, selectedSPrint 
   const enableScanItem = config_menu_rfid_screen.enable_scan_item || false
   const enableScanMonitoring = config_menu_rfid_screen.enable_scan_monitoring || false
   const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning || false
+  const enableTagingBle = config_menu_rfid_screen.enable_taging_ble || false
 
   let endPoint = ''
 
@@ -12,7 +13,7 @@ function getEndPointSearch(config_menu_rfid_screen, searchValue, selectedSPrint 
     endPoint = `/stoktake?tag_number=${encodeURIComponent(searchValue)}&sprint=${encodeURIComponent(selectedSPrint)}`
   } else if (enableMaterialTest) {
     endPoint = `/material_test?tag_number=${encodeURIComponent(searchValue)}`
-  } else if (enableScanItem) {
+  } else if (enableScanItem || enableTagingBle) {
     endPoint = `/item/search?tag_number=${encodeURIComponent(searchValue)}`
   } else if (enableScanMonitoring) {
     endPoint = `/tm/search?tag_number=${encodeURIComponent(searchValue)}`

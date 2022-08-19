@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
-import { Alert, View, Text, ScrollView } from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react'
+import { Alert, View, Text, ScrollView, PermissionsAndroid, StyleSheet } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
 import Dropdown from 'react-native-paper-dropdown'
 import decode from 'jwt-decode'
-import { ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY, ERROR_TITLE } from 'react-native-dotenv'
+import { ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY, ERROR_TITLE, INIT_QR_CODE } from 'react-native-dotenv'
+import { useCameraDevices, Camera } from 'react-native-vision-camera'
+import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
 import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
 import { getEndPointSearch, getEndPointSPrint } from '../../../lib/function-ingredients'
@@ -22,6 +24,9 @@ const RfidScreen = () => {
   const Styles = new StylesKitchen(theme)
   const [activeCameraBle, setActiveCameraBle] = useState(false)
   const [activeCameraRfid, setActiveCameraRfid] = useState(false)
+  const [qrCodeBle, setQrCodeBle] = useState('')
+  const [qrCodeRfid, setQrCodeRfid] = useState('')
+  const [checkPermissionCamera, setCheckPermissionCamera] = useState(false)
   const [searchField, setSearchField] = useState('')
   const [sPrintList, setSPrintList] = useState([])
   const [finalData, setFinalData] = useState([])
@@ -48,6 +53,13 @@ const RfidScreen = () => {
     token
   } = route.params
 
+  const devices = useCameraDevices()
+  const device = devices.back
+
+  const [frameProcessor, barcodes] = useScanBarcodes([BarcodeFormat.QR_CODE], {
+    checkInverted: true,
+  })
+
   const { Device_ID: deviceId } = decode(token)
   const rfidScreenStyles = Styles.rfidScreenStyles()
 
@@ -56,6 +68,8 @@ const RfidScreen = () => {
   const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning || false
   const enableSetting = config_menu_rfid_screen.enable_setting || false
   const enableScanning = config_menu_rfid_screen.enable_scanning || false
+  const enableTagingBle = config_menu_rfid_screen.enable_taging_ble || false
+  const enableUntagingBle = config_menu_rfid_screen.enable_untaging_ble || false
 
   const RfidService = new InstanceServices()
   const ItamService = new InstanceServices(ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY)
@@ -133,8 +147,8 @@ const RfidScreen = () => {
   }
 
   const handleCameraRfid = () => {
-    setActiveCameraRfid(true)
     setActiveCameraBle(false)
+    setActiveCameraRfid(true)
   }
 
   const handleOpenDropdown = () => {
@@ -206,6 +220,75 @@ const RfidScreen = () => {
           )
         }
         setLoadingConfirm(false)
+      }
+    } else if (enableTagingBle) {
+      if (qrCodeBle && qrCodeRfid) {
+
+        const assetId = finalData[0]?.asset_id,
+          nameAsset = finalData[0]?.name_asset
+
+        const data = [
+          {
+            'tagId': qrCodeBle,
+            'tag_name': '',
+            'assetId': assetId,
+            'name': nameAsset,
+            'object_name': 'assetA',
+            'object_type': 'assets',
+            'picture': `assets/images/${assetId}.jpg`,
+            'date': new Date.now()
+          }
+        ]
+
+        const resp = await RfidService.tagingBle(data, token)
+        if (resp.status) {
+          if (resp.status === 200) {
+            const message = resp.data?.message
+            setMessageConfirm(message)
+          }
+          else {
+            if (resp.status === 401) {
+              const message = resp.data?.message
+              Alert.alert(
+                ERROR_TITLE,
+                message
+              )
+            }
+          }
+        }
+      }
+    } else if (enableUntagingBle) {
+      if (qrCodeBle) {
+
+        const data = [
+          {
+            'tagId': qrCodeBle,
+            'tag_name': '',
+            'assetId': '',
+            'name': '',
+            'object_name': 'assetA',
+            'object_type': 'assets',
+            'picture': '',
+            'date': new Date.now()
+          }
+        ]
+
+        const resp = await RfidService.untagingBle(data, token)
+        if (resp.status) {
+          if (resp.status === 200) {
+            const message = resp.data?.message
+            setMessageConfirm(message)
+          }
+          else {
+            if (resp.status === 401) {
+              const message = resp.data?.message
+              Alert.alert(
+                ERROR_TITLE,
+                message
+              )
+            }
+          }
+        }
       }
     }
   }
@@ -294,6 +377,51 @@ const RfidScreen = () => {
     }
   }, [])
 
+  useEffect(() => {
+    const checkCameraPermission = async () => {
+      try {
+        const result = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA)
+        if (result) {
+          console.log("Camera permission granted");
+          setCheckPermissionCamera(result)
+        } else {
+          console.log("Camera permission denied");
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    if (activeCameraBle || activeCameraRfid) {
+      checkCameraPermission()
+    }
+  }, [activeCameraBle, activeCameraRfid])
+
+  useEffect(() => {
+    if (barcodes.length > 0) {
+      if (activeCameraBle) {
+        if (barcodes[0].displayValue !== qrCodeBle) {
+          setQrCodeBle(barcodes[0].displayValue)
+          setActiveCameraBle(false)
+        }
+      }
+      else if (activeCameraRfid) {
+        if (barcodes[0].displayValue !== qrCodeRfid) {
+          setQrCodeRfid(barcodes[0].displayValue)
+          setActiveCameraRfid(false)
+        }
+      }
+    }
+  }, [barcodes])
+
+  useEffect(() => {
+    if (qrCodeRfid) {
+      (async () => {
+        await sendData(config_menu_rfid_screen, qrCodeRfid, selectedSPrint)
+      })()
+    }
+  }, [qrCodeRfid])
+
   // useEffect(() => {
   //   if (data) {
   //     // if (!enableMaterialTest) { // this is will be deleted if uji mat not testing
@@ -314,42 +442,39 @@ const RfidScreen = () => {
 
   const countScan = finalData ? finalData.length : 0
 
+  const qrCodeBleValue = !!qrCodeBle ? qrCodeBle : INIT_QR_CODE,
+    qrCodeRfidValue = !!qrCodeRfid ? qrCodeRfid : INIT_QR_CODE
+
   if (loadingUrlList || loadingConfirm || loadingSprintStockOpname) {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
   }
 
-  if (activeCameraBle) {
-    return (
-      <View style={rfidScreenStyles.rfidScreenContainer} >
-        {/* <View style={rfidScreenStyles.cameraBoxContainer}> // style camera view */}
-        <Text>
-          {'Camera'}
-        </Text>
-        {/* </View> */}
-      </View>
-    )
-  } else if (activeCameraRfid) {
-    return (
-      <View style={rfidScreenStyles.rfidScreenContainer} >
-        {/* <View style={rfidScreenStyles.cameraBoxContainer}> // style camera view */}
-        <Text>
-          {'Camera'}
-        </Text>
-        {/* </View> */}
-      </View>
-    )
+  if ((activeCameraBle || activeCameraRfid) && checkPermissionCamera) {
+    if (device !== null) {
+      return (
+        <View style={rfidScreenStyles.rfidScreenContainer} >
+          <Camera
+            style={StyleSheet.absoluteFill}
+            device={device}
+            isActive={true}
+            frameProcessor={frameProcessor}
+            frameProcessorFps={5}
+          />
+        </View>
+      )
+    }
   }
 
   return (
     <View style={rfidScreenStyles.rfidScreenContainer} >
       {camera_action_ble &&
         <Surface elevation={7} customSurfaceStyle={rfidScreenStyles.surfaceScanQrBleTagContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+          <View>
             <Text style={rfidScreenStyles.qrBleTextStyle}>
-              Tidak ada qr code yang dipindai
+              {qrCodeBleValue}
             </Text>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+          <View>
             <Button onPress={handleCameraBle} label='Pindai QR Code Tag BLE'
               customButtonStyles={rfidScreenStyles.buttonScanQrBleTagStyle} />
           </View>
@@ -359,12 +484,12 @@ const RfidScreen = () => {
       {
         camera_action_rfid &&
         <Surface elevation={7} customSurfaceStyle={rfidScreenStyles.surfaceScanQrRfidTagContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+          <View>
             <Text style={rfidScreenStyles.qrRfidTextStyle}>
-              Tidak ada qr code yang dipindai
+              {qrCodeRfidValue}
             </Text>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+          <View>
             <Button onPress={handleCameraRfid} label='Pindai QR Code Tag RFID'
               customButtonStyles={rfidScreenStyles.buttonScanQrRfidTagStyle} />
           </View>

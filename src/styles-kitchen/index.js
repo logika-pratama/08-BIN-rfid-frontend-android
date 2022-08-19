@@ -205,7 +205,7 @@ export default class StylesKitchen {
     },
     surfaceScanQrBleTagContainer: {
       display: 'flex',
-      flexDirection: 'row',
+      flexDirection: 'column',
       justifyContent: 'center',
       margin: 5,
       marginTop: 40,
@@ -214,7 +214,7 @@ export default class StylesKitchen {
     },
     surfaceScanQrRfidTagContainer: {
       display: 'flex',
-      flexDirection: 'row',
+      flexDirection: 'column',
       justifyContent: 'center',
       margin: 5,
       marginTop: 40,
@@ -222,11 +222,11 @@ export default class StylesKitchen {
       backgroundColor: this.colors?.white
     },
     buttonScanQrBleTagStyle: {
-      marginRight: 15,
+      marginTop: 3,
       width: 165
     },
     buttonScanQrRfidTagStyle: {
-      marginRight: 15,
+      marginTop: 3,
       width: 165
     },
     buttonConfirmContainer: {

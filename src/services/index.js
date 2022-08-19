@@ -133,6 +133,34 @@ export default class InstanceServices {
     }
   }
 
+  async tagingBle(data, token) {
+    this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
+
+    try {
+      return await this.instance.post('/tagingBle', data)
+    }
+    catch (err) {
+      if (err.response) {
+        return err.response
+      }
+      return ERROR_CONNECTION
+    }
+  }
+
+  async untagingBle(data, token) {
+    this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
+
+    try {
+      return await this.instance.post('/untagingBle', data)
+    }
+    catch (err) {
+      if (err.response) {
+        return err.response
+      }
+      return ERROR_CONNECTION
+    }
+  }
+
   async detailConfirm(data, token) {
     this.instance.defaults.headers.common['Authorization'] = 'Bearer ' + token
 

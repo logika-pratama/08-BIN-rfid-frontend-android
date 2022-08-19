@@ -5926,7 +5926,7 @@
     "prop-types" "^15.7.2"
     "yargs" "^16.1.1"
 
-"react-native-vision-camera@^2.14.0":
+"react-native-vision-camera@^2.14.0", "react-native-vision-camera@>=2.9.4":
   "integrity" "sha512-fKmDd3e7TRmG86UMch7aBfNDUl6w2JTsclhBOH69IFCs+a72c6QN2HDzeo/dEZYTlCbacZPH/QeBBM5/TWvySg=="
   "resolved" "https://registry.npmjs.org/react-native-vision-camera/-/react-native-vision-camera-2.14.0.tgz"
   "version" "2.14.0"
@@ -7110,6 +7110,11 @@
   "integrity" "sha1-IpnwLG3tMNSllhsLn3RSShj2NPw="
   "resolved" "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz"
   "version" "1.1.2"
+
+"vision-camera-code-scanner@^0.2.0":
+  "integrity" "sha512-H5hVkXfbIcGdg9YlhuS8Y/xDX5e32Vo6eK5FyDQsE9AGVjlqEHMmSLHZg7BX8UUm4ADmiAZc8wzc4n8TUqGr0g=="
+  "resolved" "https://registry.npmjs.org/vision-camera-code-scanner/-/vision-camera-code-scanner-0.2.0.tgz"
+  "version" "0.2.0"
 
 "vlq@^1.0.0":
   "integrity" "sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w=="
