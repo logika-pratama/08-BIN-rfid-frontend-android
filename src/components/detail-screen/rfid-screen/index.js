@@ -4,7 +4,15 @@ import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
 import Dropdown from 'react-native-paper-dropdown'
 import decode from 'jwt-decode'
-import { ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY, ERROR_TITLE, INIT_QR_CODE } from 'react-native-dotenv'
+import {
+  ITAM_API_URL_STAGING,
+  ITAM_TIME_OUT,
+  ITAM_API_KEY,
+  ITAT_API_URL,
+  ITAT_TIME_OUT,
+  ERROR_TITLE,
+  INIT_QR_CODE
+} from 'react-native-dotenv'
 import { useCameraDevices, Camera } from 'react-native-vision-camera'
 import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
 import InstanceServices from '../../../services'
@@ -73,6 +81,8 @@ const RfidScreen = () => {
 
   const RfidService = new InstanceServices()
   const ItamService = new InstanceServices(ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY)
+  const ItatService = new InstanceServices(ITAT_API_URL, ITAT_TIME_OUT)
+
 
   const processToSendData = async searchField => {
     const lastCharSearchField = searchField.charAt(searchField.length - 1)
@@ -236,19 +246,20 @@ const RfidScreen = () => {
             'object_name': 'assetA',
             'object_type': 'assets',
             'picture': `assets/images/${assetId}.jpg`,
-            'date': new Date.now()
+            'date': Date.now()
           }
         ]
 
-        const resp = await RfidService.tagingBle(data, token)
+        const resp = await ItatService.tagingBle(data, token)
+
         if (resp.status) {
           if (resp.status === 200) {
-            const message = resp.data?.message
+            const message = resp.data?.message || resp?.data
             setMessageConfirm(message)
           }
           else {
             if (resp.status === 401) {
-              const message = resp.data?.message
+              const message = resp.data?.message || resp?.data
               Alert.alert(
                 ERROR_TITLE,
                 message
@@ -269,19 +280,20 @@ const RfidScreen = () => {
             'object_name': 'assetA',
             'object_type': 'assets',
             'picture': '',
-            'date': new Date.now()
+            'date': Date.now()
           }
         ]
 
-        const resp = await RfidService.untagingBle(data, token)
+        const resp = await ItatService.untagingBle(data, token)
+
         if (resp.status) {
           if (resp.status === 200) {
-            const message = resp.data?.message
+            const message = resp.data?.message || resp?.data
             setMessageConfirm(message)
           }
           else {
             if (resp.status === 401) {
-              const message = resp.data?.message
+              const message = resp.data?.message || resp?.data
               Alert.alert(
                 ERROR_TITLE,
                 message
