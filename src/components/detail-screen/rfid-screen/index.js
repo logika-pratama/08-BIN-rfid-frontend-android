@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Alert, View, Text, ScrollView, PermissionsAndroid, StyleSheet } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-paper'
@@ -11,10 +11,12 @@ import {
   ITAT_API_URL,
   ITAT_TIME_OUT,
   ERROR_TITLE,
-  INIT_QR_CODE
+  INIT_QR_CODE_BLE,
+  INIT_QR_CODE_RFID,
 } from 'react-native-dotenv'
 import { useCameraDevices, Camera } from 'react-native-vision-camera'
 import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
+import moment from 'moment'
 import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
 import { getEndPointSearch, getEndPointSPrint } from '../../../lib/function-ingredients'
@@ -32,8 +34,8 @@ const RfidScreen = () => {
   const Styles = new StylesKitchen(theme)
   const [activeCameraBle, setActiveCameraBle] = useState(false)
   const [activeCameraRfid, setActiveCameraRfid] = useState(false)
-  const [qrCodeBle, setQrCodeBle] = useState('')
-  const [qrCodeRfid, setQrCodeRfid] = useState('')
+  const [qrCodeBle, setQrCodeBle] = useState([])
+  const [qrCodeRfid, setQrCodeRfid] = useState([])
   const [checkPermissionCamera, setCheckPermissionCamera] = useState(false)
   const [searchField, setSearchField] = useState('')
   const [sPrintList, setSPrintList] = useState([])
@@ -140,13 +142,23 @@ const RfidScreen = () => {
       await RfidService.searchAdd(endPointSearch, token)
     } else {
       const resp = await RfidService.searchGet(endPointSearch, token)
-      if (resp.status === 200) {
+
+      if (resp?.status === 200) {
         const data = resp.data?.data
 
-        setFinalData(prevData => {
-          const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
-          return [...prevData, ...newData]
-        })
+        if (enableTagingBle || enableUntagingBle) {
+          if (activeCameraBle) {
+            // waiting for api detail ble
+          } else if (activeCameraRfid) {
+            setQrCodeRfid(data)
+          }
+        }
+        else {
+          setFinalData(prevData => {
+            const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
+            return [...prevData, ...newData]
+          })
+        }
       }
     }
   }
@@ -196,9 +208,9 @@ const RfidScreen = () => {
     if (enableGateScanning) {
       if (finalData) {
         const tags = finalData.map(({ asset_id }) => asset_id)
-        const sendData = [...tags, deviceId].toString()
-        const finalSendData = { 'tag': sendData }
-        const resp = await RfidService.detailConfirm(finalSendData, token)
+        const sendTags = [...tags, deviceId].toString()
+        const finalSendTags = { 'tag': sendTags }
+        const resp = await RfidService.detailConfirm(finalSendTags, token)
 
         if (resp.status === 200) {
           setFinalData([])
@@ -232,21 +244,28 @@ const RfidScreen = () => {
         setLoadingConfirm(false)
       }
     } else if (enableTagingBle) {
-      if (qrCodeBle && qrCodeRfid) {
+      if (qrCodeBle.length > 0 && qrCodeRfid.length > 0) {
 
-        const assetId = finalData[0]?.asset_id,
-          nameAsset = finalData[0]?.name_asset
+        const tagId = qrCodeBle[0]?.tag_id,
+          nameTag = qrCodeBle[0]?.name_tag
+
+        const assetId = qrCodeRfid[0]?.asset_id,
+          nameAsset = qrCodeRfid[0]?.name_asset
+
+        const date = Date.now()
+
+        const dateFormatted = moment(date).format('YYYYMMDD')
 
         const data = [
           {
-            'tagId': qrCodeBle,
-            'tag_name': '',
+            'tagId': tagId,
+            'tag_name': nameTag,
             'assetId': assetId,
             'name': nameAsset,
             'object_name': 'assetA',
             'object_type': 'assets',
-            'picture': `assets/images/${assetId}.jpg`,
-            'date': Date.now()
+            'picture': !!assetId ? `assets/images/${assetId}.jpg` : '',
+            'date': dateFormatted
           }
         ]
 
@@ -269,18 +288,25 @@ const RfidScreen = () => {
         }
       }
     } else if (enableUntagingBle) {
-      if (qrCodeBle) {
+      if (qrCodeBle.length > 0) {
+
+        const tagId = qrCodeBle[0]?.tag_id,
+          nameTag = qrCodeBle[0]?.name_tag
+
+        const date = Date.now()
+
+        const dateFormatted = moment(date).format('YYYYMMDD')
 
         const data = [
           {
-            'tagId': qrCodeBle,
-            'tag_name': '',
+            'tagId': tagId,
+            'tag_name': nameTag,
             'assetId': '',
             'name': '',
             'object_name': 'assetA',
             'object_type': 'assets',
             'picture': '',
-            'date': Date.now()
+            'date': dateFormatted
           }
         ]
 
@@ -410,29 +436,47 @@ const RfidScreen = () => {
   }, [activeCameraBle, activeCameraRfid])
 
   useEffect(() => {
-    if (barcodes.length > 0) {
-      if (activeCameraBle) {
-        if (barcodes[0].displayValue !== qrCodeBle) {
-          setQrCodeBle(barcodes[0].displayValue)
+    const sendSearchBle = async (displayValue) => {
+      if (activeCameraBle && displayValue) {
+        const tagId = qrCodeBle[0]?.tag_id
+
+        if (displayValue !== tagId) {
+          // waiting for api ble detail
+          const data = [{
+            tag_id: displayValue,
+            name_tag: ''
+          }]
+          //
+
+          setQrCodeBle(data)
           setActiveCameraBle(false)
         }
       }
-      else if (activeCameraRfid) {
-        if (barcodes[0].displayValue !== qrCodeRfid) {
-          setQrCodeRfid(barcodes[0].displayValue)
+      else if (activeCameraRfid && displayValue) {
+        const assetId = qrCodeRfid[0]?.asset_id
+
+        if (displayValue !== assetId) {
+          await sendData(config_menu_rfid_screen, displayValue)
           setActiveCameraRfid(false)
         }
       }
     }
+
+    if (barcodes?.length > 0) {
+      const displayValue = barcodes[0]?.displayValue
+      if (displayValue) {
+        sendSearchBle(displayValue)
+      }
+    }
   }, [barcodes])
 
-  useEffect(() => {
-    if (qrCodeRfid) {
-      (async () => {
-        await sendData(config_menu_rfid_screen, qrCodeRfid, selectedSPrint)
-      })()
-    }
-  }, [qrCodeRfid])
+  // useEffect(() => {
+  //   if (qrCodeRfid) {
+  //     (async () => {
+  //       await sendData(config_menu_rfid_screen, qrCodeRfid)
+  //     })()
+  //   }
+  // }, [qrCodeRfid])
 
   // useEffect(() => {
   //   if (data) {
@@ -454,8 +498,8 @@ const RfidScreen = () => {
 
   const countScan = finalData ? finalData.length : 0
 
-  const qrCodeBleValue = !!qrCodeBle ? qrCodeBle : INIT_QR_CODE,
-    qrCodeRfidValue = !!qrCodeRfid ? qrCodeRfid : INIT_QR_CODE
+  const qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : INIT_QR_CODE_BLE,
+    qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : INIT_QR_CODE_RFID
 
   if (loadingUrlList || loadingConfirm || loadingSprintStockOpname) {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
