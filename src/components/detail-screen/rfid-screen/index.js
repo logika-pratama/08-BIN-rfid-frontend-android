@@ -11,8 +11,9 @@ import {
   ITAT_API_URL,
   ITAT_TIME_OUT,
   ERROR_TITLE,
-  INIT_QR_CODE_BLE,
-  INIT_QR_CODE_RFID,
+  INIT_QR_CODE,
+  DEFAULT_QR_CODE_BLE,
+  DEFAULT_QR_CODE_RFID,
 } from 'react-native-dotenv'
 import { useCameraDevices, Camera } from 'react-native-vision-camera'
 import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
@@ -45,6 +46,10 @@ const RfidScreen = () => {
   const [loadingConfirm, setLoadingConfirm] = useState(false)
   const [loadingUrlList, setLoadingUrlList] = useState(false)
   const [loadingSprintStockOpname, setLoadingSprintStockOpname] = useState(false)
+  const [loadingScanQrCodeBle, setLoadingScanQrCodeBle] = useState(false)
+  const [loadingScanQrCodeRfid, setLoadingScanQrCodeRfid] = useState(false)
+  const [loadingTagingBle, setLoadingTagingBle] = useState(false)
+  const [loadingUntagingBle, setLoadingUntagingBle] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(false)
   const [selectedSPrint, setSelectedSPrint] = useState('')
 
@@ -82,9 +87,11 @@ const RfidScreen = () => {
   const enableUntagingBle = config_menu_rfid_screen.enable_untaging_ble || false
 
   const RfidService = new InstanceServices()
-  const ItamService = new InstanceServices(ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY)
-  const ItatService = new InstanceServices(ITAT_API_URL, ITAT_TIME_OUT)
+  const ItamService = new InstanceServices(ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY) // trough it am
+  const ItatService = new InstanceServices(ITAT_API_URL, ITAT_TIME_OUT) // trough it at ble
 
+  let qrCodeBleValue = INIT_QR_CODE,
+    qrCodeRfidValue = INIT_QR_CODE;
 
   const processToSendData = async searchField => {
     const lastCharSearchField = searchField.charAt(searchField.length - 1)
@@ -135,8 +142,12 @@ const RfidScreen = () => {
     }
   }
 
-  const sendData = async (config_menu_rfid_screen, searchValue, selectedSPrint = null) => {
-    const endPointSearch = getEndPointSearch(config_menu_rfid_screen, searchValue, selectedSPrint)
+  const sendData = async (config_menu_rfid_screen,
+    searchValue,
+    selectedSPrint = null,
+    activeCameraBle = false,
+    activeCameraRfid = false) => {
+    const endPointSearch = getEndPointSearch(config_menu_rfid_screen, searchValue, selectedSPrint, activeCameraBle, activeCameraRfid)
     // if (enableGateScanning || enableStockOpname) { // for testing
     if (enableGateScanning || enableStockOpname || enableMaterialTest) { // for running
       await RfidService.searchAdd(endPointSearch, token)
@@ -148,7 +159,8 @@ const RfidScreen = () => {
 
         if (enableTagingBle || enableUntagingBle) {
           if (activeCameraBle) {
-            // waiting for api detail ble
+            // waiting for api detail ble, done
+            setQrCodeBle(data)
           } else if (activeCameraRfid) {
             setQrCodeRfid(data)
           }
@@ -218,6 +230,7 @@ const RfidScreen = () => {
       }
     } else if (enableSetting) {
       if (urlList) {
+        setLoadingConfirm(false)
         const resp = await RfidService.uriUpdate(urlList, token)
         if (resp.status) {
           if (resp.status === 200) {
@@ -244,8 +257,9 @@ const RfidScreen = () => {
         setLoadingConfirm(false)
       }
     } else if (enableTagingBle) {
-      if (qrCodeBle.length > 0 && qrCodeRfid.length > 0) {
+      setLoadingTagingBle(true)
 
+      if (qrCodeBle.length > 0 && qrCodeRfid.length > 0) {
         const tagId = qrCodeBle[0]?.tag_id,
           nameTag = qrCodeBle[0]?.name_tag
 
@@ -258,9 +272,9 @@ const RfidScreen = () => {
 
         const data = [
           {
-            'tagId': tagId,
+            'tag_id': tagId,
             'tag_name': nameTag,
-            'assetId': assetId,
+            'asset_id': assetId,
             'name': nameAsset,
             'object_name': 'assetA',
             'object_type': 'assets',
@@ -269,16 +283,19 @@ const RfidScreen = () => {
           }
         ]
 
-        const resp = await ItatService.tagingBle(data, token)
+        // const resp = await ItatService.tagingBle(data, token) // trough it at ble
+        const resp = await RfidService.tagingBle(data, token)
 
         if (resp.status) {
           if (resp.status === 200) {
-            const message = resp.data?.message || resp?.data
+            // const message = resp.data?.message || resp?.data // trough it at ble
+            const message = resp.data?.message
             setMessageConfirm(message)
           }
           else {
             if (resp.status === 401) {
-              const message = resp.data?.message || resp?.data
+              // const message = resp.data?.message || resp?.data // trough it at ble
+              const message = resp.data?.message
               Alert.alert(
                 ERROR_TITLE,
                 message
@@ -286,9 +303,12 @@ const RfidScreen = () => {
             }
           }
         }
+
+        setLoadingTagingBle(false)
       }
     } else if (enableUntagingBle) {
       if (qrCodeBle.length > 0) {
+        setLoadingUntagingBle(true)
 
         const tagId = qrCodeBle[0]?.tag_id,
           nameTag = qrCodeBle[0]?.name_tag
@@ -299,9 +319,9 @@ const RfidScreen = () => {
 
         const data = [
           {
-            'tagId': tagId,
+            'tag_id': tagId,
             'tag_name': nameTag,
-            'assetId': '',
+            'asset_id': '',
             'name': '',
             'object_name': 'assetA',
             'object_type': 'assets',
@@ -310,16 +330,19 @@ const RfidScreen = () => {
           }
         ]
 
-        const resp = await ItatService.untagingBle(data, token)
+        // const resp = await ItatService.untagingBle(data, token) // trough it at ble
+        const resp = await RfidService.untagingBle(data, token)
 
         if (resp.status) {
           if (resp.status === 200) {
-            const message = resp.data?.message || resp?.data
+            // const message = resp.data?.message || resp?.data // trough it at ble
+            const message = resp.data?.message
             setMessageConfirm(message)
           }
           else {
             if (resp.status === 401) {
-              const message = resp.data?.message || resp?.data
+              // const message = resp.data?.message || resp?.data // trough it at ble
+              const message = resp.data?.message
               Alert.alert(
                 ERROR_TITLE,
                 message
@@ -327,6 +350,8 @@ const RfidScreen = () => {
             }
           }
         }
+
+        setLoadingUntagingBle(false)
       }
     }
   }
@@ -344,7 +369,8 @@ const RfidScreen = () => {
   useEffect(() => {
     const getListSPrint = async (endPointSPrint) => {
       setLoadingSprintStockOpname(true)
-      const resp = await ItamService.detailSPrintList(endPointSPrint, token)
+      // const resp = await ItamService.detailSPrintList(endPointSPrint, token) // trough it am
+      const resp = await RfidService.detailSPrintList(endPointSPrint, token)
       if (resp.status) {
         if (resp.status === 200) {
           let data = resp.data?.data
@@ -436,27 +462,33 @@ const RfidScreen = () => {
   }, [activeCameraBle, activeCameraRfid])
 
   useEffect(() => {
-    const sendSearchBle = async (displayValue) => {
+    const sendSearchQrCode = async (displayValue) => {
       if (activeCameraBle && displayValue) {
         const tagId = qrCodeBle[0]?.tag_id
 
         if (displayValue !== tagId) {
-          // waiting for api ble detail
-          const data = [{
-            tag_id: displayValue,
-            name_tag: ''
-          }]
+          // waiting for api ble detail, done
+          setLoadingScanQrCodeBle(true)
+          await sendData(config_menu_rfid_screen, displayValue)
+          setLoadingScanQrCodeBle(false)
+          setActiveCameraBle(false)
+
+          // const data = [{
+          //   tag_id: displayValue,
+          //   name_tag: ''
+          // }]
           //
 
-          setQrCodeBle(data)
-          setActiveCameraBle(false)
+          // setQrCodeBle(data)
+          // setActiveCameraBle(false)
         }
-      }
-      else if (activeCameraRfid && displayValue) {
+      } else if (activeCameraRfid && displayValue) {
         const assetId = qrCodeRfid[0]?.asset_id
 
         if (displayValue !== assetId) {
+          setLoadingScanQrCodeRfid(true)
           await sendData(config_menu_rfid_screen, displayValue)
+          setLoadingScanQrCodeRfid(false)
           setActiveCameraRfid(false)
         }
       }
@@ -465,7 +497,7 @@ const RfidScreen = () => {
     if (barcodes?.length > 0) {
       const displayValue = barcodes[0]?.displayValue
       if (displayValue) {
-        sendSearchBle(displayValue)
+        sendSearchQrCode(displayValue)
       }
     }
   }, [barcodes])
@@ -498,10 +530,21 @@ const RfidScreen = () => {
 
   const countScan = finalData ? finalData.length : 0
 
-  const qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : INIT_QR_CODE_BLE,
-    qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : INIT_QR_CODE_RFID
+  if (activeCameraRfid) {
+    qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : DEFAULT_QR_CODE_BLE
+  }
 
-  if (loadingUrlList || loadingConfirm || loadingSprintStockOpname) {
+  if (activeCameraBle) {
+    qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : DEFAULT_QR_CODE_RFID
+  }
+
+  if (loadingUrlList ||
+    loadingConfirm ||
+    loadingSprintStockOpname ||
+    loadingScanQrCodeBle ||
+    loadingScanQrCodeRfid ||
+    loadingTagingBle ||
+    loadingUntagingBle) {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
   }
 
