@@ -530,11 +530,11 @@ const RfidScreen = () => {
 
   const countScan = finalData ? finalData.length : 0
 
-  if (activeCameraRfid) {
+  if (activeCameraBle) {
     qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : DEFAULT_QR_CODE_BLE
   }
 
-  if (activeCameraBle) {
+  if (activeCameraRfid) {
     qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : DEFAULT_QR_CODE_RFID
   }
 
