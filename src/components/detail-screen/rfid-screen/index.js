@@ -91,7 +91,7 @@ const RfidScreen = () => {
   const ItatService = new InstanceServices(ITAT_API_URL, ITAT_TIME_OUT) // trough it at ble
 
   let qrCodeBleValue = INIT_QR_CODE,
-    qrCodeRfidValue = INIT_QR_CODE;
+    qrCodeRfidValue = INIT_QR_CODE
 
   const processToSendData = async searchField => {
     const lastCharSearchField = searchField.charAt(searchField.length - 1)
@@ -154,18 +154,33 @@ const RfidScreen = () => {
     } else {
       const resp = await RfidService.searchGet(endPointSearch, token)
 
-      if (resp?.status === 200) {
-        const data = resp.data?.data
-
-        if (enableTagingBle || enableUntagingBle) {
-          if (activeCameraBle) {
+      if (enableTagingBle || enableUntagingBle) {
+        if (activeCameraBle) {
+          if (resp?.status === 200) {
+            const data = resp.data?.data
             // waiting for api detail ble, done
             setQrCodeBle(data)
-          } else if (activeCameraRfid) {
+          } else if (resp?.status === 404) {
+            // waiting for api detail ble, done
+            const newData = [{
+              tag_id: DEFAULT_QR_CODE_BLE
+            }]
+            setQrCodeBle(newData)
+          }
+        } else if (activeCameraRfid) {
+          if (resp?.status === 200) {
+            const data = resp.data?.data
             setQrCodeRfid(data)
+          } else if (resp?.status === 404) {
+            const newData = [{
+              asset_id: DEFAULT_QR_CODE_RFID
+            }]
+            setQrCodeRfid(newData)
           }
         }
-        else {
+      } else {
+        if (resp?.status === 200) {
+          const data = resp.data?.data
           setFinalData(prevData => {
             const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
             return [...prevData, ...newData]
@@ -463,15 +478,20 @@ const RfidScreen = () => {
 
   useEffect(() => {
     const sendSearchQrCode = async (displayValue) => {
-      if (activeCameraBle && displayValue) {
+      if (activeCameraBle) {
         const tagId = qrCodeBle[0]?.tag_id
 
         if (displayValue !== tagId) {
           // waiting for api ble detail, done
           setLoadingScanQrCodeBle(true)
-          await sendData(config_menu_rfid_screen, displayValue)
-          setLoadingScanQrCodeBle(false)
-          setActiveCameraBle(false)
+          await sendData(
+            config_menu_rfid_screen,
+            displayValue,
+            null,
+            activeCameraBle,
+            activeCameraRfid)
+
+          qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : DEFAULT_QR_CODE_BLE
 
           // const data = [{
           //   tag_id: displayValue,
@@ -482,20 +502,29 @@ const RfidScreen = () => {
           // setQrCodeBle(data)
           // setActiveCameraBle(false)
         }
-      } else if (activeCameraRfid && displayValue) {
+        setActiveCameraBle(false)
+        setLoadingScanQrCodeBle(false)
+      } else if (activeCameraRfid) {
         const assetId = qrCodeRfid[0]?.asset_id
 
         if (displayValue !== assetId) {
           setLoadingScanQrCodeRfid(true)
-          await sendData(config_menu_rfid_screen, displayValue)
-          setLoadingScanQrCodeRfid(false)
-          setActiveCameraRfid(false)
+          await sendData(
+            config_menu_rfid_screen,
+            displayValue,
+            null,
+            activeCameraBle,
+            activeCameraRfid)
+          qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : DEFAULT_QR_CODE_RFID
         }
+        setActiveCameraRfid(false)
+        setLoadingScanQrCodeRfid(false)
       }
     }
 
     if (barcodes?.length > 0) {
       const displayValue = barcodes[0]?.displayValue
+
       if (displayValue) {
         sendSearchQrCode(displayValue)
       }
@@ -530,13 +559,9 @@ const RfidScreen = () => {
 
   const countScan = finalData ? finalData.length : 0
 
-  if (activeCameraBle) {
-    qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : DEFAULT_QR_CODE_BLE
-  }
+  qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : qrCodeBleValue
 
-  if (activeCameraRfid) {
-    qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : DEFAULT_QR_CODE_RFID
-  }
+  qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : qrCodeRfidValue
 
   if (loadingUrlList ||
     loadingConfirm ||

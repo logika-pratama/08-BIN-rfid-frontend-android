@@ -35,11 +35,7 @@ const WebViewScreen = () => {
 	}
 
 	const handleMessage = (e) => {
-		console.log('e')
-		console.log(e)
 	}
-
-	console.log('masuk')
 
 	const renderLoading = () => <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
 
