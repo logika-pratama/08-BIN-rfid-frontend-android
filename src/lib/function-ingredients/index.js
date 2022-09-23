@@ -50,4 +50,12 @@ function getEndPointSPrint(config_menu_rfid_screen) {
   return endPoint
 }
 
-export { getEndPointSearch, getEndPointSPrint }
+function pushWithoutDuplicate(arr, newElement) {
+  const newArr = [...arr]
+  if (!newArr.includes(newElement)) {
+    newArr.push(newElement)
+  }
+  return newArr
+}
+
+export { getEndPointSearch, getEndPointSPrint, pushWithoutDuplicate }

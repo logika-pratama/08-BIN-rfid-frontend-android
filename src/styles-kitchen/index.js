@@ -68,6 +68,16 @@ export default class StylesKitchen {
     }
   })
 
+  multipleNotificationsStyles = () => this.createStyles({
+    multipleNotificationsStyle: {
+      display: 'flex',
+      flex: 1,
+      flexWrap: 'wrap',
+      flexDirection: 'column',
+      backgroundColor: this.colors?.primary
+    }
+  })
+
   loginScreenStyles = () => this.createStyles({
     loginScreenContainer: {
       display: 'flex',

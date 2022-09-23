@@ -20,8 +20,8 @@ import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
 import moment from 'moment'
 import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
-import { getEndPointSearch, getEndPointSPrint } from '../../../lib/function-ingredients'
-import { Surface, Box, Button, Field, Notification } from '../../../lib/components-ingredients'
+import { getEndPointSearch, getEndPointSPrint, pushWithoutDuplicate } from '../../../lib/function-ingredients'
+import { Surface, Box, Button, Field, Notification, MultipleNotifications } from '../../../lib/components-ingredients'
 import LoadingScreen from '../../loading-screen'
 
 // for testing
@@ -43,13 +43,12 @@ const RfidScreen = () => {
   const [finalData, setFinalData] = useState([])
   const [urlList, setUrlList] = useState([])
   const [messageConfirm, setMessageConfirm] = useState('')
+  const [messagesConfirm, setMessagesConfirm] = useState([])
   const [loadingConfirm, setLoadingConfirm] = useState(false)
   const [loadingUrlList, setLoadingUrlList] = useState(false)
   const [loadingSprintStockOpname, setLoadingSprintStockOpname] = useState(false)
   const [loadingScanQrCodeBle, setLoadingScanQrCodeBle] = useState(false)
   const [loadingScanQrCodeRfid, setLoadingScanQrCodeRfid] = useState(false)
-  const [loadingTagingBle, setLoadingTagingBle] = useState(false)
-  const [loadingUntagingBle, setLoadingUntagingBle] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(false)
   const [selectedSPrint, setSelectedSPrint] = useState('')
 
@@ -232,6 +231,7 @@ const RfidScreen = () => {
   }
 
   const handleConfrim = async () => {
+    setLoadingConfirm(true)
     if (enableGateScanning) {
       if (finalData) {
         const tags = finalData.map(({ asset_id }) => asset_id)
@@ -245,7 +245,6 @@ const RfidScreen = () => {
       }
     } else if (enableSetting) {
       if (urlList) {
-        setLoadingConfirm(false)
         const resp = await RfidService.uriUpdate(urlList, token)
         if (resp.status) {
           if (resp.status === 200) {
@@ -269,11 +268,8 @@ const RfidScreen = () => {
             message
           )
         }
-        setLoadingConfirm(false)
       }
     } else if (enableTagingBle) {
-      setLoadingTagingBle(true)
-
       if (qrCodeBle.length > 0 && qrCodeRfid.length > 0) {
         const tagId = qrCodeBle[0]?.tag_id,
           nameTag = qrCodeBle[0]?.name_tag
@@ -281,98 +277,131 @@ const RfidScreen = () => {
         const assetId = qrCodeRfid[0]?.asset_id,
           nameAsset = qrCodeRfid[0]?.name_asset
 
-        const date = Date.now()
-
-        const dateFormatted = moment(date).format('YYYYMMDD')
-
-        const data = [
-          {
-            'tag_id': tagId,
-            'tag_name': nameTag,
-            'asset_id': assetId,
-            'name': nameAsset,
-            'object_name': 'assetA',
-            'object_type': 'assets',
-            'picture': !!assetId ? `assets/images/${assetId}.jpg` : '',
-            'date': dateFormatted
+        if (tagId === DEFAULT_QR_CODE_BLE || assetId === DEFAULT_QR_CODE_RFID) {
+          if (tagId === DEFAULT_QR_CODE_BLE) {
+            setMessagesConfirm(messages => {
+              return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_BLE)
+            })
           }
-        ]
-
-        // const resp = await ItatService.tagingBle(data, token) // trough it at ble
-        const resp = await RfidService.tagingBle(data, token)
-
-        if (resp.status) {
-          if (resp.status === 200) {
-            // const message = resp.data?.message || resp?.data // trough it at ble
-            const message = resp.data?.message
-            setMessageConfirm(message)
+          if (assetId === DEFAULT_QR_CODE_RFID) {
+            setMessagesConfirm(messages => {
+              return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_RFID)
+            })
           }
-          else {
-            if (resp.status === 401) {
+        } else {
+          const date = Date.now()
+
+          const dateFormatted = moment(date).format('YYYYMMDD')
+
+          const data = [
+            {
+              'tag_id': tagId,
+              'tag_name': nameTag,
+              'asset_id': assetId,
+              'name': nameAsset,
+              'object_name': 'assetA',
+              'object_type': 'assets',
+              'picture': `assets/images/${assetId}.jpg`,
+              'date': dateFormatted
+            }
+          ]
+
+          // const resp = await ItatService.tagingBle(data, token) // trough it at ble
+          const resp = await RfidService.tagingBle(data, token)
+
+          if (resp.status) {
+            if (resp.status === 200) {
               // const message = resp.data?.message || resp?.data // trough it at ble
               const message = resp.data?.message
-              Alert.alert(
-                ERROR_TITLE,
-                message
-              )
+              setMessagesConfirm(messages => {
+                return pushWithoutDuplicate(messages, message)
+              })
+            }
+            else {
+              if (resp.status === 401) {
+                // const message = resp.data?.message || resp?.data // trough it at ble
+                const message = resp.data?.message
+                Alert.alert(
+                  ERROR_TITLE,
+                  message
+                )
+              }
             }
           }
         }
-
-        setLoadingTagingBle(false)
+      } else {
+        setMessagesConfirm(messages => {
+          return pushWithoutDuplicate(messages, INIT_QR_CODE)
+        })
       }
     } else if (enableUntagingBle) {
       if (qrCodeBle.length > 0) {
-        setLoadingUntagingBle(true)
-
         const tagId = qrCodeBle[0]?.tag_id,
           nameTag = qrCodeBle[0]?.name_tag
 
-        const date = Date.now()
+        if (tagId === DEFAULT_QR_CODE_BLE) {
+          setMessagesConfirm(messages => {
+            return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_BLE)
+          })
+        } else {
+          const date = Date.now()
 
-        const dateFormatted = moment(date).format('YYYYMMDD')
+          const dateFormatted = moment(date).format('YYYYMMDD')
 
-        const data = [
-          {
-            'tag_id': tagId,
-            'tag_name': nameTag,
-            'asset_id': '',
-            'name': '',
-            'object_name': 'assetA',
-            'object_type': 'assets',
-            'picture': '',
-            'date': dateFormatted
-          }
-        ]
+          const data = [
+            {
+              'tag_id': tagId,
+              'tag_name': nameTag,
+              'asset_id': '',
+              'name': '',
+              'object_name': 'assetA',
+              'object_type': 'assets',
+              'picture': '',
+              'date': dateFormatted
+            }
+          ]
 
-        // const resp = await ItatService.untagingBle(data, token) // trough it at ble
-        const resp = await RfidService.untagingBle(data, token)
+          // const resp = await ItatService.untagingBle(data, token) // trough it at ble
+          const resp = await RfidService.untagingBle(data, token)
 
-        if (resp.status) {
-          if (resp.status === 200) {
-            // const message = resp.data?.message || resp?.data // trough it at ble
-            const message = resp.data?.message
-            setMessageConfirm(message)
-          }
-          else {
-            if (resp.status === 401) {
+          if (resp.status) {
+            if (resp.status === 200) {
               // const message = resp.data?.message || resp?.data // trough it at ble
               const message = resp.data?.message
-              Alert.alert(
-                ERROR_TITLE,
-                message
-              )
+              setMessagesConfirm(messages => {
+                return pushWithoutDuplicate(messages, message)
+              })
+            }
+            else {
+              if (resp.status === 401) {
+                // const message = resp.data?.message || resp?.data // trough it at ble
+                const message = resp.data?.message
+                Alert.alert(
+                  ERROR_TITLE,
+                  message
+                )
+              }
             }
           }
         }
-
-        setLoadingUntagingBle(false)
+      } else {
+        setMessagesConfirm(messages => {
+          return pushWithoutDuplicate(messages, INIT_QR_CODE)
+        })
       }
     }
+    setLoadingConfirm(false)
   }
 
   const handleDismissNotification = () => {
     setMessageConfirm('')
+  }
+
+  const handleDismissMultipleNotification = (idx) => {
+    setMessagesConfirm(messages => {
+      const rest = messages.splice(idx, 1)
+      return messages
+    })
   }
 
   useEffect(() => {
@@ -563,13 +592,7 @@ const RfidScreen = () => {
 
   qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : qrCodeRfidValue
 
-  if (loadingUrlList ||
-    loadingConfirm ||
-    loadingSprintStockOpname ||
-    loadingScanQrCodeBle ||
-    loadingScanQrCodeRfid ||
-    loadingTagingBle ||
-    loadingUntagingBle) {
+  if (loadingUrlList || loadingSprintStockOpname || loadingScanQrCodeBle || loadingScanQrCodeRfid) {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
   }
 
@@ -738,14 +761,25 @@ const RfidScreen = () => {
       {
         confirm_button &&
         <View style={rfidScreenStyles.buttonConfirmContainer}>
-          <Button onPress={handleConfrim} label='Konfirmasi' customButtonStyles={rfidScreenStyles.buttonConfirmStyle} />
+          <Button
+            customButtonStyles={rfidScreenStyles.buttonConfirmStyle}
+            label='Konfirmasi'
+            loading={loadingConfirm}
+            onPress={handleConfrim} />
         </View>
       }
 
       {
-        !!messageConfirm &&
+        // !!messageConfirm &&
         <View style={rfidScreenStyles.notificationUrlContainer}>
-          <Notification visible={!!messageConfirm} duration={3000} message={messageConfirm} onDismiss={handleDismissNotification} />
+          <Notification duration={3000} message={messageConfirm} onDismiss={handleDismissNotification} />
+        </View>
+      }
+
+      {
+        // messagesConfirm.length > 0 &&
+        <View style={rfidScreenStyles.notificationUrlContainer}>
+          <MultipleNotifications duration={3000} messages={messagesConfirm} onDismiss={handleDismissMultipleNotification} />
         </View>
       }
 

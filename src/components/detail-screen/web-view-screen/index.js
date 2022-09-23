@@ -8,7 +8,7 @@ import LoadingScreen from '../../loading-screen';
 import StylesKitchen from '../../../styles-kitchen'
 
 const intervalPostMessage = `(function() {
-    window.ReactNativeWebView.postMessage();
+    window.ReactNativeWebView.postMessage('WebView');
 })();`
 
 
@@ -42,6 +42,7 @@ const WebViewScreen = () => {
 	return (
 		<View style={webViewStyles.webViewContainer}>
 			<WebView
+				javaScriptEnabled
 				injectedJavaScript={intervalPostMessage}
 				source={{ uri: url_screen }}
 				startInLoadingState

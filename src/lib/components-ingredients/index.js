@@ -1,5 +1,5 @@
 import React from 'react'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, View, Text } from 'react-native'
 import { useTheme, TextInput as TextInputPaper, Snackbar, Surface as SurfacePaper, FAB } from 'react-native-paper'
 import StylesKitchen from '../../styles-kitchen'
 
@@ -44,7 +44,7 @@ export function Field({ selectedIndex, selectedMenuId, selectedUrlScreen, select
   )
 }
 
-export function Notification({ visible, children, message, duration, onDismiss, customNotificationStyle }) {
+export function Notification({ children, message, duration, onDismiss, customNotificationStyle }) {
   const theme = useTheme()
   const Styles = new StylesKitchen(theme)
   const notificationStyles = Styles.notificationStyles()
@@ -55,13 +55,51 @@ export function Notification({ visible, children, message, duration, onDismiss, 
 
   return (
     <Snackbar
-      style={[notificationStyles.notificationStyle, customNotificationStyle]}
-      visible={visible}
+      wrapperStyle={[notificationStyles.notificationStyle, customNotificationStyle]}
+      visible={!!message}
       duration={duration}
       onDismiss={handleDismiss}>
       {children ? children : message}
     </Snackbar>
   )
+}
+
+export function MultipleNotifications({ messages, duration, onDismiss, customMultipleNotificationsStyle }) {
+  const theme = useTheme()
+  const Styles = new StylesKitchen(theme)
+  const multipleNotificationsStyles = Styles.multipleNotificationsStyles()
+
+  const handleDismiss = (idx) => () => {
+    onDismiss(idx)
+  }
+
+  if (messages.length > 0) {
+    return messages.map((message, idx) => (
+      <Snackbar
+        key={idx}
+        wrapperStyle={[multipleNotificationsStyles.multipleNltotificationsStyle, customMultipleNotificationsStyle]}
+        visible={true}
+        duration={duration}
+        onDismiss={handleDismiss(idx)}>
+        {message}
+      </Snackbar>
+    ))
+    // return <View style={[multipleNotificationsStyles.multipleNltotificationsStyle, customMultipleNotificationsStyle]}>
+    //   {messages.map((message, idx) => (
+    //     <Text
+    //       key={idx}>
+    //       {message}
+    //     </Text >
+    //   ))}
+    // </View>
+  } else {
+    return <Snackbar
+      style={[multipleNotificationsStyles.multipleNltotificationsStyle, customMultipleNotificationsStyle]}
+      visible={false}
+      duration={duration}>
+      {messages}
+    </ Snackbar>
+  }
 }
 
 export function Box({ children, customBoxStyle, elevation }) {
