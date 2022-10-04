@@ -1,4 +1,4 @@
-package com.polrirfidfrontendandroid;
+package com.demo.rfidscannerwl;
 
 import com.facebook.react.ReactActivity;
 import android.os.Bundle;
