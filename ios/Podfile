@@ -3,7 +3,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '11.0'
 
-target 'PolriRfidFrontendAndroid' do
+target 'RFIDScannerWL' do
   config = use_native_modules!
 
   use_react_native!(
@@ -16,7 +16,7 @@ target 'PolriRfidFrontendAndroid' do
 
   pod 'react-native-webview', :path => '../node_modules/react-native-webview'
 
-  target 'PolriRfidFrontendAndroidTests' do
+  target 'RFIDScannerWLTests' do
     inherit! :complete
     # Pods for testing
   end

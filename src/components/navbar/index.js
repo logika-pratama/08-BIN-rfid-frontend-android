@@ -16,16 +16,16 @@ const NavbarHomeScreen = () => {
   const whiteColor = theme.colors.white
   const { token } = route.params
 
-  const { id_user, Device_ID, idaccount } = decode(token)
+  // const { id_user, Device_ID, idaccount } = decode(token)
 
   const handleLogout = async () => {
     await deleteToken()
   }
 
-  const accountInfo = Device_ID ? `${id_user}/${Device_ID}` : `${id_user}`
+  // const accountInfo = Device_ID ? `${id_user}/${Device_ID}` : `${id_user}`
   return (
     <View style={navBarStyles.navbarContainer}>
-      <View style={navBarStyles.imageContainer} >
+      {/* <View style={navBarStyles.imageContainer} >
         <Image
           style={navBarStyles.imageStyle}
           source={DivTikPolri}
@@ -36,7 +36,7 @@ const NavbarHomeScreen = () => {
           {accountInfo}
         </Text>
         <IconButton icon='logout' color={whiteColor} size={25} onPress={handleLogout} />
-      </View>
+      </View> */}
     </View>
   )
 }

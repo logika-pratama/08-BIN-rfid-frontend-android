@@ -1,22 +1,52 @@
 [
   {
-    "asset_id": "1000000000009",
-    "name_asset": "Laptop"
+    "rfid_id": "E280699500005008D643DFF",
+    "asset_id": "213124141222",
+    "name_asset": "Photocopy"
   },
   {
-    "asset_id": "1000000000010",
-    "name_asset": "Handphone"
+    "rfid_id": "E280699500005008D643DB2",
+    "asset_id": "2134099087934229",
+    "name_asset": "Belleza 3"
   },
   {
-    "asset_id": "1000000000011",
-    "name_asset": "Tas"
+    "rfid_id": "E280699500005008D643DA5",
+    "asset_id": "JF01298738K00",
+    "name_asset": "Kendaraan operasional"
   },
   {
-    "asset_id": "1000000000012",
-    "name_asset": "Telepon"
+    "rfid_id": "E280699500005008D643DED",
+    "asset_id": "C10A165381",
+    "name_asset": "Fujitsu Scanner"
   },
   {
-    "asset_id": "1000000000013",
-    "name_asset": "Buku"
+    "rfid_id": "E280699500004008D643DD6",
+    "asset_id": "BCG-597C-E1321",
+    "name_asset": "iPhone 13 - Spare"
+  },
+  {
+    "rfid_id": "E280699500004008D643E04",
+    "asset_id": "VM3",
+    "name_asset": "Macbook Air Pro"
+  },
+  {
+    "rfid_id": "E280699500005008D643DC5",
+    "asset_id": "F1-7193",
+    "name_asset": "Fujitsu F1 7160"
+  },
+  {
+    "rfid_id": "E280699500004008D643DD5",
+    "asset_id": "MT-221-022",
+    "name_asset": "Fujitsu Monitor"
+  },
+  {
+    "rfid_id": "E280699500005008D643DD4",
+    "asset_id": "CZC5310CDM625",
+    "name_asset": "SA-EXCH-SERV01"
+  },
+  {
+    "rfid_id": "E280699500004008D643DC1",
+    "asset_id": "CZC3400FN948",
+    "name_asset": "EMEA-DEPOT-SERV02"
   }
 ]

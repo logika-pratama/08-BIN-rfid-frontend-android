@@ -84,7 +84,8 @@ const NavigationStack = () => {
   return (
     <SafeAreaView style={navigationStackStyles.navigationStackContainer}>
       <NavigationContainer>
-        {authData ? <AppStack token={authData.jwtToken} /> : <LoginStack />}
+        {/* {authData ? <AppStack token={authData.jwtToken} /> : <LoginStack />} */}
+        <AppStack token={"authData.jwtToken"} />
       </NavigationContainer>
     </SafeAreaView>
   )

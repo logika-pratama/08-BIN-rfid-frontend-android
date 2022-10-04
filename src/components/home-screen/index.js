@@ -8,6 +8,46 @@ import InstanceServices from '../../services'
 import StylesKitchen from '../../styles-kitchen'
 import LoadingScreen from '../loading-screen'
 
+const dataMenu = [
+  {
+    "id": 6,
+    "title": "Memindai Barang",
+    "integration_module_screen": false,
+    "camera_action_ble": false,
+    "camera_action_rfid": false,
+    "dropdown": false,
+    "table": true,
+    "rfid_screen": true,
+    "menu_order": 2,
+    "box": true,
+    "table_headers": [
+      {
+        "name": "asset_id",
+        "label": "ID Aset"
+      },
+      {
+        "name": "name_asset",
+        "label": "Name Aset"
+      }
+    ],
+    "search_field": true,
+    "setting_url_form": false,
+    "confirm_button": true,
+    "config_menu_rfid_screen": {
+      "enable_setting": false,
+      "enable_scanning": false,
+      "enable_scan_item": true,
+      "enable_taging_ble": false,
+      "enable_stock_opname": false,
+      "enable_untaging_ble": false,
+      "enable_gate_scanning": false,
+      "enable_material_test": false,
+      "enable_scan_monitoring": false
+    },
+    "url_screen": ""
+  }
+]
+
 const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
   const {
     id,
@@ -81,53 +121,55 @@ const HomeScreen = () => {
 
   const RfidService = new InstanceServices()
 
-  useEffect(() => {
-    const requestCameraPermission = async () => {
-      try {
-        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA)
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log("You can use the camera");
-        } else {
-          console.log("Camera permission denied");
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    }
+  // useEffect(() => {
+  //   const requestCameraPermission = async () => {
+  //     try {
+  //       const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA)
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         console.log("You can use the camera");
+  //       } else {
+  //         console.log("Camera permission denied");
+  //       }
+  //     } catch (err) {
+  //       console.warn(err);
+  //     }
+  //   }
 
-    if (homeMenu) {
-      requestCameraPermission()
-    }
-  }, [homeMenu])
+  //   if (homeMenu) {
+  //     requestCameraPermission()
+  //   }
+  // }, [homeMenu])
 
   useEffect(() => {
     const getHomeMenuList = async () => {
-      setLoadingMenu(true)
-      const resp = await RfidService.homeMenuList(token)
+      // setLoadingMenu(true)
+      // const resp = await RfidService.homeMenuList(token)
 
-      if (resp.status) {
-        if (resp.status === 200) {
-          const data = resp.data?.data
-          setHomeMenu(data)
-        }
-        else {
-          if (resp.status === 401) {
-            const message = resp.data.message
-            Alert.alert(
-              ERROR_TITLE,
-              message
-            )
-          }
-        }
-      }
-      else {
-        const message = resp
-        Alert.alert(
-          ERROR_TITLE,
-          message
-        )
-      }
-      setLoadingMenu(false)
+      // if (resp.status) {
+      //   if (resp.status === 200) {
+      //     const data = resp.data?.data
+      //     setHomeMenu(data)
+      //   }
+      //   else {
+      //     if (resp.status === 401) {
+      //       const message = resp.data.message
+      //       Alert.alert(
+      //         ERROR_TITLE,
+      //         message
+      //       )
+      //     }
+      //   }
+      // }
+      // else {
+      //   const message = resp
+      //   Alert.alert(
+      //     ERROR_TITLE,
+      //     message
+      //   )
+      // }
+      // setLoadingMenu(false)
+
+      setHomeMenu(dataMenu)
     }
 
     getHomeMenuList()

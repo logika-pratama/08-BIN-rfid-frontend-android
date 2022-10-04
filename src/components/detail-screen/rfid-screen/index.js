@@ -25,7 +25,7 @@ import { Surface, Box, Button, Field, Notification, MultipleNotifications } from
 import LoadingScreen from '../../loading-screen'
 
 // for testing
-import DataMaterialTest from '../../../data-dummy/material-test.json'
+import ScanningItem from '../../../data-dummy/scanning-item.json'
 // end 
 
 const RfidScreen = () => {
@@ -74,7 +74,7 @@ const RfidScreen = () => {
     checkInverted: true,
   })
 
-  const { Device_ID: deviceId } = decode(token)
+  // const { Device_ID: deviceId } = decode(token)
   const rfidScreenStyles = Styles.rfidScreenStyles()
 
   const enableStockOpname = config_menu_rfid_screen.enable_stock_opname || false
@@ -82,6 +82,7 @@ const RfidScreen = () => {
   const enableGateScanning = config_menu_rfid_screen.enable_gate_scanning || false
   const enableSetting = config_menu_rfid_screen.enable_setting || false
   const enableScanning = config_menu_rfid_screen.enable_scanning || false
+  const enableScanItem = config_menu_rfid_screen.enable_scan_item || false
   const enableTagingBle = config_menu_rfid_screen.enable_taging_ble || false
   const enableUntagingBle = config_menu_rfid_screen.enable_untaging_ble || false
 
@@ -102,15 +103,15 @@ const RfidScreen = () => {
       if (finalArrText) {
         const filteredData = finalArrText.filter(el => {
           if (enableScanning) {
-            return el && finalData.map(({ rfid_tag }) => {
-              if (el !== rfid_tag) {
+            return el && finalData.map(({ rfid_id }) => {
+              if (el !== rfid_id) {
                 return el
               }
             })
           }
           else {
-            return el && finalData.map(({ asset_id }) => {
-              if (el !== asset_id) {
+            return el && finalData.map(({ rfid_id }) => {
+              if (el !== rfid_id) {
                 return el
               }
             })
@@ -122,11 +123,11 @@ const RfidScreen = () => {
 
           if (enableScanning) {
             const data = [{
-              "rfid_tag": searchValue,
+              "rfid_id": searchValue,
             }]
 
             setFinalData(prevData => {
-              const newData = data.filter(({ rfid_tag: tagCurr }) => !prevData.some(({ rfid_tag: tagPrev }) => tagPrev === tagCurr))
+              const newData = data.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
               return [...prevData, ...newData]
             })
           }
@@ -172,18 +173,32 @@ const RfidScreen = () => {
             setQrCodeRfid(data)
           } else if (resp?.status === 404) {
             const newData = [{
-              asset_id: DEFAULT_QR_CODE_RFID
+              rfid_id: DEFAULT_QR_CODE_RFID
             }]
             setQrCodeRfid(newData)
           }
         }
       } else {
-        if (resp?.status === 200) {
-          const data = resp.data?.data
+        // demo
+        if (enableScanItem) {
+          let data = []
+          const filteredData = ScanningItem.find(({ rfid_id }) => rfid_id === searchValue)
+          if (filteredData) {
+            data = [filteredData]
+          }
+
           setFinalData(prevData => {
-            const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
+            const newData = data.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
             return [...prevData, ...newData]
-          })
+          }) // end demo
+        } else {
+          if (resp?.status === 200) {
+            const data = resp.data?.data
+            setFinalData(prevData => {
+              const newData = data.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
+              return [...prevData, ...newData]
+            })
+          }
         }
       }
     }
@@ -234,7 +249,7 @@ const RfidScreen = () => {
     setLoadingConfirm(true)
     if (enableGateScanning) {
       if (finalData) {
-        const tags = finalData.map(({ asset_id }) => asset_id)
+        const tags = finalData.map(({ rfid_id }) => rfid_id)
         const sendTags = [...tags, deviceId].toString()
         const finalSendTags = { 'tag': sendTags }
         const resp = await RfidService.detailConfirm(finalSendTags, token)
@@ -274,16 +289,16 @@ const RfidScreen = () => {
         const tagId = qrCodeBle[0]?.tag_id,
           nameTag = qrCodeBle[0]?.name_tag
 
-        const assetId = qrCodeRfid[0]?.asset_id,
+        const rfidId = qrCodeRfid[0]?.rfid_id,
           nameAsset = qrCodeRfid[0]?.name_asset
 
-        if (tagId === DEFAULT_QR_CODE_BLE || assetId === DEFAULT_QR_CODE_RFID) {
+        if (tagId === DEFAULT_QR_CODE_BLE || rfidId === DEFAULT_QR_CODE_RFID) {
           if (tagId === DEFAULT_QR_CODE_BLE) {
             setMessagesConfirm(messages => {
               return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_BLE)
             })
           }
-          if (assetId === DEFAULT_QR_CODE_RFID) {
+          if (rfidId === DEFAULT_QR_CODE_RFID) {
             setMessagesConfirm(messages => {
               return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_RFID)
             })
@@ -297,11 +312,11 @@ const RfidScreen = () => {
             {
               'tag_id': tagId,
               'tag_name': nameTag,
-              'asset_id': assetId,
+              'rfid_id': rfidId,
               'name': nameAsset,
               'object_name': 'assetA',
               'object_type': 'assets',
-              'picture': `assets/images/${assetId}.jpg`,
+              'picture': `assets/images/${rfidId}.jpg`,
               'date': dateFormatted
             }
           ]
@@ -352,7 +367,7 @@ const RfidScreen = () => {
             {
               'tag_id': tagId,
               'tag_name': nameTag,
-              'asset_id': '',
+              'rfid_id': '',
               'name': '',
               'object_name': 'assetA',
               'object_type': 'assets',
@@ -534,9 +549,9 @@ const RfidScreen = () => {
         setActiveCameraBle(false)
         setLoadingScanQrCodeBle(false)
       } else if (activeCameraRfid) {
-        const assetId = qrCodeRfid[0]?.asset_id
+        const rfidId = qrCodeRfid[0]?.rfid_id
 
-        if (displayValue !== assetId) {
+        if (displayValue !== rfidId) {
           setLoadingScanQrCodeRfid(true)
           await sendData(
             config_menu_rfid_screen,
@@ -544,7 +559,7 @@ const RfidScreen = () => {
             null,
             activeCameraBle,
             activeCameraRfid)
-          qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : DEFAULT_QR_CODE_RFID
+          qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.rfid_id : DEFAULT_QR_CODE_RFID
         }
         setActiveCameraRfid(false)
         setLoadingScanQrCodeRfid(false)
@@ -573,7 +588,7 @@ const RfidScreen = () => {
   //     // if (!enableMaterialTest) { // this is will be deleted if uji mat not testing
   //     data &&
   //       setFinalData(prevData => {
-  //         const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
+  //         const newData = data.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
   //         return [...prevData, ...newData]
   //       })
   //     // } // materialTest still using testing (dummy)
@@ -590,7 +605,7 @@ const RfidScreen = () => {
 
   qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : qrCodeBleValue
 
-  qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : qrCodeRfidValue
+  qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.rfid_id : qrCodeRfidValue
 
   if (loadingUrlList || loadingSprintStockOpname || loadingScanQrCodeBle || loadingScanQrCodeRfid) {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
