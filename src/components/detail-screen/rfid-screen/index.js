@@ -5,6 +5,8 @@ import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-p
 import Dropdown from 'react-native-paper-dropdown'
 import decode from 'jwt-decode'
 import {
+  SHEET_DB_URL,
+  SHEET_DB_TIMEOUT,
   ITAM_API_URL_STAGING,
   ITAM_TIME_OUT,
   ITAM_API_KEY,
@@ -46,6 +48,8 @@ const RfidScreen = () => {
   const [messagesConfirm, setMessagesConfirm] = useState([])
   const [loadingConfirm, setLoadingConfirm] = useState(false)
   const [loadingUrlList, setLoadingUrlList] = useState(false)
+  const [sheetDb, setSheetDb] = useState([])
+  const [loadingSheetDb, setLoadingSheetDb] = useState(false)
   const [loadingSprintStockOpname, setLoadingSprintStockOpname] = useState(false)
   const [loadingScanQrCodeBle, setLoadingScanQrCodeBle] = useState(false)
   const [loadingScanQrCodeRfid, setLoadingScanQrCodeRfid] = useState(false)
@@ -87,6 +91,7 @@ const RfidScreen = () => {
   const enableUntagingBle = config_menu_rfid_screen.enable_untaging_ble || false
 
   const RfidService = new InstanceServices()
+  const SheetDbService = new InstanceServices(SHEET_DB_URL, SHEET_DB_TIMEOUT)
   const ItamService = new InstanceServices(ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY) // trough it am
   const ItatService = new InstanceServices(ITAT_API_URL, ITAT_TIME_OUT) // trough it at ble
 
@@ -181,15 +186,15 @@ const RfidScreen = () => {
       } else {
         // demo
         if (enableScanItem) {
-          let data = []
-          const filteredData = ScanningItem.find(({ rfid_id }) => rfid_id === searchValue)
+          let newData = []
+          let filteredData = ScanningItem.find(({ rfid_id }) => rfid_id === searchValue)
           if (filteredData) {
-            data = [filteredData]
+            newData = [...newData, filteredData]
           }
 
           setFinalData(prevData => {
-            const newData = data.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
-            return [...prevData, ...newData]
+            const filteredData = newData.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
+            return [...prevData, ...filteredData]
           }) // end demo
         } else {
           if (resp?.status === 200) {
@@ -419,6 +424,14 @@ const RfidScreen = () => {
     })
   }
 
+  const handlePressRowTable = (el) => () => {
+    if (enableScanItem) {
+      navigation.navigate('detail-secondary', {
+        title, ...el
+      })
+    }
+  }
+
   useEffect(() => {
     navigation.setOptions({
       title
@@ -575,6 +588,32 @@ const RfidScreen = () => {
     }
   }, [barcodes])
 
+  useEffect(() => {
+    const getDataFromSheetDb = async (endPoint) => {
+      setLoadingSheetDb(true)
+      const resp = await SheetDbService.getSheetDb(endPoint)
+      if (resp.status) {
+        if (resp.status === 200) {
+          const data = resp.data
+          setSheetDb(data)
+        }
+      }
+      else {
+        const message = resp
+        Alert.alert(
+          ERROR_TITLE,
+          message
+        )
+        navigation.goBack()
+      }
+      setLoadingSheetDb(false)
+    }
+
+    if (enableScanItem) {
+      // getDataFromSheetDb('/5ueoikmvi29vt')
+    }
+  }, [])
+
   // useEffect(() => {
   //   if (qrCodeRfid) {
   //     (async () => {
@@ -607,7 +646,7 @@ const RfidScreen = () => {
 
   qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.rfid_id : qrCodeRfidValue
 
-  if (loadingUrlList || loadingSprintStockOpname || loadingScanQrCodeBle || loadingScanQrCodeRfid) {
+  if (loadingUrlList || loadingSprintStockOpname || loadingScanQrCodeBle || loadingScanQrCodeRfid || loadingSheetDb) {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
   }
 
@@ -738,7 +777,7 @@ const RfidScreen = () => {
             {/* Table Body */}
             {
               finalData?.map((row, idx) =>
-                <DataTable.Row key={idx}>
+                <DataTable.Row key={idx} onPress={handlePressRowTable(row)}>
                   {table_headers?.map(({ name: col }, idx) => {
                     return <View key={idx} style={rfidScreenStyles.tableBodyStyle}>
                       <Text numberOfLines={5} maxLength={10} style={rfidScreenStyles.tableBodyTitleText}>

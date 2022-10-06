@@ -6,6 +6,7 @@ import { useTheme } from 'react-native-paper'
 import { useAuth } from '../contexts'
 import HomeScreen from '../components/home-screen'
 import DetailScreen from '../components/detail-screen'
+import DetailSecondaryScreen from '../components/detail-secondary-screen'
 import IntegrationModuleScreen from '../components/integration-module-screen'
 import LoginScreen from '../components/login-screen'
 import StylesKitchen from '../styles-kitchen'
@@ -44,6 +45,18 @@ const AppStack = ({ token }) => {
       <Stack.Screen
         name='detail'
         component={DetailScreen}
+        options={({ route }) => ({
+          title: route.params.title,
+          headerStyle: {
+            backgroundColor: primaryColor
+          },
+          headerTintColor: whiteColor,
+        })}
+        initialParams={{ token }}
+      />
+      <Stack.Screen
+        name='detail-secondary'
+        component={DetailSecondaryScreen}
         options={({ route }) => ({
           title: route.params.title,
           headerStyle: {

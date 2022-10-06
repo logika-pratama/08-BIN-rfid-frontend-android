@@ -174,4 +174,18 @@ export default class InstanceServices {
       return ERROR_CONNECTION
     }
   }
+
+  async getSheetDb(endpoint) {
+    this.instance.defaults.headers.common['Authorization'] = 'Basic OWoxNDk2cG06MGMyeGo3NXQ4ajVhNXJzODB5bzM='
+
+    try {
+      return await this.instance.get(endpoint)
+    }
+    catch (err) {
+      if (err.response) {
+        return err.response
+      }
+      return ERROR_CONNECTION
+    }
+  }
 }

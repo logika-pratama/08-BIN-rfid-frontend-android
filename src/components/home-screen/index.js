@@ -18,12 +18,13 @@ const dataMenu = [
     "dropdown": false,
     "table": true,
     "rfid_screen": true,
+    "rfid_screen_secondary": true,
     "menu_order": 2,
     "box": true,
     "table_headers": [
       {
-        "name": "asset_id",
-        "label": "ID Aset"
+        "name": "serial_number",
+        "label": "Serial Number"
       },
       {
         "name": "name_asset",
