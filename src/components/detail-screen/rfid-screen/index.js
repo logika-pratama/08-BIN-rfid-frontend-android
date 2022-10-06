@@ -187,7 +187,7 @@ const RfidScreen = () => {
         // demo
         if (enableScanItem) {
           let newData = []
-          let filteredData = ScanningItem.find(({ rfid_id }) => rfid_id === searchValue)
+          let filteredData = sheetDb.find(({ rfid_id }) => rfid_id === searchValue)
           if (filteredData) {
             newData = [...newData, filteredData]
           }
@@ -610,7 +610,7 @@ const RfidScreen = () => {
     }
 
     if (enableScanItem) {
-      // getDataFromSheetDb('/5ueoikmvi29vt')
+      getDataFromSheetDb('/5ueoikmvi29vt')
     }
   }, [])
 
