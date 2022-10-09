@@ -20,6 +20,7 @@ import {
 import { useCameraDevices, Camera } from 'react-native-vision-camera'
 import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
 import moment from 'moment'
+import { useSheetDb } from '../../../contexts/sheet-db'
 import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
 import { getEndPointSearch, getEndPointSPrint, pushWithoutDuplicate } from '../../../lib/function-ingredients'
@@ -34,6 +35,7 @@ const RfidScreen = () => {
   const route = useRoute()
   const navigation = useNavigation()
   const theme = useTheme()
+  const { sheetDb, loadSheet } = useSheetDb()
   const Styles = new StylesKitchen(theme)
   const [activeCameraBle, setActiveCameraBle] = useState(false)
   const [activeCameraRfid, setActiveCameraRfid] = useState(false)
@@ -48,8 +50,6 @@ const RfidScreen = () => {
   const [messagesConfirm, setMessagesConfirm] = useState([])
   const [loadingConfirm, setLoadingConfirm] = useState(false)
   const [loadingUrlList, setLoadingUrlList] = useState(false)
-  const [sheetDb, setSheetDb] = useState([])
-  const [loadingSheetDb, setLoadingSheetDb] = useState(false)
   const [loadingSprintStockOpname, setLoadingSprintStockOpname] = useState(false)
   const [loadingScanQrCodeBle, setLoadingScanQrCodeBle] = useState(false)
   const [loadingScanQrCodeRfid, setLoadingScanQrCodeRfid] = useState(false)
@@ -251,166 +251,171 @@ const RfidScreen = () => {
   }
 
   const handleConfrim = async () => {
-    setLoadingConfirm(true)
-    if (enableGateScanning) {
-      if (finalData) {
-        const tags = finalData.map(({ rfid_id }) => rfid_id)
-        const sendTags = [...tags, deviceId].toString()
-        const finalSendTags = { 'tag': sendTags }
-        const resp = await RfidService.detailConfirm(finalSendTags, token)
+    if (enableScanItem) {
+      setSearchField('')
+      setFinalData([])
+    } else {
+      setLoadingConfirm(true)
+      if (enableGateScanning) {
+        if (finalData) {
+          const tags = finalData.map(({ rfid_id }) => rfid_id)
+          const sendTags = [...tags, deviceId].toString()
+          const finalSendTags = { 'tag': sendTags }
+          const resp = await RfidService.detailConfirm(finalSendTags, token)
 
-        if (resp.status === 200) {
-          setFinalData([])
-        }
-      }
-    } else if (enableSetting) {
-      if (urlList) {
-        const resp = await RfidService.uriUpdate(urlList, token)
-        if (resp.status) {
           if (resp.status === 200) {
-            const message = resp.data?.message
-            setMessageConfirm(message)
+            setFinalData([])
           }
-          else {
-            if (resp.status === 401) {
+        }
+      } else if (enableSetting) {
+        if (urlList) {
+          const resp = await RfidService.uriUpdate(urlList, token)
+          if (resp.status) {
+            if (resp.status === 200) {
               const message = resp.data?.message
-              Alert.alert(
-                ERROR_TITLE,
-                message
-              )
+              setMessageConfirm(message)
+            }
+            else {
+              if (resp.status === 401) {
+                const message = resp.data?.message
+                Alert.alert(
+                  ERROR_TITLE,
+                  message
+                )
+              }
             }
           }
+          else {
+            const message = resp
+            Alert.alert(
+              ERROR_TITLE,
+              message
+            )
+          }
         }
-        else {
-          const message = resp
-          Alert.alert(
-            ERROR_TITLE,
-            message
-          )
+      } else if (enableTagingBle) {
+        if (qrCodeBle.length > 0 && qrCodeRfid.length > 0) {
+          const tagId = qrCodeBle[0]?.tag_id,
+            nameTag = qrCodeBle[0]?.name_tag
+
+          const rfidId = qrCodeRfid[0]?.rfid_id,
+            nameAsset = qrCodeRfid[0]?.name_asset
+
+          if (tagId === DEFAULT_QR_CODE_BLE || rfidId === DEFAULT_QR_CODE_RFID) {
+            if (tagId === DEFAULT_QR_CODE_BLE) {
+              setMessagesConfirm(messages => {
+                return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_BLE)
+              })
+            }
+            if (rfidId === DEFAULT_QR_CODE_RFID) {
+              setMessagesConfirm(messages => {
+                return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_RFID)
+              })
+            }
+          } else {
+            const date = Date.now()
+
+            const dateFormatted = moment(date).format('YYYYMMDD')
+
+            const data = [
+              {
+                'tag_id': tagId,
+                'tag_name': nameTag,
+                'rfid_id': rfidId,
+                'name': nameAsset,
+                'object_name': 'assetA',
+                'object_type': 'assets',
+                'picture': `assets/images/${rfidId}.jpg`,
+                'date': dateFormatted
+              }
+            ]
+
+            // const resp = await ItatService.tagingBle(data, token) // trough it at ble
+            const resp = await RfidService.tagingBle(data, token)
+
+            if (resp.status) {
+              if (resp.status === 200) {
+                // const message = resp.data?.message || resp?.data // trough it at ble
+                const message = resp.data?.message
+                setMessagesConfirm(messages => {
+                  return pushWithoutDuplicate(messages, message)
+                })
+              }
+              else {
+                if (resp.status === 401) {
+                  // const message = resp.data?.message || resp?.data // trough it at ble
+                  const message = resp.data?.message
+                  Alert.alert(
+                    ERROR_TITLE,
+                    message
+                  )
+                }
+              }
+            }
+          }
+        } else {
+          setMessagesConfirm(messages => {
+            return pushWithoutDuplicate(messages, INIT_QR_CODE)
+          })
         }
-      }
-    } else if (enableTagingBle) {
-      if (qrCodeBle.length > 0 && qrCodeRfid.length > 0) {
-        const tagId = qrCodeBle[0]?.tag_id,
-          nameTag = qrCodeBle[0]?.name_tag
+      } else if (enableUntagingBle) {
+        if (qrCodeBle.length > 0) {
+          const tagId = qrCodeBle[0]?.tag_id,
+            nameTag = qrCodeBle[0]?.name_tag
 
-        const rfidId = qrCodeRfid[0]?.rfid_id,
-          nameAsset = qrCodeRfid[0]?.name_asset
-
-        if (tagId === DEFAULT_QR_CODE_BLE || rfidId === DEFAULT_QR_CODE_RFID) {
           if (tagId === DEFAULT_QR_CODE_BLE) {
             setMessagesConfirm(messages => {
               return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_BLE)
             })
-          }
-          if (rfidId === DEFAULT_QR_CODE_RFID) {
-            setMessagesConfirm(messages => {
-              return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_RFID)
-            })
-          }
-        } else {
-          const date = Date.now()
+          } else {
+            const date = Date.now()
 
-          const dateFormatted = moment(date).format('YYYYMMDD')
+            const dateFormatted = moment(date).format('YYYYMMDD')
 
-          const data = [
-            {
-              'tag_id': tagId,
-              'tag_name': nameTag,
-              'rfid_id': rfidId,
-              'name': nameAsset,
-              'object_name': 'assetA',
-              'object_type': 'assets',
-              'picture': `assets/images/${rfidId}.jpg`,
-              'date': dateFormatted
-            }
-          ]
+            const data = [
+              {
+                'tag_id': tagId,
+                'tag_name': nameTag,
+                'rfid_id': '',
+                'name': '',
+                'object_name': 'assetA',
+                'object_type': 'assets',
+                'picture': '',
+                'date': dateFormatted
+              }
+            ]
 
-          // const resp = await ItatService.tagingBle(data, token) // trough it at ble
-          const resp = await RfidService.tagingBle(data, token)
+            // const resp = await ItatService.untagingBle(data, token) // trough it at ble
+            const resp = await RfidService.untagingBle(data, token)
 
-          if (resp.status) {
-            if (resp.status === 200) {
-              // const message = resp.data?.message || resp?.data // trough it at ble
-              const message = resp.data?.message
-              setMessagesConfirm(messages => {
-                return pushWithoutDuplicate(messages, message)
-              })
-            }
-            else {
-              if (resp.status === 401) {
+            if (resp.status) {
+              if (resp.status === 200) {
                 // const message = resp.data?.message || resp?.data // trough it at ble
                 const message = resp.data?.message
-                Alert.alert(
-                  ERROR_TITLE,
-                  message
-                )
+                setMessagesConfirm(messages => {
+                  return pushWithoutDuplicate(messages, message)
+                })
+              }
+              else {
+                if (resp.status === 401) {
+                  // const message = resp.data?.message || resp?.data // trough it at ble
+                  const message = resp.data?.message
+                  Alert.alert(
+                    ERROR_TITLE,
+                    message
+                  )
+                }
               }
             }
           }
-        }
-      } else {
-        setMessagesConfirm(messages => {
-          return pushWithoutDuplicate(messages, INIT_QR_CODE)
-        })
-      }
-    } else if (enableUntagingBle) {
-      if (qrCodeBle.length > 0) {
-        const tagId = qrCodeBle[0]?.tag_id,
-          nameTag = qrCodeBle[0]?.name_tag
-
-        if (tagId === DEFAULT_QR_CODE_BLE) {
+        } else {
           setMessagesConfirm(messages => {
-            return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_BLE)
+            return pushWithoutDuplicate(messages, INIT_QR_CODE)
           })
-        } else {
-          const date = Date.now()
-
-          const dateFormatted = moment(date).format('YYYYMMDD')
-
-          const data = [
-            {
-              'tag_id': tagId,
-              'tag_name': nameTag,
-              'rfid_id': '',
-              'name': '',
-              'object_name': 'assetA',
-              'object_type': 'assets',
-              'picture': '',
-              'date': dateFormatted
-            }
-          ]
-
-          // const resp = await ItatService.untagingBle(data, token) // trough it at ble
-          const resp = await RfidService.untagingBle(data, token)
-
-          if (resp.status) {
-            if (resp.status === 200) {
-              // const message = resp.data?.message || resp?.data // trough it at ble
-              const message = resp.data?.message
-              setMessagesConfirm(messages => {
-                return pushWithoutDuplicate(messages, message)
-              })
-            }
-            else {
-              if (resp.status === 401) {
-                // const message = resp.data?.message || resp?.data // trough it at ble
-                const message = resp.data?.message
-                Alert.alert(
-                  ERROR_TITLE,
-                  message
-                )
-              }
-            }
-          }
         }
-      } else {
-        setMessagesConfirm(messages => {
-          return pushWithoutDuplicate(messages, INIT_QR_CODE)
-        })
       }
+      setLoadingConfirm(false)
     }
-    setLoadingConfirm(false)
   }
 
   const handleDismissNotification = () => {
@@ -589,28 +594,8 @@ const RfidScreen = () => {
   }, [barcodes])
 
   useEffect(() => {
-    const getDataFromSheetDb = async (endPoint) => {
-      setLoadingSheetDb(true)
-      const resp = await SheetDbService.getSheetDb(endPoint)
-      if (resp.status) {
-        if (resp.status === 200) {
-          const data = resp.data
-          setSheetDb(data)
-        }
-      }
-      else {
-        const message = resp
-        Alert.alert(
-          ERROR_TITLE,
-          message
-        )
-        navigation.goBack()
-      }
-      setLoadingSheetDb(false)
-    }
-
     if (enableScanItem) {
-      getDataFromSheetDb('/5ueoikmvi29vt')
+      loadSheet()
     }
   }, [])
 
@@ -646,7 +631,7 @@ const RfidScreen = () => {
 
   qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.rfid_id : qrCodeRfidValue
 
-  if (loadingUrlList || loadingSprintStockOpname || loadingScanQrCodeBle || loadingScanQrCodeRfid || loadingSheetDb) {
+  if (loadingUrlList || loadingSprintStockOpname || loadingScanQrCodeBle || loadingScanQrCodeRfid) {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
   }
 
@@ -817,7 +802,7 @@ const RfidScreen = () => {
         <View style={rfidScreenStyles.buttonConfirmContainer}>
           <Button
             customButtonStyles={rfidScreenStyles.buttonConfirmStyle}
-            label='Konfirmasi'
+            label={enableScanItem ? 'Bersihkan' : 'Konfirmasi'}
             loading={loadingConfirm}
             onPress={handleConfrim} />
         </View>

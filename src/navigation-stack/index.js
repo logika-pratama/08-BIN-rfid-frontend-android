@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useTheme } from 'react-native-paper'
+import { SheetDbProvider } from '../contexts/sheet-db'
 import { useAuth } from '../contexts'
 import HomeScreen from '../components/home-screen'
 import DetailScreen from '../components/detail-screen'
@@ -95,12 +96,14 @@ const NavigationStack = () => {
   }
 
   return (
-    <SafeAreaView style={navigationStackStyles.navigationStackContainer}>
-      <NavigationContainer>
-        {/* {authData ? <AppStack token={authData.jwtToken} /> : <LoginStack />} */}
-        <AppStack token={"authData.jwtToken"} />
-      </NavigationContainer>
-    </SafeAreaView>
+    <SheetDbProvider>
+      <SafeAreaView style={navigationStackStyles.navigationStackContainer}>
+        <NavigationContainer>
+          {/* {authData ? <AppStack token={authData.jwtToken} /> : <LoginStack />} */}
+          <AppStack token={"authData.jwtToken"} />
+        </NavigationContainer>
+      </SafeAreaView>
+    </SheetDbProvider>
   )
 }
 

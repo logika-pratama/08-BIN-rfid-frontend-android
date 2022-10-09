@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { PermissionsAndroid, Alert, FlatList, View, Pressable } from 'react-native'
-import { ERROR_TITLE } from 'react-native-dotenv'
 import MenuScreen from '../menu-screen'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { useTheme } from 'react-native-paper'

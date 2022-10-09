@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
+import { useTheme } from 'react-native-paper'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { Surface } from '../../lib/components-ingredients'
+import StylesKitchen from '../../styles-kitchen'
 
 const DetailSecondaryScreen = () => {
 	const route = useRoute()
 	const navigation = useNavigation()
+	const theme = useTheme()
 
 	const {
 		title,
@@ -21,45 +24,46 @@ const DetailSecondaryScreen = () => {
 		vendor_harwat = ''
 	} = route.params
 
+	const Styles = new StylesKitchen(theme)
+	const rfidSecondaryScreenStyles = Styles.rfidSecondaryScreenStyles()
+
 	useEffect(() => {
 		navigation.setOptions({
 			title
 		})
 	}, [])
 
-	return <View>
-		<Surface elevation={7}>
-			<Text>
-				{'foto'}
-			</Text>
+	return <View style={rfidSecondaryScreenStyles.rfidSecondaryScreenContainer}>
+		<Surface elevation={7} customSurfaceStyle={rfidSecondaryScreenStyles.imageContainer}>
+			<Image source={{ uri: photo }} style={rfidSecondaryScreenStyles.imageStyle} />
 		</Surface>
-		<Surface elevation={4}>
-			<Text>
-				{serial_number}
+		<Surface elevation={3} customSurfaceStyle={rfidSecondaryScreenStyles.contentContainer}>
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Serial Number: ' + serial_number}
 			</Text>
-			<Text>
-				{name_asset}
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Name Asset: ' + name_asset}
 			</Text>
-			<Text>
-				{model}
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Model: ' + model}
 			</Text>
-			<Text>
-				{manufactured}
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Manufactured: ' + manufactured}
 			</Text>
-			<Text>
-				{tahun_pengadaan}
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Tahun Pengadaan: ' + tahun_pengadaan}
 			</Text>
-			<Text>
-				{batas_garansi}
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Batas Garansi: ' + batas_garansi}
 			</Text>
-			<Text>
-				{kondisi}
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Kondisi: ' + kondisi}
 			</Text>
-			<Text>
-				{harwat_terakhir}
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Harwat Terakhir: ' + harwat_terakhir}
 			</Text>
-			<Text>
-				{vendor_harwat}
+			<Text style={rfidSecondaryScreenStyles.contentStyle}>
+				{'Vendor Harwat: ' + vendor_harwat}
 			</Text>
 		</Surface>
 	</View >

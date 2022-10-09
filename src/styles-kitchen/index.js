@@ -162,6 +162,9 @@ export default class StylesKitchen {
       justifyContent: 'space-between',
       backgroundColor: this.colors?.primary
     },
+    customLoadingContainer: {
+      backgroundColor: 'background: rgba(52,42,41,.5)'
+    },
     menuContainer: {
       display: 'flex',
       flexDirection: 'row',
@@ -309,6 +312,37 @@ export default class StylesKitchen {
     tableFootersTitleText: {
       color: this.colors?.white,
       textAlign: 'right'
+    }
+  })
+
+  rfidSecondaryScreenStyles = () => this.createStyles({
+    rfidSecondaryScreenContainer: {
+      display: 'flex',
+      flex: 1,
+      // marginTop: 48
+    },
+    imageContainer: {
+      display: 'flex',
+      paddingTop: 30,
+      paddingBottom: 30,
+      marginBottom: 20
+    },
+    imageStyle: {
+      height: 250,
+      width: 250
+    },
+    contentContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      paddingTop: 20,
+      paddingBottom: 15,
+      paddingLeft: 30,
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start'
+    },
+    contentStyle: {
+      color: this.colors.primary,
+      marginBottom: 5
     }
   })
 
