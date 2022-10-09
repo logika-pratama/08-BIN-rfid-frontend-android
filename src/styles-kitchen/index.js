@@ -328,8 +328,9 @@ export default class StylesKitchen {
       marginBottom: 20
     },
     imageStyle: {
-      height: 250,
-      width: 250
+      height: 200,
+      width: 200,
+      resizeMode: 'contain'
     },
     contentContainer: {
       display: 'flex',
