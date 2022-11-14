@@ -5,13 +5,6 @@ import { TextInput as TextInputPaper, useTheme, DataTable } from 'react-native-p
 import Dropdown from 'react-native-paper-dropdown'
 import decode from 'jwt-decode'
 import {
-  SHEET_DB_URL,
-  SHEET_DB_TIMEOUT,
-  ITAM_API_URL_STAGING,
-  ITAM_TIME_OUT,
-  ITAM_API_KEY,
-  ITAT_API_URL,
-  ITAT_TIME_OUT,
   ERROR_TITLE,
   INIT_QR_CODE,
   DEFAULT_QR_CODE_BLE,
@@ -20,22 +13,17 @@ import {
 import { useCameraDevices, Camera } from 'react-native-vision-camera'
 import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
 import moment from 'moment'
-import { useSheetDb } from '../../../contexts/sheet-db'
 import InstanceServices from '../../../services'
 import StylesKitchen from '../../../styles-kitchen'
 import { getEndPointSearch, getEndPointSPrint, pushWithoutDuplicate } from '../../../lib/function-ingredients'
 import { Surface, Box, Button, Field, Notification, MultipleNotifications } from '../../../lib/components-ingredients'
 import LoadingScreen from '../../loading-screen'
 
-// for testing
-import ScanningItem from '../../../data-dummy/scanning-item.json'
-// end 
 
 const RfidScreen = () => {
   const route = useRoute()
   const navigation = useNavigation()
   const theme = useTheme()
-  const { sheetDb, loadSheet } = useSheetDb()
   const Styles = new StylesKitchen(theme)
   const [activeCameraBle, setActiveCameraBle] = useState(false)
   const [activeCameraRfid, setActiveCameraRfid] = useState(false)
@@ -92,9 +80,6 @@ const RfidScreen = () => {
   const enableUntagingBle = config_menu_rfid_screen.enable_untaging_ble || false
 
   const RfidService = new InstanceServices()
-  const SheetDbService = new InstanceServices(SHEET_DB_URL, SHEET_DB_TIMEOUT)
-  const ItamService = new InstanceServices(ITAM_API_URL_STAGING, ITAM_TIME_OUT, ITAM_API_KEY) // trough it am
-  const ItatService = new InstanceServices(ITAT_API_URL, ITAT_TIME_OUT) // trough it at ble
 
   let qrCodeBleValue = INIT_QR_CODE,
     qrCodeRfidValue = INIT_QR_CODE
@@ -109,15 +94,15 @@ const RfidScreen = () => {
       if (finalArrText) {
         const filteredData = finalArrText.filter(el => {
           if (enableScanning) {
-            return el && finalData.map(({ rfid_id }) => {
-              if (el !== rfid_id) {
+            return el && finalData.map(({ asset_id }) => {
+              if (el !== asset_id) {
                 return el
               }
             })
           }
           else {
-            return el && finalData.map(({ rfid_id }) => {
-              if (el !== rfid_id) {
+            return el && finalData.map(({ asset_id }) => {
+              if (el !== asset_id) {
                 return el
               }
             })
@@ -129,11 +114,11 @@ const RfidScreen = () => {
 
           if (enableScanning) {
             const data = [{
-              "rfid_id": searchValue,
+              "rfid_tag": searchValue,
             }]
 
             setFinalData(prevData => {
-              const newData = data.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
+              const newData = data.filter(({ rfid_tag: tagCurr }) => !prevData.some(({ rfid_tag: tagPrev }) => tagPrev === tagCurr))
               return [...prevData, ...newData]
             })
           }
@@ -179,32 +164,18 @@ const RfidScreen = () => {
             setQrCodeRfid(data)
           } else if (resp?.status === 404) {
             const newData = [{
-              rfid_id: DEFAULT_QR_CODE_RFID
+              asset_id: DEFAULT_QR_CODE_RFID
             }]
             setQrCodeRfid(newData)
           }
         }
       } else {
-        // demo
-        if (enableScanItem) {
-          let newData = []
-          let filteredData = sheetDb.find(({ rfid_id }) => rfid_id === searchValue)
-          if (filteredData) {
-            newData = [...newData, filteredData]
-          }
-
+        if (resp?.status === 200) {
+          const data = resp.data?.data
           setFinalData(prevData => {
-            const filteredData = newData.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
-            return [...prevData, ...filteredData]
-          }) // end demo
-        } else {
-          if (resp?.status === 200) {
-            const data = resp.data?.data
-            setFinalData(prevData => {
-              const newData = data.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
-              return [...prevData, ...newData]
-            })
-          }
+            const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
+            return [...prevData, ...newData]
+          })
         }
       }
     }
@@ -259,7 +230,7 @@ const RfidScreen = () => {
       setLoadingConfirm(true)
       if (enableGateScanning) {
         if (finalData) {
-          const tags = finalData.map(({ rfid_id }) => rfid_id)
+          const tags = finalData.map(({ asset_id }) => asset_id)
           const sendTags = [...tags, deviceId].toString()
           const finalSendTags = { 'tag': sendTags }
           const resp = await RfidService.detailConfirm(finalSendTags, token)
@@ -299,16 +270,16 @@ const RfidScreen = () => {
           const tagId = qrCodeBle[0]?.tag_id,
             nameTag = qrCodeBle[0]?.name_tag
 
-          const rfidId = qrCodeRfid[0]?.rfid_id,
+          const assetId = qrCodeRfid[0]?.asset_id,
             nameAsset = qrCodeRfid[0]?.name_asset
 
-          if (tagId === DEFAULT_QR_CODE_BLE || rfidId === DEFAULT_QR_CODE_RFID) {
+          if (tagId === DEFAULT_QR_CODE_BLE || assetId === DEFAULT_QR_CODE_RFID) {
             if (tagId === DEFAULT_QR_CODE_BLE) {
               setMessagesConfirm(messages => {
                 return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_BLE)
               })
             }
-            if (rfidId === DEFAULT_QR_CODE_RFID) {
+            if (assetId === DEFAULT_QR_CODE_RFID) {
               setMessagesConfirm(messages => {
                 return pushWithoutDuplicate(messages, DEFAULT_QR_CODE_RFID)
               })
@@ -322,11 +293,11 @@ const RfidScreen = () => {
               {
                 'tag_id': tagId,
                 'tag_name': nameTag,
-                'rfid_id': rfidId,
+                'asset_id': assetId,
                 'name': nameAsset,
                 'object_name': 'assetA',
                 'object_type': 'assets',
-                'picture': `assets/images/${rfidId}.jpg`,
+                'picture': `assets/images/${assetId}.jpg`,
                 'date': dateFormatted
               }
             ]
@@ -377,7 +348,7 @@ const RfidScreen = () => {
               {
                 'tag_id': tagId,
                 'tag_name': nameTag,
-                'rfid_id': '',
+                'asset_id': '',
                 'name': '',
                 'object_name': 'assetA',
                 'object_type': 'assets',
@@ -568,9 +539,9 @@ const RfidScreen = () => {
         setActiveCameraBle(false)
         setLoadingScanQrCodeBle(false)
       } else if (activeCameraRfid) {
-        const rfidId = qrCodeRfid[0]?.rfid_id
+        const assetId = qrCodeRfid[0]?.asset_id
 
-        if (displayValue !== rfidId) {
+        if (displayValue !== assetId) {
           setLoadingScanQrCodeRfid(true)
           await sendData(
             config_menu_rfid_screen,
@@ -578,7 +549,7 @@ const RfidScreen = () => {
             null,
             activeCameraBle,
             activeCameraRfid)
-          qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.rfid_id : DEFAULT_QR_CODE_RFID
+          qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : DEFAULT_QR_CODE_RFID
         }
         setActiveCameraRfid(false)
         setLoadingScanQrCodeRfid(false)
@@ -594,12 +565,6 @@ const RfidScreen = () => {
     }
   }, [barcodes])
 
-  useEffect(() => {
-    if (enableScanItem) {
-      loadSheet()
-    }
-  }, [])
-
   // useEffect(() => {
   //   if (qrCodeRfid) {
   //     (async () => {
@@ -613,7 +578,7 @@ const RfidScreen = () => {
   //     // if (!enableMaterialTest) { // this is will be deleted if uji mat not testing
   //     data &&
   //       setFinalData(prevData => {
-  //         const newData = data.filter(({ rfid_id: tagCurr }) => !prevData.some(({ rfid_id: tagPrev }) => tagPrev === tagCurr))
+  //         const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
   //         return [...prevData, ...newData]
   //       })
   //     // } // materialTest still using testing (dummy)
@@ -630,7 +595,7 @@ const RfidScreen = () => {
 
   qrCodeBleValue = qrCodeBle.length > 0 ? qrCodeBle[0]?.tag_id : qrCodeBleValue
 
-  qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.rfid_id : qrCodeRfidValue
+  qrCodeRfidValue = qrCodeRfid.length > 0 ? qrCodeRfid[0]?.asset_id : qrCodeRfidValue
 
   if (loadingUrlList || loadingSprintStockOpname || loadingScanQrCodeBle || loadingScanQrCodeRfid) {
     return <LoadingScreen customLoadingContainer={rfidScreenStyles.customLoadingContainer} />
