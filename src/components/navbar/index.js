@@ -10,6 +10,12 @@ const NavbarHomeScreen = () => {
 
   return (
     <View style={navBarStyles.navbarContainer}>
+      <View style={navBarStyles.menuContainer}>
+        <Text style={navBarStyles.textStyle}>
+          {accountInfo}
+        </Text>
+        <IconButton icon='logout' color={whiteColor} size={25} onPress={handleLogout} />
+      </View>
     </View>
   )
 }
