@@ -10,7 +10,7 @@ import LoadingScreen from '../loading-screen'
 const dataMenu = [
   {
     "id": 6,
-    "title": "Memindai Barang",
+    "title": "Scanning Item",
     "integration_module_screen": false,
     "camera_action_ble": false,
     "camera_action_rfid": false,
@@ -22,8 +22,8 @@ const dataMenu = [
     "box": true,
     "table_headers": [
       {
-        "name": "serial_number",
-        "label": "Serial Number"
+        "name": "asset_id",
+        "label": "ID Asset"
       },
       {
         "name": "name_asset",
@@ -33,6 +33,46 @@ const dataMenu = [
     "search_field": true,
     "setting_url_form": false,
     "confirm_button": true,
+    "confirm_text": "Clear",
+    "config_menu_rfid_screen": {
+      "enable_setting": false,
+      "enable_scanning": false,
+      "enable_scan_item": true,
+      "enable_taging_ble": false,
+      "enable_stock_opname": false,
+      "enable_untaging_ble": false,
+      "enable_gate_scanning": false,
+      "enable_material_test": false,
+      "enable_scan_monitoring": false
+    },
+    "url_screen": ""
+  },
+  {
+    "id": 2,
+    "title": "Stock Opname",
+    "integration_module_screen": false,
+    "camera_action_ble": false,
+    "camera_action_rfid": false,
+    "dropdown": false,
+    "table": true,
+    "rfid_screen": true,
+    "rfid_screen_secondary": true,
+    "menu_order": 2,
+    "box": true,
+    "table_headers": [
+      {
+        "name": "asset_id",
+        "label": "ID Asset"
+      },
+      {
+        "name": "name_asset",
+        "label": "Name Aset"
+      }
+    ],
+    "search_field": true,
+    "setting_url_form": false,
+    "confirm_button": true,
+    "confirm_text": "Confirm",
     "config_menu_rfid_screen": {
       "enable_setting": false,
       "enable_scanning": false,
@@ -63,6 +103,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
     box,
     setting_url_form,
     confirm_button,
+    confirm_text,
     config_menu_rfid_screen,
     url_screen
   } = item
@@ -88,6 +129,7 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
           box,
           setting_url_form,
           confirm_button,
+          confirm_text,
           config_menu_rfid_screen
         })
       }

@@ -66,6 +66,7 @@ const RfidScreen = () => {
     table_headers,
     table,
     confirm_button,
+    confirm_text,
     setting_url_form,
     config_menu_rfid_screen,
     token
@@ -802,7 +803,7 @@ const RfidScreen = () => {
         <View style={rfidScreenStyles.buttonConfirmContainer}>
           <Button
             customButtonStyles={rfidScreenStyles.buttonConfirmStyle}
-            label={enableScanItem ? 'Bersihkan' : 'Konfirmasi'}
+            label={confirm_text}
             loading={loadingConfirm}
             onPress={handleConfrim} />
         </View>
