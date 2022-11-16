@@ -3,6 +3,7 @@ import { PermissionsAndroid, Alert, FlatList, View, Pressable } from 'react-nati
 import MenuScreen from '../menu-screen'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { useTheme } from 'react-native-paper'
+import decode from 'jwt-decode'
 import InstanceServices from '../../services'
 import StylesKitchen from '../../styles-kitchen'
 import LoadingScreen from '../loading-screen'
@@ -45,7 +46,8 @@ const dataMenu = [
       "enable_material_test": false,
       "enable_scan_monitoring": false
     },
-    "url_screen": ""
+    "url_screen": "",
+    "roles": ["2", "3"]
   },
   {
     "id": 2,
@@ -71,24 +73,25 @@ const dataMenu = [
     ],
     "search_field": true,
     "setting_url_form": false,
-    "confirm_button": true,
-    "confirm_text": "Confirm",
+    "confirm_button": false,
+    "confirm_text": "",
     "config_menu_rfid_screen": {
       "enable_setting": false,
       "enable_scanning": false,
-      "enable_scan_item": true,
+      "enable_scan_item": false,
       "enable_taging_ble": false,
-      "enable_stock_opname": false,
+      "enable_stock_opname": true,
       "enable_untaging_ble": false,
       "enable_gate_scanning": false,
       "enable_material_test": false,
       "enable_scan_monitoring": false
     },
-    "url_screen": ""
+    "url_screen": "",
+    "roles": ["3"]
   }
 ]
 
-const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
+const renderItem = (token, navigation, homeScreenStyles) => ({ item }) => {
   const {
     id,
     title,
@@ -105,8 +108,12 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
     confirm_button,
     confirm_text,
     config_menu_rfid_screen,
-    url_screen
+    url_screen,
+    roles
   } = item
+
+  const { role } = decode(token)
+
   const onPress = () => {
     if (integration_module_screen) {
       return navigation.navigate('integration_module', {
@@ -144,11 +151,15 @@ const renderItem = (navigation, homeScreenStyles) => ({ item }) => {
     }
   }
 
-  return (
-    <Pressable style={homeScreenStyles.homeButton} onPress={onPress}>
-      <MenuScreen title={item.title} />
-    </Pressable>
-  )
+  if (roles.indexOf(role) !== -1) {
+    return (
+      <Pressable style={homeScreenStyles.homeButton} onPress={onPress}>
+        <MenuScreen title={item.title} />
+      </Pressable>
+    )
+  }
+
+  return null
 }
 
 const HomeScreen = () => {
@@ -227,7 +238,7 @@ const HomeScreen = () => {
     <View style={homeScreenStyles.homeScreenContainer}>
       <FlatList
         data={data}
-        renderItem={renderItem(navigation, homeScreenStyles)}
+        renderItem={renderItem(token, navigation, homeScreenStyles)}
         keyExtractor={item => item.id} />
     </View>
   )

@@ -109,7 +109,7 @@ export default class StylesKitchen {
       height: 175
     },
     textStyle: {
-      color: this.colors.primary,
+      color: this.colors.black,
       marginTop: 10,
       fontSize: 16,
       fontWeight: 'bold'
@@ -159,7 +159,7 @@ export default class StylesKitchen {
       height: 65,
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-end',
       backgroundColor: this.colors?.primary
     },
     customLoadingContainer: {

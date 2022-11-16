@@ -14,7 +14,7 @@ function getEndPointSearch(config_menu_rfid_screen,
   let endPoint = ''
 
   if (enableStockOpname) {
-    endPoint = `/stock_opname?tag_number=${encodeURIComponent(searchValue)}&sprint=${encodeURIComponent(selectedSPrint)}`
+    endPoint = `/stoktake/search?tag_number=${encodeURIComponent(searchValue)}`
   } else if (enableMaterialTest) {
     endPoint = `/material_test?tag_number=${encodeURIComponent(searchValue)}`
   } else if (enableScanItem) {

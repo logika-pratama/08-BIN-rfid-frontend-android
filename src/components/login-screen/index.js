@@ -45,7 +45,7 @@ const LoginScreen = () => {
         await saveToken({ jwtToken })
       }
       else {
-        if (resp.status === 401) {
+        if (resp.status === 400) {
           const message = resp.data.message
           Alert.alert(
             ERROR_TITLE,
@@ -70,10 +70,10 @@ const LoginScreen = () => {
       <View style={loginScreenStyles.imageAndTextContainer}>
         <Image
           style={loginScreenStyles.imageStyle}
-          source={LogistikPolri}
+        // source={LogistikPolri}
         />
         <Text style={loginScreenStyles.textStyle}>
-          ITAT Mobile
+          Handheld RFID
         </Text>
       </View>
       <View style={loginScreenStyles.formContainer}>

@@ -67,7 +67,7 @@ const RfidScreen = () => {
     checkInverted: true,
   })
 
-  // const { Device_ID: deviceId } = decode(token)
+  const { Device_ID: deviceId } = decode(token)
   const rfidScreenStyles = Styles.rfidScreenStyles()
 
   const enableStockOpname = config_menu_rfid_screen.enable_stock_opname || false
@@ -140,8 +140,18 @@ const RfidScreen = () => {
     activeCameraRfid = false) => {
     const endPointSearch = getEndPointSearch(config_menu_rfid_screen, searchValue, selectedSPrint, activeCameraBle, activeCameraRfid)
     // if (enableGateScanning || enableStockOpname) { // for testing
-    if (enableGateScanning || enableStockOpname || enableMaterialTest) { // for running
-      await RfidService.searchAdd(endPointSearch, token)
+    if (enableGateScanning) { // for running
+      await RfidService.searchAdd(endPointSearch, token) // chane to body than params
+    } else if (enableStockOpname || enableMaterialTest) {
+      const resp = await RfidService.searchAdd(endPointSearch, token)
+
+      if (resp?.status === 200) {
+        const data = resp.data?.data
+        setFinalData(prevData => {
+          const newData = data.filter(({ asset_id: tagCurr }) => !prevData.some(({ asset_id: tagPrev }) => tagPrev === tagCurr))
+          return [...prevData, ...newData]
+        })
+      }
     } else {
       const resp = await RfidService.searchGet(endPointSearch, token)
 
@@ -665,36 +675,37 @@ const RfidScreen = () => {
       }
 
       {
-        enableStockOpname || enableMaterialTest ?
-          search_field && !!selectedSPrint &&
-          <View style={rfidScreenStyles.searchingContainer}>
-            <TextInputPaper
-              name='search'
-              style={rfidScreenStyles.feildsStyle}
-              autoFocus
-              multiline
-              autoComplete='off'
-              onFocus={handleFocus}
-              onChange={handleChangeSearchField}
-              value={searchField}
-              label={'Pindai'}
-              placeholder={'Pindai'}
-            />
-          </View> : search_field &&
-          <View style={rfidScreenStyles.searchingContainer}>
-            <TextInputPaper
-              name='search'
-              style={rfidScreenStyles.feildsStyle}
-              autoFocus
-              multiline
-              autoComplete='off'
-              onFocus={handleFocus}
-              onChange={handleChangeSearchField}
-              value={searchField}
-              label={'Pindai'}
-              placeholder={'Pindai'}
-            />
-          </View>
+        // enableStockOpname || enableMaterialTest ?
+        //   search_field && !!selectedSPrint &&
+        //   <View style={rfidScreenStyles.searchingContainer}>
+        //     <TextInputPaper
+        //       name='search'
+        //       style={rfidScreenStyles.feildsStyle}
+        //       autoFocus
+        //       multiline
+        //       autoComplete='off'
+        //       onFocus={handleFocus}
+        //       onChange={handleChangeSearchField}
+        //       value={searchField}
+        //       label={'Pindai'}
+        //       placeholder={'Pindai'}
+        //     />
+        //   </View> : 
+        search_field &&
+        <View style={rfidScreenStyles.searchingContainer}>
+          <TextInputPaper
+            name='search'
+            style={rfidScreenStyles.feildsStyle}
+            autoFocus
+            multiline
+            autoComplete='off'
+            onFocus={handleFocus}
+            onChange={handleChangeSearchField}
+            value={searchField}
+            label={'Pindai'}
+            placeholder={'Pindai'}
+          />
+        </View>
       }
 
       {
