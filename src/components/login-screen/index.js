@@ -73,7 +73,7 @@ const LoginScreen = () => {
         // source={LogistikPolri}
         />
         <Text style={loginScreenStyles.textStyle}>
-          Handheld RFID
+          RFID Soultion
         </Text>
       </View>
       <View style={loginScreenStyles.formContainer}>
